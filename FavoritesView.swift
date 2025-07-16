@@ -87,13 +87,22 @@ struct FavoritesView: View {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             if !dataManager.favoriteLensesList.isEmpty {
                                 Button(action: {
-                                    withAnimation { isSelectionMode.toggle() }
+                                    withAnimation(.easeInOut) { isSelectionMode.toggle() }
                                     if !isSelectionMode { dataManager.clearComparison() }
                                 }) {
-                                    Text(isSelectionMode ? "Done" : "Select")
-                                        .font(.headline.weight(.semibold))
-                                        .foregroundColor(.accentColor)
-                                        .padding(.trailing, 10) // <-- УВЕЛИЧЕННЫЙ ОТСТУП ДЛЯ КНОПКИ
+                                    // --- ОБНОВЛЕННАЯ КНОПКА ---
+                                    HStack(spacing: 6) {
+                                        Image(systemName: isSelectionMode ? "checkmark.circle.fill" : "square.and.arrow.down.on.square")
+                                        Text(isSelectionMode ? "Done" : "Select")
+                                    }
+                                    .font(.headline.weight(.semibold))
+                                    .foregroundColor(isSelectionMode ? .green : .cyan)
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 12)
+                                    .background(
+                                        (isSelectionMode ? Color.green : Color.cyan).opacity(0.2)
+                                    )
+                                    .clipShape(Capsule())
                                 }
                             }
                         }
@@ -137,7 +146,7 @@ struct FavoritesView: View {
 }
 
 
-// Строка списка
+// Строка списка (без изменений)
 struct LensRow: View {
     let lens: Lens
     let isSelectionMode: Bool

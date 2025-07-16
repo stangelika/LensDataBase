@@ -4,10 +4,10 @@ import SwiftUI
 
 struct ProjectDetailView: View {
     @EnvironmentObject var dataManager: DataManager
-    @Binding var project: Project // Используем Binding, чтобы изменения сохранялись
+    @Binding var project: Project
     
-    // Состояние для показа модального окна выбора камер
     @State private var showingCameraSelection = false
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         ZStack {
@@ -24,14 +24,31 @@ struct ProjectDetailView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    // Название проекта
-                    TextField("Project Name", text: $project.name)
-                        .font(.largeTitle.weight(.bold))
-                        .foregroundColor(.white)
-                        .padding(.horizontal)
-                        .padding(.top, 20)
-                        .onChange(of: project.name) { _ in dataManager.saveProjects() }
                     
+                    // --- ОБНОВЛЕННЫЙ ЗАГОЛОВОК ПРОЕКТА ---
+                    HStack {
+                        // Пустое пространство, чтобы не перекрывать кнопку "назад"
+                        Spacer().frame(width: 50)
+                        
+                        TextField("Project Name", text: $project.name)
+                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .foregroundColor(.white)
+                            .shadow(color: .cyan.opacity(0.2), radius: 5)
+                            .multilineTextAlignment(.leading)
+                            
+                        Spacer()
+                    }
+                    .padding(.top, 10) // Уменьшили верхний отступ
+                    .padding(.bottom, 12)
+                    
+                    // Разделитель
+                    Rectangle()
+                        .frame(height: 1)
+                        .foregroundColor(.white.opacity(0.15))
+                        .padding(.horizontal)
+                        .padding(.bottom, 10)
+
+
                     // Выбор даты
                     HStack {
                         Label("Project Date", systemImage: "calendar")
@@ -84,7 +101,7 @@ struct ProjectDetailView: View {
                     }
                     .frame(height: 100)
 
-                    // --- НОВАЯ СЕКЦИЯ ДЛЯ КАМЕР ---
+                    // Секция для камер
                     Text("Cameras (\(project.cameraIDs.count))")
                         .font(.headline)
                         .foregroundColor(.white)
@@ -101,7 +118,6 @@ struct ProjectDetailView: View {
                                     }
                                 }
                             }
-                            // Кнопка для добавления новой камеры
                             Button(action: { showingCameraSelection = true }) {
                                 AddItemCard(icon: "camera.badge.plus", text: "Add Camera")
                             }
@@ -116,19 +132,34 @@ struct ProjectDetailView: View {
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .preferredColorScheme(.dark)
         .sheet(isPresented: $showingCameraSelection) {
-            // Показываем лист выбора камер
             CameraSelectionView(project: $project)
                 .environmentObject(dataManager)
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: { dismiss() }) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(8)
+                        .background(Color.white.opacity(0.15))
+                        .clipShape(Circle())
+                }
+            }
+        }
+        .onChange(of: project.name) { _ in
+            // Переместили onChange сюда, чтобы он не был внутри заголовка
+            dataManager.saveProjects()
         }
     }
 }
 
 
-// --- КОМПОНЕНТЫ ДЛЯ ЭКРАНА ---
+// --- КОМПОНЕНТЫ ДЛЯ ЭКРАНА (без изменений) ---
 
-// Карточка для объектива в проекте
 struct ProjectLensCard: View {
     let lens: Lens
     var body: some View {
@@ -141,7 +172,6 @@ struct ProjectLensCard: View {
     }
 }
 
-// Новая карточка для камеры в проекте
 struct ProjectCameraCard: View {
     let camera: Camera
     var body: some View {
@@ -154,7 +184,6 @@ struct ProjectCameraCard: View {
     }
 }
 
-// Карточка-заглушка
 struct PlaceholderCard: View {
     let text: String
     let subtext: String
@@ -167,7 +196,6 @@ struct PlaceholderCard: View {
     }
 }
 
-// Карточка-кнопка для добавления
 struct AddItemCard: View {
     let icon: String
     let text: String

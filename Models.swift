@@ -76,6 +76,8 @@ struct Lens: Codable, Identifiable {
     let length: String
     let front_diameter: String
     let squeeze_factor: String?
+    let weight_g: String // <-- ДОБАВЛЕНО НОВОЕ ПОЛЕ
+    let mount: String // <-- ДОБАВЛЕНО НОВОЕ ПОЛЕ
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -91,6 +93,8 @@ struct Lens: Codable, Identifiable {
         case length
         case front_diameter
         case squeeze_factor
+        case weight_g // <-- ДОБАВЛЕНО НОВОЕ ПОЛЕ
+        case mount // <-- ДОБАВЛЕНО НОВОЕ ПОЛЕ
     }
     
     init(from decoder: Decoder) throws {
@@ -110,30 +114,19 @@ struct Lens: Codable, Identifiable {
         length = try Lens.decodeFlexible(container: container, key: .length) ?? ""
         front_diameter = try Lens.decodeFlexible(container: container, key: .front_diameter) ?? ""
         squeeze_factor = try Lens.decodeFlexible(container: container, key: .squeeze_factor)
+        
+        // Декодируем новые поля, если они есть, иначе ставим заглушку
+        weight_g = (try? Lens.decodeFlexible(container: container, key: .weight_g)) ?? "N/A"
+        mount = (try? Lens.decodeFlexible(container: container, key: .mount)) ?? "N/A"
     }
     
     // Универсальный метод для декодирования любых полей
     private static func decodeFlexible(container: KeyedDecodingContainer<Lens.CodingKeys>, key: CodingKeys) throws -> String? {
-        // Пробуем декодировать как строку
-        if let stringValue = try? container.decode(String.self, forKey: key) {
-            return stringValue
-        }
-        // Пробуем декодировать как целое число
-        else if let intValue = try? container.decode(Int.self, forKey: key) {
-            return String(intValue)
-        }
-        // Пробуем декодировать как число с плавающей точкой
-        else if let doubleValue = try? container.decode(Double.self, forKey: key) {
-            return String(doubleValue)
-        }
-        // Пробуем декодировать как булево значение
-        else if let boolValue = try? container.decode(Bool.self, forKey: key) {
-            return boolValue ? "true" : "false"
-        }
-        // Если ничего не получилось, возвращаем nil
-        else {
-            return nil
-        }
+        if let stringValue = try? container.decode(String.self, forKey: key) { return stringValue }
+        else if let intValue = try? container.decode(Int.self, forKey: key) { return String(intValue) }
+        else if let doubleValue = try? container.decode(Double.self, forKey: key) { return String(doubleValue) }
+        else if let boolValue = try? container.decode(Bool.self, forKey: key) { return boolValue ? "true" : "false" }
+        else { return nil }
     }
 }
 
@@ -147,18 +140,12 @@ struct AppData: Codable {
     let lenses: [Lens]
     let inventory: [String: [InventoryItem]]
     
-    // Кастомный инициализатор для обработки ошибок в массиве объективов
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
         last_updated = try container.decode(String.self, forKey: .last_updated)
         rentals = try container.decode([Rental].self, forKey: .rentals)
         inventory = try container.decode([String: [InventoryItem]].self, forKey: .inventory)
-        
-        // Обрабатываем объективы с защитой от ошибок (ИСПРАВЛЕНО: let вместо var)
         let lensesArray = try container.decode([Lens].self, forKey: .lenses)
-        
-        // Фильтруем объективы с пустым ID
         lenses = lensesArray.filter { !$0.id.isEmpty }
     }
 }
@@ -176,21 +163,15 @@ struct LensSeries: Identifiable {
     let lenses: [Lens]
 }
 
-// MARK: - Состояния приложения (ИСПРАВЛЕНО: добавлено Equatable)
+// MARK: - Состояния приложения
 enum DataLoadingState: Equatable {
-    case idle
-    case loading
-    case loaded
-    case error(String)
+    case idle, loading, loaded, error(String)
 }
 
 enum ActiveTab: Equatable {
-    case rentalView
-    case allLenses
-    case updateView
-    case favorites 
-    case projects
+    case rentalView, allLenses, updateView, favorites, projects
 }
+
 // MARK: - Модель для Проектов
 
 struct Project: Codable, Identifiable, Equatable {
@@ -198,18 +179,24 @@ struct Project: Codable, Identifiable, Equatable {
     var name: String
     var notes: String
     var date: Date
-    var lensIDs: [String] // Массив ID объективов в этом проекте
-    var cameraIDs: [String] // Массив ID камер в этом проекте
+    var lensIDs: [String]
+    var cameraIDs: [String]
     
-    // Статический метод для создания пустого проекта
-    static func empty() -> Project {
-        Project(
-            id: UUID(),
-            name: "New Project",
-            notes: "",
-            date: Date(),
-            lensIDs: [],
-            cameraIDs: []
-        )
+    // --- >>> ВОТ ЭТОТ БЛОК Я ДОБАВИЛ <<< ---
+    // Кастомный инициализатор для создания нового проекта "с нуля"
+    init(name: String) {
+        self.id = UUID()
+        self.name = name
+        self.notes = "" // По умолчанию заметки пустые
+        self.date = Date() // По умолчанию ставим текущую дату
+        self.lensIDs = [] // Начинаем с пустого списка объективов
+        self.cameraIDs = [] // и камер
     }
-}
+    
+    // Статический метод для создания пустого проекта (остается на месте)
+    static func empty() -> Project {
+        // Теперь он использует наш новый простой init
+        return Project(name: "New Project")
+    }
+    }
+

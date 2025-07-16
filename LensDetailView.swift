@@ -9,191 +9,204 @@ struct LensDetailView: View, Identifiable {
     @State private var showingProjectSelection = false // Новое состояние для показа листа проектов
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
-                // Header with back button
-                HStack {
-                    Button(action: {
-                        dismiss() // Используем dismiss()
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.white.opacity(0.2))
-                            .clipShape(Circle())
-                    }
-                    
-                    Spacer()
-                }
-                .padding(.horizontal)
-                .padding(.top, 10)
-                
-                // Lens title
-                StickyHeader(title: lens.display_name)
-                
-                // БЛОК ДЛЯ ЗАГОЛОВКА И КНОПОК
-                HStack(alignment: .top) {
-                    // Название объектива
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("\(lens.manufacturer) · \(lens.lens_name)")
-                            .font(.title3)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Spacer() // Занимает все свободное место
-                    
-                    // Кнопка "Избранное"
-                    Button(action: {
-                        dataManager.toggleFavorite(lens: lens)
-                    }) {
-                        Image(systemName: dataManager.isFavorite(lens: lens) ? "star.fill" : "star")
-                            .font(.title2.weight(.bold))
-                            .foregroundColor(dataManager.isFavorite(lens: lens) ? .yellow : .gray)
-                            .padding(8)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Circle())
-                            .shadow(color: .yellow.opacity(dataManager.isFavorite(lens: lens) ? 0.3 : 0), radius: 8)
-                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: dataManager.isFavorite(lens: lens))
-                    }
-                }
-                .padding(.bottom, 8)
-                .padding(.horizontal)
-                
-                
-                // Specifications grid
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 18), GridItem(.flexible())], spacing: 18) {
-                    
-                    // --- КАРТОЧКИ С ХАРАКТЕРИСТИКАМИ ---
-                    
-                    SpecCard(
-                        title: "Фокусное расстояние",
-                        value: lens.focal_length,
-                        icon: "arrow.left.and.right",
-                        color: .blue
-                    )
-                    SpecCard(
-                        title: "Диафрагма",
-                        value: lens.aperture,
-                        icon: "camera.aperture",
-                        color: .purple
-                    )
-                    SpecCard(
-                        title: "Формат",
-                        value: lens.format,
-                        icon: "crop",
-                        color: .green
-                    )
-                    SpecCard(
-                        title: "Мин. дистанция",
-                        value: lens.close_focus_cm.isEmpty ? lens.close_focus_in : lens.close_focus_cm,
-                        icon: "ruler",
-                        color: .orange
-                    )
-                    SpecCard(
-                        title: "Круг изображения",
-                        value: lens.image_circle,
-                        icon: "circle.dashed",
-                        color: .teal
-                    )
-                    if let squeeze = lens.squeeze_factor, squeeze != "N/A" {
-                        SpecCard(
-                            title: "Коэф. сжатия",
-                            value: squeeze,
-                            icon: "aspectratio",
-                            color: .pink
-                        )
-                    }
-                    SpecCard(
-                        title: "Длина",
-                        value: lens.length,
-                        icon: "arrow.up.and.down",
-                        color: .indigo
-                    )
-                    SpecCard(
-                        title: "Передний диаметр",
-                        value: lens.front_diameter,
-                        icon: "circle",
-                        color: .brown
-                    )
-
-                    // --- КАРТОЧКИ-КНОПКИ ---
-                    
-                    Button(action: {
-                        let query = lens.display_name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? lens.display_name
-                        if let url = URL(string: "https://www.google.com/search?tbm=isch&q=\(query)") {
-                            UIApplication.shared.open(url)
+        // Оборачиваем все в VStack, чтобы можно было разместить кнопку под ScrollView
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 28) {
+                    // Header with back button
+                    HStack {
+                        Button(action: {
+                            dismiss() // Используем dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(10)
+                                .background(Color.white.opacity(0.2))
+                                .clipShape(Circle())
                         }
-                    }) {
+                        
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 10)
+                    
+                    // Lens title
+                    StickyHeader(title: lens.display_name)
+                    
+                    // БЛОК ДЛЯ ЗАГОЛОВКА И КНОПОК
+                    HStack(alignment: .top) {
+                        // Название объектива
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("\(lens.manufacturer) · \(lens.lens_name)")
+                                .font(.title3)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer() // Занимает все свободное место
+                        
+                        // Кнопка "Избранное"
+                        Button(action: {
+                            dataManager.toggleFavorite(lens: lens)
+                        }) {
+                            Image(systemName: dataManager.isFavorite(lens: lens) ? "star.fill" : "star")
+                                .font(.title2.weight(.bold))
+                                .foregroundColor(dataManager.isFavorite(lens: lens) ? .yellow : .gray)
+                                .padding(8)
+                                .background(.ultraThinMaterial)
+                                .clipShape(Circle())
+                                .shadow(color: .yellow.opacity(dataManager.isFavorite(lens: lens) ? 0.3 : 0), radius: 8)
+                                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: dataManager.isFavorite(lens: lens))
+                        }
+                    }
+                    .padding(.bottom, 8)
+                    .padding(.horizontal)
+                    
+                    
+                    // Specifications grid
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 18), GridItem(.flexible())], spacing: 18) {
+                        
+                        // --- КАРТОЧКИ С ХАРАКТЕРИСТИКАМИ ---
+                        
                         SpecCard(
-                            title: "Действие",
-                            value: "Поиск Google",
-                            icon: "photo.on.rectangle.angled",
+                            title: "Фокусное расстояние",
+                            value: lens.focal_length,
+                            icon: "arrow.left.and.right",
                             color: .blue
                         )
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    
-                    Button(action: {
-                        showCompatibilityCheck = true
-                    }) {
                         SpecCard(
-                            title: "Действие",
-                            value: "Проверить совм.",
-                            icon: "camera.metering.center.weighted",
+                            title: "Диафрагма",
+                            value: lens.aperture,
+                            icon: "camera.aperture",
+                            color: .purple
+                        )
+                        SpecCard(
+                            title: "Формат",
+                            value: lens.format,
+                            icon: "crop",
                             color: .green
                         )
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
-                .padding(.horizontal)
-                
-                // НОВАЯ КНОПКА "ДОБАВИТЬ В ПРОЕКТ"
-                Button(action: {
-                    showingProjectSelection = true // Показываем лист выбора проектов
-                }) {
-                    Label("Add to Project", systemImage: "folder.fill.badge.plus")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            LinearGradient(
-                                colors: [.cyan, .blue],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
+                        SpecCard(
+                            title: "Мин. дистанция",
+                            value: lens.close_focus_cm.isEmpty ? lens.close_focus_in : lens.close_focus_cm,
+                            icon: "ruler",
+                            color: .orange
                         )
-                        .cornerRadius(15)
-                        .padding(.horizontal)
-                        .padding(.bottom, 20) // Отступ снизу
-                }
-
-                // Rentals section
-                let rentals = dataManager.rentalsForLens(lens.id)
-                if !rentals.isEmpty {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Доступно в аренду")
-                            .font(.title2.weight(.semibold))
-                            .foregroundColor(.white)
-                            .padding(.leading, 4)
-                        
-                        ForEach(rentals) { rental in
-                            Button(action: {
-                                dataManager.selectedRentalId = rental.id
-                                dataManager.activeTab = .rentalView
-                                dismiss() // Используем dismiss()
-                            }) {
-                                RentalCard(rental: rental)
-                            }
-                            .buttonStyle(PlainButtonStyle())
+                        SpecCard(
+                            title: "Круг изображения",
+                            value: lens.image_circle,
+                            icon: "circle.dashed",
+                            color: .teal
+                        )
+                        if let squeeze = lens.squeeze_factor, squeeze != "N/A" {
+                            SpecCard(
+                                title: "Коэф. сжатия",
+                                value: squeeze,
+                                icon: "aspectratio",
+                                color: .pink
+                            )
                         }
+                        SpecCard(
+                            title: "Длина",
+                            value: lens.length,
+                            icon: "arrow.up.and.down",
+                            color: .indigo
+                        )
+                        SpecCard(
+                            title: "Передний диаметр",
+                            value: lens.front_diameter,
+                            icon: "circle",
+                            color: .brown
+                        )
+
+                        // --- КАРТОЧКИ-КНОПКИ ---
+                        
+                        Button(action: {
+                            let query = lens.display_name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? lens.display_name
+                            if let url = URL(string: "https://www.google.com/search?tbm=isch&q=\(query)") {
+                                UIApplication.shared.open(url)
+                            }
+                        }) {
+                            SpecCard(
+                                title: "Действие",
+                                value: "Поиск Google",
+                                icon: "photo.on.rectangle.angled",
+                                color: .blue
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        Button(action: {
+                            showCompatibilityCheck = true
+                        }) {
+                            SpecCard(
+                                title: "Действие",
+                                value: "Проверить совм.",
+                                icon: "camera.metering.center.weighted",
+                                color: .green
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
-                    .padding(.top, 20)
                     .padding(.horizontal)
+
+                    // Rentals section
+                    let rentals = dataManager.rentalsForLens(lens.id)
+                    if !rentals.isEmpty {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Доступно в аренду")
+                                .font(.title2.weight(.semibold))
+                                .foregroundColor(.white)
+                                .padding(.leading, 4)
+                            
+                            ForEach(rentals) { rental in
+                                Button(action: {
+                                    dataManager.selectedRentalId = rental.id
+                                    dataManager.activeTab = .rentalView
+                                    dismiss() // Используем dismiss()
+                                }) {
+                                    RentalCard(rental: rental)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                        }
+                        .padding(.top, 20)
+                        .padding(.horizontal)
+                    }
                 }
+                .padding(.bottom, 30)
             }
-            .padding(.bottom, 30)
+            
+            // --- ОБНОВЛЕННАЯ И ЗАКРЕПЛЕННАЯ КНОПКА ---
+            Button(action: {
+                showingProjectSelection = true
+            }) {
+                HStack(spacing: 10) {
+                    Image(systemName: "folder.fill.badge.plus")
+                        .font(.title3.weight(.semibold))
+                    Text("Add to Project")
+                        .font(.headline.weight(.bold))
+                }
+                .foregroundColor(.white)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(
+                    LinearGradient(
+                        colors: [.cyan, .blue.opacity(0.8)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .cornerRadius(20)
+                .shadow(color: .cyan.opacity(0.4), radius: 10, y: 5)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                )
+            }
+            .padding(.horizontal, 24)
+            .padding(.bottom, 20)
+            .padding(.top, 5) // Небольшой отступ сверху
         }
         .background(
             LinearGradient(
@@ -210,11 +223,10 @@ struct LensDetailView: View, Identifiable {
         .fullScreenCover(isPresented: $showCompatibilityCheck) {
             CameraLensVisualizerRoot(lens: lens)
         }
-        .sheet(isPresented: $showingProjectSelection) { // МОДИФИКАТОР .sheet
-            // Этот лист будет показывать ProjectSelectionView
-            // Мы передаем ему ID текущего объектива
+        .sheet(isPresented: $showingProjectSelection) {
+            // ВАШ КОД ДЛЯ ProjectSelectionView. Замените lensIDToAdd на lens, если нужно передать весь объект
             ProjectSelectionView(lensIDToAdd: lens.id)
-                .environmentObject(dataManager) // Важно: передаем dataManager в новый View
+                .environmentObject(dataManager)
         }
     }
 }

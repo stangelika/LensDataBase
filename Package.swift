@@ -19,7 +19,7 @@ let package = Package(
             bundleIdentifier: "com.lensdatabase.app",
             teamIdentifier: "K28W7HPGF3",
             displayVersion: "7.7",
-            bundleVersion: "12",
+            bundleVersion: "13",
             appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.green),
             supportedDeviceFamilies: [
