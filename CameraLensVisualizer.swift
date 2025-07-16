@@ -6,7 +6,7 @@ import SwiftUI
 }
 
 struct CameraLensVisualizerRoot: View {
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     @EnvironmentObject var dataManager: DataManager
     let lens: Lens
     
@@ -21,7 +21,7 @@ struct CameraLensVisualizerRoot: View {
                 VStack(spacing: 16) {
                     // Шапка
                     HStack {
-                        Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                        Button(action: { dismiss() }) {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 20, weight: .bold))
                                 .foregroundColor(.white)

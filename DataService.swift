@@ -64,7 +64,7 @@ class DataManager: ObservableObject {
         didSet { saveFavorites() } // Автоматическое сохранение избранного
     }
     @Published var comparisonSet = Set<String>()
-    @Published var projects: [Project] { // <-- НОВЫЙ МАССИВ ДЛЯ ПРОЕКТОВ
+    @Published var projects: [Project] = [] { // <-- НОВЫЙ МАССИВ ДЛЯ ПРОЕКТОВ
         didSet { saveProjects() } // Автоматическое сохранение проектов при изменении
     }
     
@@ -273,7 +273,7 @@ class DataManager: ObservableObject {
     }
     
     func groupLenses(forRental rentalId: String? = nil) -> [LensGroup] {
-        let lenses = rentalId != nil ? lensesForRental(rentalId!) : availableLenses
+        let lenses = rentalId.map { lensesForRental($0) } ?? availableLenses
         
         let normalizedManufacturers = lenses.reduce(into: [String: [Lens]]()) { result, lens in
             let normalized = normalizeName(lens.manufacturer)

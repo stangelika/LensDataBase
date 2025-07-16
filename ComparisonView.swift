@@ -4,7 +4,7 @@ import SwiftUI
 
 struct ComparisonView: View {
     @EnvironmentObject var dataManager: DataManager
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     
     // Получаем полные модели объективов
     private var lensesToCompare: [Lens] {
@@ -44,7 +44,7 @@ struct ComparisonView: View {
                         .foregroundColor(.white)
                     Spacer()
                     Button("Done") {
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }
                     .font(.headline.weight(.semibold))
                     .foregroundColor(.cyan)

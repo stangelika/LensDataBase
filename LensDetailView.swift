@@ -1,7 +1,6 @@
 import SwiftUI
 
-struct LensDetailView: View, Identifiable {
-    let id = UUID() // Внимание: если LensDetailView используется в ForEach или NavigationLink, id должен быть стабильным, лучше использовать lens.id
+struct LensDetailView: View {
     let lens: Lens
     @EnvironmentObject var dataManager: DataManager
     @Environment(\.dismiss) var dismiss // Используем @Environment(\.dismiss) вместо @Environment(\.presentationMode) для iOS 15+
