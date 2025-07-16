@@ -64,7 +64,7 @@ class DataManager: ObservableObject {
         didSet { saveFavorites() } // Автоматическое сохранение избранного
     }
     @Published var comparisonSet = Set<String>()
-    @Published var projects: [Project] { // <-- НОВЫЙ МАССИВ ДЛЯ ПРОЕКТОВ
+    @Published var projects: [Project] = [] { // <-- НОВЫЙ МАССИВ ДЛЯ ПРОЕКТОВ
         didSet { saveProjects() } // Автоматическое сохранение проектов при изменении
     }
     
