@@ -14,50 +14,43 @@ struct FavoritesView: View {
             NavigationView {
                 ZStack {
                     // Background
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color(.sRGB, red: 24/255, green: 27/255, blue: 37/255, opacity: 1),
-                            Color(.sRGB, red: 34/255, green: 37/255, blue: 57/255, opacity: 1)
-                        ]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .ignoresSafeArea()
+                    DesignSystem.Gradients.primaryBackground
+                        .ignoresSafeArea()
 
                     // Main content
-                    VStack(spacing: 20) {
+                    VStack(spacing: DesignSystem.Spacing.xl) {
                         // Custom header
                         HStack {
                             Text("Favorites")
-                                .font(.system(size: 36, weight: .heavy, design: .rounded))
-                                .foregroundStyle(LinearGradient(colors: [.white, .yellow.opacity(0.85), .orange], startPoint: .leading, endPoint: .trailing))
-                                .shadow(color: .yellow.opacity(0.18), radius: 12, x: 0, y: 6)
+                                .font(DesignSystem.Typography.largeTitle)
+                                .foregroundStyle(DesignSystem.Gradients.textAccent)
+                                .designSystemShadow(DesignSystem.Shadows.md)
                             Spacer()
                         }
-                        .padding(.horizontal, 28)
-                        .padding(.top, 22)
+                        .padding(.horizontal, DesignSystem.Spacing.headerSpacing)
+                        .padding(.top, DesignSystem.Spacing.xxl)
 
                         // Check for empty favorites list
                         if dataManager.favoriteLensesList.isEmpty {
                             Spacer()
-                            VStack(spacing: 12) {
+                            VStack(spacing: DesignSystem.Spacing.md) {
                                 Image(systemName: "star.slash.fill")
                                     .font(.system(size: 60))
                                     .foregroundColor(.yellow.opacity(0.6))
                                 Text("No Favorites Yet")
-                                    .font(.title2.weight(.bold))
+                                    .font(DesignSystem.Typography.title2)
                                 Text("Tap the star on a lens's detail page to add it to your favorites.")
-                                    .font(.subheadline)
+                                    .font(DesignSystem.Typography.body)
                                     .foregroundColor(.white.opacity(0.7))
                                     .multilineTextAlignment(.center)
-                                    .padding(.horizontal, 40)
+                                    .padding(.horizontal, DesignSystem.Spacing.huge)
                             }
                             Spacer()
                             Spacer()
                         } else {
                             // List
                             ScrollView {
-                                LazyVStack(spacing: 16) {
+                                LazyVStack(spacing: DesignSystem.Spacing.lg) {
                                     ForEach(dataManager.favoriteLensesList) { lens in
                                         Button(action: {
                                             if isSelectionMode {
@@ -75,7 +68,7 @@ struct FavoritesView: View {
                                         .buttonStyle(PlainButtonStyle())
                                     }
                                 }
-                                .padding(.horizontal)
+                                .padding(.horizontal, DesignSystem.Spacing.contentInsets)
                                 .padding(.bottom, 100) // Bottom padding for floating button
                             }
                         }
@@ -91,14 +84,14 @@ struct FavoritesView: View {
                                     if !isSelectionMode { dataManager.clearComparison() }
                                 }) {
                                     // --- ОБНОВЛЕННАЯ КНОПКА ---
-                                    HStack(spacing: 6) {
+                                    HStack(spacing: DesignSystem.Spacing.xs) {
                                         Image(systemName: isSelectionMode ? "checkmark.circle.fill" : "square.and.arrow.down.on.square")
                                         Text(isSelectionMode ? "Done" : "Select")
                                     }
-                                    .font(.headline.weight(.semibold))
+                                    .font(DesignSystem.Typography.headline)
                                     .foregroundColor(isSelectionMode ? .green : .cyan)
-                                    .padding(.vertical, 8)
-                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, DesignSystem.Spacing.sm)
+                                    .padding(.horizontal, DesignSystem.Spacing.md)
                                     .background(
                                         (isSelectionMode ? Color.green : Color.cyan).opacity(0.2)
                                     )
@@ -120,16 +113,16 @@ struct FavoritesView: View {
                         showComparisonSheet = true
                     }) {
                         Text("Compare (\(dataManager.comparisonSet.count)) Lenses")
-                            .font(.headline.weight(.heavy))
+                            .font(DesignSystem.Typography.headline)
                             .foregroundColor(.white)
-                            .padding()
+                            .padding(DesignSystem.Spacing.lg)
                             .frame(maxWidth: .infinity)
                             .background(Color.blue)
-                            .cornerRadius(16)
-                            .shadow(color: .blue.opacity(0.5), radius: 10, y: 5)
+                            .cornerRadius(DesignSystem.CornerRadius.lg)
+                            .designSystemShadow(DesignSystem.Shadows.primaryGlow)
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 20)
+                    .padding(.horizontal, DesignSystem.Spacing.contentInsets)
+                    .padding(.bottom, DesignSystem.Spacing.xl)
                 }
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
@@ -153,19 +146,19 @@ struct LensRow: View {
     let isSelectedForComparison: Bool
     
     var body: some View {
-        HStack(spacing: 15) {
+        HStack(spacing: DesignSystem.Spacing.lg) {
             if isSelectionMode {
                 Image(systemName: isSelectedForComparison ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
                     .foregroundColor(isSelectedForComparison ? .blue : .secondary)
             }
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
                 Text(lens.display_name)
-                    .font(.headline.weight(.bold))
+                    .font(DesignSystem.Typography.headline)
                     .foregroundColor(.white)
                 Text("\(lens.manufacturer) • \(lens.format)")
-                    .font(.subheadline)
+                    .font(DesignSystem.Typography.body)
                     .foregroundColor(.white.opacity(0.8))
             }
             Spacer()
@@ -175,17 +168,17 @@ struct LensRow: View {
                     .foregroundColor(.white.opacity(0.5))
             }
         }
-        .padding()
+        .padding(DesignSystem.Spacing.lg)
         .background(
             ZStack {
                 Color.white.opacity(isSelectedForComparison ? 0.15 : 0.05)
                 if isSelectedForComparison {
-                    RoundedRectangle(cornerRadius: 16)
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.lg)
                         .stroke(Color.blue, lineWidth: 2)
                 }
             }
         )
-        .cornerRadius(16)
+        .cornerRadius(DesignSystem.CornerRadius.lg)
         .animation(.easeInOut(duration: 0.2), value: [isSelectionMode, isSelectedForComparison])
     }
 }

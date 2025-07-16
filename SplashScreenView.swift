@@ -14,14 +14,8 @@ struct SplashScreenView: View {
         } else {
             ZStack {
                 // Gradient dark background with "aura light"
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color(.sRGB, red: 28/255, green: 32/255, blue: 48/255, opacity: 1),
-                        Color(.sRGB, red: 38/255, green: 36/255, blue: 97/255, opacity: 1)
-                    ]),
-                    startPoint: .topLeading, endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
+                DesignSystem.Gradients.splashBackground
+                    .ignoresSafeArea()
 
                 // Glowing colored circle "aura"
                 Circle()
@@ -63,10 +57,10 @@ struct SplashScreenView: View {
                             .scaleEffect(logoPulse ? 1.07 : 1)
                             .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: logoPulse)
                     }
-                    .padding(.bottom, 8)
+                    .padding(.bottom, DesignSystem.Spacing.sm)
 
                     Text("Lens Data Base")
-                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .font(DesignSystem.Typography.largeTitle)
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [.white, .yellow, .orange, .purple.opacity(0.95)],
@@ -80,14 +74,14 @@ struct SplashScreenView: View {
                         .animation(.easeOut(duration: 0.8).delay(0.4), value: showSubtitle)
 
                     Text("Cinematic lens catalog & rentals")
-                        .font(.footnote.weight(.semibold))
+                        .font(DesignSystem.Typography.caption)
                         .foregroundColor(.white.opacity(0.65))
-                        .padding(.top, 4)
+                        .padding(.top, DesignSystem.Spacing.xs)
                         .opacity(showSubtitle ? 1 : 0)
                         .offset(y: showSubtitle ? 0 : 8)
                         .animation(.easeOut(duration: 0.8).delay(0.6), value: showSubtitle)
                 }
-                .padding(.top, 24)
+                .padding(.top, DesignSystem.Spacing.xxl)
 
                 // Transparent loading card and signature
                 VStack {
@@ -95,19 +89,19 @@ struct SplashScreenView: View {
                     GlassCard()
                         .frame(height: 80)
                         .overlay(
-                            VStack(spacing: 10) {
+                            VStack(spacing: DesignSystem.Spacing.sm) {
                                 if dataManager.loadingState == .loading {
-                                    HStack(spacing: 12) {
+                                    HStack(spacing: DesignSystem.Spacing.md) {
                                         ProgressView()
                                             .scaleEffect(1.1)
                                             .tint(.orange)
                                         Text("Loading data...")
-                                            .font(.subheadline)
+                                            .font(DesignSystem.Typography.body)
                                             .foregroundColor(.white.opacity(0.8))
                                     }
                                 } else if case .error(let error) = dataManager.loadingState {
                                     Text("Error: \(error)")
-                                        .font(.footnote)
+                                        .font(DesignSystem.Typography.caption)
                                         .foregroundColor(.red)
                                 }
                                 ShimmeringText(text: "Developed by Skvora007", phase: shimmerPhase)
@@ -116,10 +110,10 @@ struct SplashScreenView: View {
                                     .frame(maxWidth: .infinity)
                                     .padding(.top, 1)
                             }
-                            .padding(.vertical, 8)
+                            .padding(.vertical, DesignSystem.Spacing.sm)
                         )
-                        .padding(.horizontal, 40)
-                        .padding(.bottom, 36)
+                        .padding(.horizontal, DesignSystem.Spacing.huge)
+                        .padding(.bottom, DesignSystem.Spacing.sectionSpacing)
                 }
             }
             .onAppear {
@@ -153,15 +147,15 @@ struct SplashScreenView: View {
 // Flexible glass card for reuse
 struct GlassCard: View {
     var body: some View {
-        RoundedRectangle(cornerRadius: 32, style: .continuous)
+        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xxl, style: .continuous)
             .fill(.ultraThinMaterial)
             .shadow(color: Color.white.opacity(0.07), radius: 16, x: 0, y: 10)
             .background(
-                RoundedRectangle(cornerRadius: 32)
+                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xxl)
                     .stroke(Color.white.opacity(0.13), lineWidth: 1.1)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 32)
+                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xxl)
                     .stroke(
                         LinearGradient(
                             colors: [Color.orange.opacity(0.13), Color.purple.opacity(0.09), .clear],
