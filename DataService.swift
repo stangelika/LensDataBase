@@ -47,7 +47,7 @@ class NetworkService {
 }
 
 
-// MARK: - Менеджер данных (ОБНОВЛЕННЫЙ И ИСПРАВЛЕННЫЙ)
+// MARK: - Data Manager
 class DataManager: ObservableObject {
     @Published var appData: AppData?
     @Published var loadingState: DataLoadingState = .idle
@@ -59,23 +59,23 @@ class DataManager: ObservableObject {
     @Published var activeTab: ActiveTab = .allLenses
     @Published var selectedRentalId: String = ""
     
-    // Свойства для новых функций
+    // Properties for new features
     @Published var favoriteLenses = Set<String>() {
-        didSet { saveFavorites() } // Автоматическое сохранение избранного
+        didSet { saveFavorites() } // Auto-save favorites
     }
     @Published var comparisonSet = Set<String>()
-    @Published var projects: [Project] = [] { // <-- НОВЫЙ МАССИВ ДЛЯ ПРОЕКТОВ
-        didSet { saveProjects() } // Автоматическое сохранение проектов при изменении
+    @Published var projects: [Project] = [] {
+        didSet { saveProjects() } // Auto-save projects on change
     }
     
     @Published var favoriteLensesList: [Lens] = []
     
     private var cancellables = Set<AnyCancellable>()
     private let favoritesKey = "favoriteLenses"
-    private let projectsKey = "userProjects" // <-- КЛЮЧ ДЛЯ ХРАНЕНИЯ ПРОЕКТОВ
+    private let projectsKey = "userProjects"
 
     init() {
-        // Загружаем проекты (убедимся, что проекты инициализированы до loadFavorites)
+        // Load projects first
         if let data = UserDefaults.standard.data(forKey: projectsKey) {
             if let decodedProjects = try? JSONDecoder().decode([Project].self, from: data) {
                 self.projects = decodedProjects
@@ -86,7 +86,7 @@ class DataManager: ObservableObject {
             self.projects = []
         }
         
-        loadFavorites() // Загружаем избранное после инициализации проектов
+        loadFavorites() // Load favorites after projects initialization
     }
     
     // MARK: - Projects Logic
@@ -99,23 +99,22 @@ class DataManager: ObservableObject {
     
     func deleteProject(at offsets: IndexSet) {
         projects.remove(atOffsets: offsets)
-        // saveProjects() будет вызван через didSet
+        // saveProjects() called through didSet
     }
     
     func updateProject(_ project: Project) {
         guard let index = projects.firstIndex(where: { $0.id == project.id }) else { return }
         projects[index] = project
-        // saveProjects() будет вызван через didSet
+        // saveProjects() called through didSet
     }
     
-    // ЭТО БЫЛ private - МЕНЯЕМ НА internal ИЛИ УБИРАЕМ КЛЮЧЕВОЕ СЛОВО ДЛЯ ДОСТУПА
-    internal func saveProjects() { // Изменено на internal (или просто func saveProjects())
+    // Project persistence methods
+    internal func saveProjects() {
         do {
             let data = try JSONEncoder().encode(projects)
             UserDefaults.standard.set(data, forKey: projectsKey)
-            print("✅ Проекты сохранены.")
         } catch {
-            print("❌ Ошибка при сохранении проектов: \(error)")
+            print("Error saving projects: \(error)")
         }
     }
     
@@ -123,26 +122,18 @@ class DataManager: ObservableObject {
         guard let data = UserDefaults.standard.data(forKey: projectsKey) else { return }
         do {
             projects = try JSONDecoder().decode([Project].self, from: data)
-            print("✅ Проекты загружены.")
         } catch {
-            print("❌ Ошибка при загрузке проектов: \(error)")
+            print("Error loading projects: \(error)")
         }
     }
     
-    // НОВЫЙ МЕТОД: Добавление объектива в проект
+    // Add lens to project
     func addLens(_ lensID: String, toProject project: Project) {
-        // Находим индекс проекта, чтобы обновить его
         if let index = projects.firstIndex(where: { $0.id == project.id }) {
-            // Проверяем, есть ли уже этот объектив в проекте
             if !projects[index].lensIDs.contains(lensID) {
                 projects[index].lensIDs.append(lensID)
-                // saveProjects() будет вызван через didSet projects
-                print("✅ Объектив \(lensID) добавлен в проект '\(project.name)'.")
-            } else {
-                print("⚠️ Объектив \(lensID) уже есть в проекте '\(project.name)'.")
+                // saveProjects() called through didSet
             }
-        } else {
-            print("❌ Проект не найден: \(project.name)")
         }
     }
     
@@ -157,13 +148,11 @@ class DataManager: ObservableObject {
     internal func saveFavorites() { // Сделал internal, на всякий случай
         let favoritesArray = Array(favoriteLenses)
         UserDefaults.standard.set(favoritesArray, forKey: favoritesKey)
-        print("✅ Избранное сохранено.")
     }
 
     private func loadFavorites() {
         guard let favoritesArray = UserDefaults.standard.array(forKey: favoritesKey) as? [String] else { return }
         self.favoriteLenses = Set(favoritesArray)
-        print("✅ Избранное загружено.")
     }
 
     func isFavorite(lens: Lens) -> Bool {
@@ -211,7 +200,6 @@ class DataManager: ObservableObject {
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?.loadingState = .error(error.localizedDescription)
-                    print("❌ Ошибка при загрузке локальных данных: \(error.localizedDescription)")
                 }
             }, receiveValue: { [weak self] (appData, cameraData) in
                 guard let self = self else { return }
@@ -222,13 +210,11 @@ class DataManager: ObservableObject {
                 self.loadingState = .loaded
                 
                 self.updateFavoriteLensesList()
-                print("✅ Локальные данные успешно загружены!")
             })
             .store(in: &cancellables)
     }
 
     func refreshDataFromAPI() {
-        print("Начинаем обновление данных с сервера...")
         loadingState = .loading
         
         NetworkService.shared.fetchLensData()
@@ -240,13 +226,11 @@ class DataManager: ObservableObject {
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?.loadingState = .error(error.localizedDescription)
-                    print("❌ Ошибка при обновлении данных с сервера: \(error.localizedDescription)")
                 }
             }, receiveValue: { [weak self] cameraResponse in
                 self?.cameras = cameraResponse.camera.sorted { $0.manufacturer < $1.manufacturer }
                 self?.formats = cameraResponse.formats
                 self?.loadingState = .loaded
-                print("✅ Данные с сервера успешно обновлены!")
             })
             .store(in: &cancellables)
     }

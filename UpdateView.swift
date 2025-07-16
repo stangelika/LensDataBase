@@ -7,7 +7,7 @@ struct UpdateView: View {
 
     var body: some View {
         ZStack {
-            // Фон как в других разделах
+            // Background matching other sections
             LinearGradient(
                 gradient: Gradient(colors: [
                     Color(.sRGB, red: 24/255, green: 27/255, blue: 37/255, opacity: 1),
@@ -55,13 +55,13 @@ struct UpdateView: View {
                 .background(GlassBackground())
                 .padding(.horizontal)
 
-                // Кнопка обновления
+                // Update button
                 Button(action: {
-                    // Вызываем функцию обновления из DataManager
+                    // Call update function from DataManager
                     dataManager.refreshDataFromAPI()
                 }) {
                     HStack {
-                        // Показываем индикатор загрузки или иконку
+                        // Show loading indicator or icon
                         if dataManager.loadingState == .loading {
                             ProgressView()
                                 .tint(.white)

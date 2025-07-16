@@ -1,22 +1,22 @@
 import SwiftUI
 
 struct LensDetailView: View, Identifiable {
-    let id = UUID() // Внимание: если LensDetailView используется в ForEach или NavigationLink, id должен быть стабильным, лучше использовать lens.id
+    let id = UUID() // Note: for stable IDs in ForEach or NavigationLink, consider using lens.id
     let lens: Lens
     @EnvironmentObject var dataManager: DataManager
-    @Environment(\.dismiss) var dismiss // Используем @Environment(\.dismiss) вместо @Environment(\.presentationMode) для iOS 15+
+    @Environment(\.dismiss) var dismiss // Using @Environment(\.dismiss) for iOS 15+
     @State private var showCompatibilityCheck = false
-    @State private var showingProjectSelection = false // Новое состояние для показа листа проектов
+    @State private var showingProjectSelection = false // State for showing project selection sheet
     
     var body: some View {
-        // Оборачиваем все в VStack, чтобы можно было разместить кнопку под ScrollView
+        // Wrap everything in VStack to place button below ScrollView
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
                     // Header with back button
                     HStack {
                         Button(action: {
-                            dismiss() // Используем dismiss()
+                            dismiss() // Using dismiss()
                         }) {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 20, weight: .bold))
@@ -34,18 +34,18 @@ struct LensDetailView: View, Identifiable {
                     // Lens title
                     StickyHeader(title: lens.display_name)
                     
-                    // БЛОК ДЛЯ ЗАГОЛОВКА И КНОПОК
+                    // Header block with title and buttons
                     HStack(alignment: .top) {
-                        // Название объектива
+                        // Lens name
                         VStack(alignment: .leading, spacing: 10) {
                             Text("\(lens.manufacturer) · \(lens.lens_name)")
                                 .font(.title3)
                                 .foregroundColor(.secondary)
                         }
                         
-                        Spacer() // Занимает все свободное место
+                        Spacer() // Takes all available space
                         
-                        // Кнопка "Избранное"
+                        // Favorite button
                         Button(action: {
                             dataManager.toggleFavorite(lens: lens)
                         }) {
@@ -66,7 +66,7 @@ struct LensDetailView: View, Identifiable {
                     // Specifications grid
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 18), GridItem(.flexible())], spacing: 18) {
                         
-                        // --- КАРТОЧКИ С ХАРАКТЕРИСТИКАМИ ---
+                        // Specification cards
                         
                         SpecCard(
                             title: "Фокусное расстояние",

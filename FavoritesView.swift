@@ -9,11 +9,11 @@ struct FavoritesView: View {
     @State private var showComparisonSheet = false
 
     var body: some View {
-        // Главный ZStack для размещения плавающей кнопки поверх всего
+        // Main ZStack for floating button overlay
         ZStack {
             NavigationView {
                 ZStack {
-                    // Фон
+                    // Background
                     LinearGradient(
                         gradient: Gradient(colors: [
                             Color(.sRGB, red: 24/255, green: 27/255, blue: 37/255, opacity: 1),
@@ -24,9 +24,9 @@ struct FavoritesView: View {
                     )
                     .ignoresSafeArea()
 
-                    // Основной контент
+                    // Main content
                     VStack(spacing: 20) {
-                        // Кастомный заголовок
+                        // Custom header
                         HStack {
                             Text("Favorites")
                                 .font(.system(size: 36, weight: .heavy, design: .rounded))
@@ -37,7 +37,7 @@ struct FavoritesView: View {
                         .padding(.horizontal, 28)
                         .padding(.top, 22)
 
-                        // Проверка на пустой список избранного
+                        // Check for empty favorites list
                         if dataManager.favoriteLensesList.isEmpty {
                             Spacer()
                             VStack(spacing: 12) {
@@ -55,7 +55,7 @@ struct FavoritesView: View {
                             Spacer()
                             Spacer()
                         } else {
-                            // Список
+                            // List
                             ScrollView {
                                 LazyVStack(spacing: 16) {
                                     ForEach(dataManager.favoriteLensesList) { lens in
@@ -76,7 +76,7 @@ struct FavoritesView: View {
                                     }
                                 }
                                 .padding(.horizontal)
-                                .padding(.bottom, 100) // Отступ снизу для плавающей кнопки
+                                .padding(.bottom, 100) // Bottom padding for floating button
                             }
                         }
                     }

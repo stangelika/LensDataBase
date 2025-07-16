@@ -7,17 +7,17 @@ struct CameraApiResponse: Codable {
     let formats: [RecordingFormat]
 }
 
-// ИСПРАВЛЕННАЯ СТРУКТУРА CAMERA
+// MARK: - Camera Model
 struct Camera: Codable, Identifiable, Hashable {
-    let id: String // БЫЛ Int, СТАЛ String
+    let id: String // String instead of Int for API compatibility
     let manufacturer: String
     let model: String
     let sensor: String
-    let sensorWidth: String // Названия свойств оставляем для удобства
+    let sensorWidth: String
     let sensorHeight: String
     let imageCircle: String
 
-    // Добавляем CodingKeys для связи с JSON
+    // CodingKeys for JSON mapping
     private enum CodingKeys: String, CodingKey {
         case id, manufacturer, model, sensor
         case sensorWidth = "sensorwidth"
@@ -26,10 +26,10 @@ struct Camera: Codable, Identifiable, Hashable {
     }
 }
 
-// ИСПРАВЛЕННАЯ СТРУКТУРА RECORDINGFORMAT
+// MARK: - Recording Format Model
 struct RecordingFormat: Codable, Identifiable, Hashable {
-    let id: String // БЫЛ Int, СТАЛ String
-    let cameraId: String // БЫЛ Int, СТАЛ String
+    let id: String // String instead of Int for API compatibility
+    let cameraId: String // String instead of Int for API compatibility
     let manufacturer: String
     let model: String
     let sensorWidth: String
@@ -39,7 +39,7 @@ struct RecordingFormat: Codable, Identifiable, Hashable {
     let recordingHeight: String
     let recordingImageCircle: String
 
-    // Добавляем CodingKeys для связи с JSON
+    // CodingKeys for JSON mapping
     private enum CodingKeys: String, CodingKey {
         case id, manufacturer, model
         case cameraId = "cameraid"
@@ -53,7 +53,7 @@ struct RecordingFormat: Codable, Identifiable, Hashable {
 }
 
 
-// MARK: - Модели данных
+// MARK: - Lens Data Models
 struct Rental: Codable, Identifiable {
     let id: String
     let name: String
@@ -76,8 +76,8 @@ struct Lens: Codable, Identifiable {
     let length: String
     let front_diameter: String
     let squeeze_factor: String?
-    let weight_g: String // <-- ДОБАВЛЕНО НОВОЕ ПОЛЕ
-    let mount: String // <-- ДОБАВЛЕНО НОВОЕ ПОЛЕ
+    let weight_g: String // Weight in grams
+    let mount: String // Lens mount type
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -93,14 +93,14 @@ struct Lens: Codable, Identifiable {
         case length
         case front_diameter
         case squeeze_factor
-        case weight_g // <-- ДОБАВЛЕНО НОВОЕ ПОЛЕ
-        case mount // <-- ДОБАВЛЕНО НОВОЕ ПОЛЕ
+        case weight_g // Weight in grams
+        case mount // Lens mount type
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        // Обрабатываем все поля с помощью универсального декодера
+        // Process all fields using universal decoder
         id = try Lens.decodeFlexible(container: container, key: .id) ?? ""
         display_name = try Lens.decodeFlexible(container: container, key: .display_name) ?? ""
         manufacturer = try Lens.decodeFlexible(container: container, key: .manufacturer) ?? ""
@@ -115,12 +115,12 @@ struct Lens: Codable, Identifiable {
         front_diameter = try Lens.decodeFlexible(container: container, key: .front_diameter) ?? ""
         squeeze_factor = try Lens.decodeFlexible(container: container, key: .squeeze_factor)
         
-        // Декодируем новые поля, если они есть, иначе ставим заглушку
+        // Decode new fields with fallback values
         weight_g = (try? Lens.decodeFlexible(container: container, key: .weight_g)) ?? "N/A"
         mount = (try? Lens.decodeFlexible(container: container, key: .mount)) ?? "N/A"
     }
     
-    // Универсальный метод для декодирования любых полей
+    // Universal method for decoding flexible field types
     private static func decodeFlexible(container: KeyedDecodingContainer<Lens.CodingKeys>, key: CodingKeys) throws -> String? {
         if let stringValue = try? container.decode(String.self, forKey: key) { return stringValue }
         else if let intValue = try? container.decode(Int.self, forKey: key) { return String(intValue) }
@@ -150,7 +150,7 @@ struct AppData: Codable {
     }
 }
 
-// MARK: - Группировка данных для UI
+// MARK: - UI Data Grouping
 struct LensGroup: Identifiable {
     let id = UUID()
     let manufacturer: String
@@ -163,7 +163,7 @@ struct LensSeries: Identifiable {
     let lenses: [Lens]
 }
 
-// MARK: - Состояния приложения
+// MARK: - Application State
 enum DataLoadingState: Equatable {
     case idle, loading, loaded, error(String)
 }
@@ -172,7 +172,7 @@ enum ActiveTab: Equatable {
     case rentalView, allLenses, updateView, favorites, projects
 }
 
-// MARK: - Модель для Проектов
+// MARK: - Project Management Model
 
 struct Project: Codable, Identifiable, Equatable {
     let id: UUID
@@ -182,20 +182,18 @@ struct Project: Codable, Identifiable, Equatable {
     var lensIDs: [String]
     var cameraIDs: [String]
     
-    // --- >>> ВОТ ЭТОТ БЛОК Я ДОБАВИЛ <<< ---
-    // Кастомный инициализатор для создания нового проекта "с нуля"
+    // Custom initializer for creating new projects
     init(name: String) {
         self.id = UUID()
         self.name = name
-        self.notes = "" // По умолчанию заметки пустые
-        self.date = Date() // По умолчанию ставим текущую дату
-        self.lensIDs = [] // Начинаем с пустого списка объективов
-        self.cameraIDs = [] // и камер
+        self.notes = "" // Default empty notes
+        self.date = Date() // Default current date
+        self.lensIDs = [] // Start with empty lens list
+        self.cameraIDs = [] // Start with empty camera list
     }
     
-    // Статический метод для создания пустого проекта (остается на месте)
+    // Static method for creating empty projects
     static func empty() -> Project {
-        // Теперь он использует наш новый простой init
         return Project(name: "New Project")
     }
 }
