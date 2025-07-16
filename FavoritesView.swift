@@ -72,10 +72,8 @@ struct FavoritesView: View {
                                 .padding(.bottom, 100) // Bottom padding for floating button
                             }
                         }
-                    }
-                    .sheet(item: $selectedLens) { lens in
-                        LensDetailView(lens: lens).environmentObject(dataManager)
-                    }
+                    } // <-- Конец VStack
+                    // ✅ ИСПРАВЛЕНО: .toolbar теперь применён к VStack, чтобы избежать неоднозначности
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             if !dataManager.favoriteLensesList.isEmpty {
@@ -83,7 +81,6 @@ struct FavoritesView: View {
                                     withAnimation(.easeInOut) { isSelectionMode.toggle() }
                                     if !isSelectionMode { dataManager.clearComparison() }
                                 }) {
-                                    // --- ОБНОВЛЕННАЯ КНОПКА ---
                                     HStack(spacing: DesignSystem.Spacing.xs) {
                                         Image(systemName: isSelectionMode ? "checkmark.circle.fill" : "square.and.arrow.down.on.square")
                                         Text(isSelectionMode ? "Done" : "Select")
@@ -100,6 +97,9 @@ struct FavoritesView: View {
                             }
                         }
                     }
+                }
+                .sheet(item: $selectedLens) { lens in
+                    LensDetailView(lens: lens).environmentObject(dataManager)
                 }
             }
             .navigationViewStyle(.stack)
