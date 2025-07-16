@@ -198,5 +198,5 @@ struct Project: Codable, Identifiable, Equatable {
         // Теперь он использует наш новый простой init
         return Project(name: "New Project")
     }
-    }
+}
 

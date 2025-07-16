@@ -23,9 +23,13 @@ struct ComparisonView: View {
         ("Front Diameter", \.front_diameter),
         ("Length", \.length),
         ("Weight (g)", \.weight_g),
-        ("Mount", \.mount),
-        ("Squeeze", \.squeeze_factor!) // Используем ! т.к. в модели он опционал
+        ("Mount", \.mount)
     ]
+    
+    // Специальная функция для обработки опциональных полей
+    private func getSqueezeValue(for lens: Lens) -> String {
+        return lens.squeeze_factor ?? "N/A"
+    }
 
     var body: some View {
         ZStack {
@@ -79,6 +83,9 @@ struct ComparisonView: View {
                             ForEach(specs, id: \.0) { spec in
                                 SpecNameCell(name: spec.0)
                             }
+                            
+                            // Добавляем squeeze_factor отдельно
+                            SpecNameCell(name: "Squeeze")
                         }
                         .frame(width: 140) // Фиксированная ширина для первого столбца
                         .zIndex(1) // Помещаем поверх прокручиваемого контента
@@ -97,6 +104,9 @@ struct ComparisonView: View {
                                             let value = lens[keyPath: spec.1]
                                             SpecValueCell(value: value.isEmpty ? "-" : value)
                                         }
+                                        
+                                        // Добавляем squeeze_factor отдельно
+                                        SpecValueCell(value: getSqueezeValue(for: lens))
                                     }
                                     .frame(width: 150) // Фиксированная ширина для каждого столбца данных
                                 }
