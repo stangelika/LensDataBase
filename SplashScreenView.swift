@@ -13,7 +13,7 @@ struct SplashScreenView: View {
             MainTabView()
         } else {
             ZStack {
-                // Градиентный темный фон с "aura light"
+                // Gradient dark background with "aura light"
                 LinearGradient(
                     gradient: Gradient(colors: [
                         Color(.sRGB, red: 28/255, green: 32/255, blue: 48/255, opacity: 1),
@@ -23,7 +23,7 @@ struct SplashScreenView: View {
                 )
                 .ignoresSafeArea()
 
-                // Светящийся цветной круг "аура"
+                // Glowing colored circle "aura"
                 Circle()
                     .fill(
                         RadialGradient(
@@ -39,7 +39,7 @@ struct SplashScreenView: View {
                     .blur(radius: 2)
                     .offset(x: -60, y: -120)
 
-                // Центральная стеклянная карта с логотипом и анимацией
+                // Central glass card with logo and animation
                 VStack(spacing: 0) {
                     ZStack {
                         GlassCard()
@@ -48,7 +48,7 @@ struct SplashScreenView: View {
                             .scaleEffect(glassBlur ? 1 : 0.85)
                             .animation(.easeOut(duration: 0.7), value: glassBlur)
 
-                        // Логотип с пульсацией и shadow
+                        // Logo with pulsing and shadow
                         Image(systemName: "camera.aperture")
                             .font(.system(size: 88, weight: .bold))
                             .symbolRenderingMode(.palette)
@@ -89,7 +89,7 @@ struct SplashScreenView: View {
                 }
                 .padding(.top, 24)
 
-                // Прозрачная карточка загрузки и подпись
+                // Transparent loading card and signature
                 VStack {
                     Spacer()
                     GlassCard()
@@ -129,7 +129,7 @@ struct SplashScreenView: View {
                     logoPulse = true
                     showSubtitle = true
                 }
-                // Запуск shimmer
+                // Start shimmer animation
                 withAnimation(Animation.linear(duration: 1.8).repeatForever(autoreverses: false)) {
                     shimmerPhase = 1.0
                 }
@@ -150,7 +150,7 @@ struct SplashScreenView: View {
     }
 }
 
-// Гибкий стеклянный card для переиспользования
+// Flexible glass card for reuse
 struct GlassCard: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 32, style: .continuous)
@@ -173,7 +173,7 @@ struct GlassCard: View {
     }
 }
 
-// Эффект shimmer для оживления подписи
+// Shimmer effect for signature animation
 struct ShimmeringText: View {
     let text: String
     var phase: CGFloat

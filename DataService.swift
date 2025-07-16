@@ -148,13 +148,11 @@ class DataManager: ObservableObject {
     internal func saveFavorites() { // Сделал internal, на всякий случай
         let favoritesArray = Array(favoriteLenses)
         UserDefaults.standard.set(favoritesArray, forKey: favoritesKey)
-        print("✅ Избранное сохранено.")
     }
 
     private func loadFavorites() {
         guard let favoritesArray = UserDefaults.standard.array(forKey: favoritesKey) as? [String] else { return }
         self.favoriteLenses = Set(favoritesArray)
-        print("✅ Избранное загружено.")
     }
 
     func isFavorite(lens: Lens) -> Bool {
@@ -202,7 +200,6 @@ class DataManager: ObservableObject {
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?.loadingState = .error(error.localizedDescription)
-                    print("❌ Ошибка при загрузке локальных данных: \(error.localizedDescription)")
                 }
             }, receiveValue: { [weak self] (appData, cameraData) in
                 guard let self = self else { return }
@@ -213,13 +210,11 @@ class DataManager: ObservableObject {
                 self.loadingState = .loaded
                 
                 self.updateFavoriteLensesList()
-                print("✅ Локальные данные успешно загружены!")
             })
             .store(in: &cancellables)
     }
 
     func refreshDataFromAPI() {
-        print("Начинаем обновление данных с сервера...")
         loadingState = .loading
         
         NetworkService.shared.fetchLensData()
@@ -231,13 +226,11 @@ class DataManager: ObservableObject {
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?.loadingState = .error(error.localizedDescription)
-                    print("❌ Ошибка при обновлении данных с сервера: \(error.localizedDescription)")
                 }
             }, receiveValue: { [weak self] cameraResponse in
                 self?.cameras = cameraResponse.camera.sorted { $0.manufacturer < $1.manufacturer }
                 self?.formats = cameraResponse.formats
                 self?.loadingState = .loaded
-                print("✅ Данные с сервера успешно обновлены!")
             })
             .store(in: &cancellables)
     }

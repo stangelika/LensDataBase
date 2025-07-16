@@ -48,10 +48,10 @@ struct ProjectsListView: View {
                         }
                         Spacer()
                     } else {
-                        // Список проектов
+                        // Projects list
                         List {
                             ForEach($dataManager.projects) { $project in
-                                // Теперь NavigationLink ведет на ProjectDetailView
+                                // NavigationLink leads to ProjectDetailView
                                 NavigationLink(destination: ProjectDetailView(project: $project)) {
                                     ProjectRow(project: project)
                                 }
