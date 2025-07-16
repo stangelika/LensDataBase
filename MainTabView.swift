@@ -1,4 +1,4 @@
-// MainTabView_Version3_Version4.swift
+// MainTabView.swift
 
 import SwiftUI
 
@@ -15,28 +15,28 @@ struct MainTabView: View {
             .ignoresSafeArea()
             
             TabView(selection: $dataManager.activeTab) {
-                // Экран 1: Все объективы
+                // Screen 1: All Lenses
                 AllLensesView()
                     .tag(ActiveTab.allLenses)
                 
-                // Экран 2: Ренталы
+                // Screen 2: Rentals
                 RentalView()
                     .tag(ActiveTab.rentalView)
                     
-                // Экран 3: Избранное
+                // Screen 3: Favorites
                 FavoritesView()
                     .tag(ActiveTab.favorites)
                 
-                // ЭКРАН 4: ПРОЕКТЫ (НОВЫЙ)
+                // Screen 4: Projects
                 ProjectsListView()
-                    .tag(ActiveTab.projects) // <--- ДОБАВЬ ЭТОТ БЛОК
+                    .tag(ActiveTab.projects)
                 
-                // Экран 5: Настройки и обновление
+                // Screen 5: Settings and Updates
                 UpdateView()
                     .tag(ActiveTab.updateView)
             }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
-            // .indexViewStyle(.page(backgroundDisplayMode: .always)) // Раскомментируй для видимых точек
+            // .indexViewStyle(.page(backgroundDisplayMode: .always)) // Uncomment for visible dots
         }
         .preferredColorScheme(.dark)
         .onAppear {

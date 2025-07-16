@@ -20,8 +20,9 @@ struct RentalView: View {
                 endPoint: .bottom
             )
             .ignoresSafeArea()
+            
             VStack(spacing: 20) {
-                // --- ЗАГОЛОВОК ---
+                // Header
                 HStack {
                     Text(selectedRentalName)
                         .font(.system(size: 36, weight: .heavy, design: .rounded))
@@ -39,7 +40,7 @@ struct RentalView: View {
                 .padding(.horizontal, 28)
                 .padding(.top, 22)
 
-                // --- ФИЛЬТРЫ ---
+                // Filters
                 HStack(spacing: 16) {
                     Menu {
                         Picker("Rental", selection: $dataManager.selectedRentalId) {
@@ -74,7 +75,7 @@ struct RentalView: View {
                 }
                 .padding(.horizontal, 24)
 
-                // --- КОНТЕНТ ---
+                // Content
                 if dataManager.loadingState == .loading {
                     VStack {
                         ProgressView()

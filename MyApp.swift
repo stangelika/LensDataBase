@@ -9,7 +9,7 @@ struct LensApp: App {
             SplashScreenView()
                 .environmentObject(dataManager)
                 .onAppear {
-                    // Настройка навигации
+                    // Navigation bar configuration
                     let appearance = UINavigationBarAppearance()
                     appearance.configureWithTransparentBackground()
                     appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
@@ -18,10 +18,10 @@ struct LensApp: App {
                     UINavigationBar.appearance().standardAppearance = appearance
                     UINavigationBar.appearance().scrollEdgeAppearance = appearance
                     
-                    // Настройка общего вида
+                    // General appearance setup
                     UITableView.appearance().backgroundColor = .clear
                     
-                    // Загрузка данных при запуске
+                    // Load data on startup
                     dataManager.loadData()
                 }
         }
