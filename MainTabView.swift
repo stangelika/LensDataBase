@@ -7,12 +7,8 @@ struct MainTabView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [Color(.sRGB, white: 0.09, opacity: 1), Color(.sRGB, white: 0.15, opacity: 1)]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            DesignSystem.Gradients.primaryBackground
+                .ignoresSafeArea()
             
             TabView(selection: $dataManager.activeTab) {
                 // Screen 1: All Lenses

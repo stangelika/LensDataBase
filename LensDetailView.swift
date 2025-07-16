@@ -12,7 +12,7 @@ struct LensDetailView: View, Identifiable {
         // Wrap everything in VStack to place button below ScrollView
         VStack(spacing: 0) {
             ScrollView {
-                VStack(alignment: .leading, spacing: 28) {
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xl) {
                     // Header with back button
                     HStack {
                         Button(action: {
@@ -21,15 +21,15 @@ struct LensDetailView: View, Identifiable {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 20, weight: .bold))
                                 .foregroundColor(.white)
-                                .padding(10)
+                                .padding(DesignSystem.Spacing.sm)
                                 .background(Color.white.opacity(0.2))
                                 .clipShape(Circle())
                         }
                         
                         Spacer()
                     }
-                    .padding(.horizontal)
-                    .padding(.top, 10)
+                    .padding(.horizontal, DesignSystem.Spacing.contentInsets)
+                    .padding(.top, DesignSystem.Spacing.sm)
                     
                     // Lens title
                     StickyHeader(title: lens.display_name)
@@ -37,9 +37,9 @@ struct LensDetailView: View, Identifiable {
                     // Header block with title and buttons
                     HStack(alignment: .top) {
                         // Lens name
-                        VStack(alignment: .leading, spacing: 10) {
+                        VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
                             Text("\(lens.manufacturer) · \(lens.lens_name)")
-                                .font(.title3)
+                                .font(DesignSystem.Typography.title3)
                                 .foregroundColor(.secondary)
                         }
                         
@@ -52,19 +52,17 @@ struct LensDetailView: View, Identifiable {
                             Image(systemName: dataManager.isFavorite(lens: lens) ? "star.fill" : "star")
                                 .font(.title2.weight(.bold))
                                 .foregroundColor(dataManager.isFavorite(lens: lens) ? .yellow : .gray)
-                                .padding(8)
+                                .padding(DesignSystem.Spacing.sm)
                                 .background(.ultraThinMaterial)
                                 .clipShape(Circle())
                                 .shadow(color: .yellow.opacity(dataManager.isFavorite(lens: lens) ? 0.3 : 0), radius: 8)
                                 .animation(.spring(response: 0.3, dampingFraction: 0.6), value: dataManager.isFavorite(lens: lens))
                         }
                     }
-                    .padding(.bottom, 8)
-                    .padding(.horizontal)
-                    
+                    .padding(.horizontal, DesignSystem.Spacing.contentInsets)
                     
                     // Specifications grid
-                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 18), GridItem(.flexible())], spacing: 18) {
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: DesignSystem.Spacing.lg), GridItem(.flexible())], spacing: DesignSystem.Spacing.lg) {
                         
                         // Specification cards
                         
@@ -148,16 +146,16 @@ struct LensDetailView: View, Identifiable {
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, DesignSystem.Spacing.contentInsets)
 
                     // Rentals section
                     let rentals = dataManager.rentalsForLens(lens.id)
                     if !rentals.isEmpty {
-                        VStack(alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: DesignSystem.Spacing.lg) {
                             Text("Доступно в аренду")
-                                .font(.title2.weight(.semibold))
+                                .font(DesignSystem.Typography.title2)
                                 .foregroundColor(.white)
-                                .padding(.leading, 4)
+                                .padding(.leading, DesignSystem.Spacing.xs)
                             
                             ForEach(rentals) { rental in
                                 Button(action: {
@@ -170,54 +168,41 @@ struct LensDetailView: View, Identifiable {
                                 .buttonStyle(PlainButtonStyle())
                             }
                         }
-                        .padding(.top, 20)
-                        .padding(.horizontal)
+                        .padding(.top, DesignSystem.Spacing.xl)
+                        .padding(.horizontal, DesignSystem.Spacing.contentInsets)
                     }
                 }
-                .padding(.bottom, 30)
+                .padding(.bottom, DesignSystem.Spacing.xxxl)
             }
             
             // --- ОБНОВЛЕННАЯ И ЗАКРЕПЛЕННАЯ КНОПКА ---
             Button(action: {
                 showingProjectSelection = true
             }) {
-                HStack(spacing: 10) {
+                HStack(spacing: DesignSystem.Spacing.sm) {
                     Image(systemName: "folder.fill.badge.plus")
                         .font(.title3.weight(.semibold))
                     Text("Add to Project")
                         .font(.headline.weight(.bold))
                 }
                 .foregroundColor(.white)
-                .padding()
+                .padding(DesignSystem.Spacing.lg)
                 .frame(maxWidth: .infinity)
-                .background(
-                    LinearGradient(
-                        colors: [.cyan, .blue.opacity(0.8)],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .cornerRadius(20)
-                .shadow(color: .cyan.opacity(0.4), radius: 10, y: 5)
+                .background(DesignSystem.Gradients.buttonPrimary)
+                .cornerRadius(DesignSystem.CornerRadius.lg)
+                .designSystemShadow(DesignSystem.Shadows.primaryGlow)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.lg)
                         .stroke(Color.white.opacity(0.3), lineWidth: 1)
                 )
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 20)
-            .padding(.top, 5) // Небольшой отступ сверху
+            .padding(.horizontal, DesignSystem.Spacing.contentInsets)
+            .padding(.bottom, DesignSystem.Spacing.xl)
+            .padding(.top, DesignSystem.Spacing.xs)
         }
         .background(
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(.sRGB, red: 27/255, green: 29/255, blue: 48/255, opacity: 1),
-                    Color(.sRGB, red: 38/255, green: 36/255, blue: 97/255, opacity: 1)
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            DesignSystem.Gradients.detailBackground
+                .ignoresSafeArea()
         )
         .navigationBarHidden(true)
         .fullScreenCover(isPresented: $showCompatibilityCheck) {
@@ -239,19 +224,13 @@ struct StickyHeader: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(.system(size: 33, weight: .heavy, design: .rounded))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.white, .blue],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .shadow(color: .blue.opacity(0.10), radius: 6, x: 0, y: 2)
+                .font(DesignSystem.Typography.largeTitle)
+                .foregroundStyle(DesignSystem.Gradients.textPrimary)
+                .designSystemShadow(DesignSystem.Shadows.sm)
             Spacer()
         }
-        .padding(.vertical, 2)
-        .padding(.horizontal)
+        .padding(.vertical, DesignSystem.Spacing.xs)
+        .padding(.horizontal, DesignSystem.Spacing.contentInsets)
     }
 }
 
@@ -263,7 +242,7 @@ struct SpecCard: View {
     let color: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 11) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
             HStack(alignment: .center) {
                 Image(systemName: icon)
                     .font(.system(size: 15))
@@ -274,26 +253,19 @@ struct SpecCard: View {
                     )
                 
                 Text(title)
-                    .font(.caption.weight(.medium))
+                    .font(DesignSystem.Typography.caption)
                     .foregroundColor(.secondary)
             }
             Text(value)
-                .font(.system(.title3, design: .rounded).weight(.semibold))
+                .font(DesignSystem.Typography.headline)
                 .foregroundColor(.white)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
-                .padding(.leading, 4)
+                .padding(.leading, DesignSystem.Spacing.xs)
         }
-        .padding(16)
+        .padding(DesignSystem.Spacing.lg)
         .frame(maxWidth: .infinity, minHeight: 100, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color.white.opacity(0.07))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color.white.opacity(0.1), lineWidth: 1)
-        )
+        .cardStyle()
     }
 }
 
@@ -302,20 +274,20 @@ struct RentalCard: View {
     let rental: Rental
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 13) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
             HStack {
                 Text(rental.name)
-                    .font(.headline.weight(.semibold))
+                    .font(DesignSystem.Typography.headline)
                 Spacer()
                 Image(systemName: "building.2")
                     .foregroundColor(.secondary)
             }
             Text(rental.address)
-                .font(.subheadline)
+                .font(DesignSystem.Typography.body)
                 .foregroundColor(.secondary)
             Divider()
-                .padding(.vertical, 4)
-            HStack(spacing: 16) {
+                .padding(.vertical, DesignSystem.Spacing.xs)
+            HStack(spacing: DesignSystem.Spacing.lg) {
                 ContactButton(
                     label: rental.phone,
                     icon: "phone",
@@ -339,15 +311,8 @@ struct RentalCard: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color.white.opacity(0.07))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color.white.opacity(0.1), lineWidth: 1)
-        )
+        .padding(DesignSystem.Spacing.lg)
+        .cardStyle()
     }
 }
 
@@ -360,16 +325,16 @@ struct ContactButton: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 6) {
+            HStack(spacing: DesignSystem.Spacing.xs) {
                 Image(systemName: icon)
                     .imageScale(.small)
                 Text(label)
-                    .font(.subheadline)
+                    .font(DesignSystem.Typography.caption)
                     .lineLimit(1)
             }
             .foregroundColor(color)
-            .padding(.vertical, 8)
-            .padding(.horizontal, 12)
+            .padding(.vertical, DesignSystem.Spacing.sm)
+            .padding(.horizontal, DesignSystem.Spacing.md)
             .background(
                 Capsule(style: .continuous)
                     .fill(color.opacity(0.16))
