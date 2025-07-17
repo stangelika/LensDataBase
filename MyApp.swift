@@ -9,21 +9,24 @@ struct LensApp: App {
             SplashScreenView()
                 .environmentObject(dataManager)
                 .onAppear {
-                    // Настройка навигации
-                    let appearance = UINavigationBarAppearance()
-                    appearance.configureWithTransparentBackground()
-                    appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
-                    appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
-                    
-                    UINavigationBar.appearance().standardAppearance = appearance
-                    UINavigationBar.appearance().scrollEdgeAppearance = appearance
-                    
-                    // Настройка общего вида
-                    UITableView.appearance().backgroundColor = .clear
-                    
-                    // Загрузка данных при запуске
+                    setupAppearance()
                     dataManager.loadData()
                 }
         }
+    }
+    
+    /// Configures the app's UI appearance
+    private func setupAppearance() {
+        // Configure navigation bar appearance
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
+        
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        
+        // Configure general view appearance
+        UITableView.appearance().backgroundColor = .clear
     }
 }

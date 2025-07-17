@@ -1,15 +1,19 @@
-// DataService_Version3.swift
+// DataService.swift
 
 import Foundation
 import Combine
 
-// MARK: - Сетевой сервис (без изменений)
+// MARK: - Network Service
+
+/// Network service for fetching lens and camera data from remote APIs
 class NetworkService {
     static let shared = NetworkService()
     
     private let LENS_DATA_URL = "https://script.google.com/macros/s/AKfycbzDzKQ3AU6ynZuPjET0NWqYMlDXMt5UKVPBOq9g7XurJKPoulWuPVVIl9U8eq_nSCG6/exec"
     private let CAMERA_DATA_URL = "https://script.google.com/macros/s/AKfycbz-2rLDrwQ7DPD3nOm7iGTvCISfIYggOVob2F43pgjR2UG3diztAaig6wO737m_Rh3GJw/exec"
     
+    /// Fetches lens data from the remote API
+    /// - Returns: Publisher that emits AppData or an error
     func fetchLensData() -> AnyPublisher<AppData, Error> {
         guard let url = URL(string: LENS_DATA_URL) else {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
@@ -27,6 +31,8 @@ class NetworkService {
             .eraseToAnyPublisher()
     }
     
+    /// Fetches camera data from the remote API
+    /// - Returns: Publisher that emits CameraApiResponse or an error
     func fetchCameraData() -> AnyPublisher<CameraApiResponse, Error> {
         guard let url = URL(string: CAMERA_DATA_URL) else {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
@@ -45,7 +51,9 @@ class NetworkService {
     }
 }
 
-// MARK: - Менеджер данных (ОБНОВЛЕН)
+// MARK: - Data Manager
+
+/// Central data manager for the application, handling data loading, favorites, and state management
 class DataManager: ObservableObject {
     @Published var appData: AppData?
     @Published var loadingState: DataLoadingState = .idle
@@ -57,49 +65,56 @@ class DataManager: ObservableObject {
     @Published var activeTab: ActiveTab = .allLenses
     @Published var selectedRentalId: String = ""
     
-    // Новое свойство для хранения ID избранных объективов
+    /// Set of favorite lens IDs
     @Published var favoriteLenses = Set<String>()
     
     private var cancellables = Set<AnyCancellable>()
-    private let favoritesKey = "favoriteLenses" // Ключ для UserDefaults
+    private let favoritesKey = "favoriteLenses"
 
-    // Инициализатор для загрузки избранного при старте
+    /// Initializes the data manager and loads saved favorites
     init() {
         loadFavorites()
     }
     
-    // MARK: - Favorites Logic
+    // MARK: - Favorites Management
     
+    /// Saves favorites to UserDefaults
     private func saveFavorites() {
-        // UserDefaults не умеет хранить Set напрямую, поэтому конвертируем в Array
+        // UserDefaults doesn't support Set directly, so convert to Array
         let favoritesArray = Array(favoriteLenses)
         UserDefaults.standard.set(favoritesArray, forKey: favoritesKey)
     }
 
+    /// Loads favorites from UserDefaults
     private func loadFavorites() {
-        // Загружаем массив строк из UserDefaults
         guard let favoritesArray = UserDefaults.standard.array(forKey: favoritesKey) as? [String] else {
             return
         }
-        // Конвертируем обратно в Set
+        // Convert back to Set
         self.favoriteLenses = Set(favoritesArray)
     }
 
+    /// Checks if a lens is marked as favorite
+    /// - Parameter lens: The lens to check
+    /// - Returns: True if the lens is a favorite, false otherwise
     func isFavorite(lens: Lens) -> Bool {
         return favoriteLenses.contains(lens.id)
     }
 
+    /// Toggles favorite status for a lens
+    /// - Parameter lens: The lens to toggle favorite status for
     func toggleFavorite(lens: Lens) {
         if isFavorite(lens: lens) {
             favoriteLenses.remove(lens.id)
         } else {
             favoriteLenses.insert(lens.id)
         }
-        saveFavorites() // Сохраняем изменения каждый раз при переключении
+        saveFavorites() // Save changes after each toggle
     }
     
     // MARK: - Data Loading
 
+    /// Loads data from local JSON files
     func loadData() {
         guard loadingState == .idle else { return }
         loadingState = .loading
@@ -111,7 +126,6 @@ class DataManager: ObservableObject {
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?.loadingState = .error(error.localizedDescription)
-                    print("❌ Ошибка загрузки локальных данных: \(error)")
                 }
             }, receiveValue: { [weak self] (appData, cameraData) in
                 self?.appData = appData
@@ -120,13 +134,12 @@ class DataManager: ObservableObject {
                 self?.formats = cameraData.formats
                 
                 self?.loadingState = .loaded
-                print("✅ Локальные данные успешно загружены!")
             })
             .store(in: &cancellables)
     }
 
+    /// Refreshes data from remote API
     func refreshDataFromAPI() {
-        print("Начинаем обновление данных с сервера...")
         loadingState = .loading
         
         NetworkService.shared.fetchLensData()
@@ -138,17 +151,18 @@ class DataManager: ObservableObject {
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?.loadingState = .error(error.localizedDescription)
-                    print("❌ Ошибка при обновлении данных с сервера: \(error)")
                 }
             }, receiveValue: { [weak self] cameraResponse in
                 self?.cameras = cameraResponse.camera.sorted { $0.manufacturer < $1.manufacturer }
                 self?.formats = cameraResponse.formats
                 self?.loadingState = .loaded
-                print("✅ Данные с сервера успешно обновлены!")
             })
             .store(in: &cancellables)
     }
 
+    /// Loads local JSON files from the app bundle
+    /// - Parameter fileName: Name of the JSON file to load
+    /// - Returns: Publisher that emits decoded data or an error
     private func loadLocalJSON<T: Decodable>(from fileName: String) -> AnyPublisher<T, Error> {
         guard let url = Bundle.main.url(forResource: fileName, withExtension: "json") else {
             return Fail(error: URLError(.fileDoesNotExist)).eraseToAnyPublisher()
@@ -163,6 +177,7 @@ class DataManager: ObservableObject {
     
     // MARK: - Helper Functions
     
+    /// Collects available lenses from inventory
     private func collectAvailableLenses() {
         guard let appData = appData else { return }
         
@@ -170,6 +185,9 @@ class DataManager: ObservableObject {
         availableLenses = appData.lenses.filter { lensIds.contains($0.id) }
     }
     
+    /// Groups lenses by manufacturer and series for UI display
+    /// - Parameter rentalId: Optional rental ID to filter lenses for specific rental
+    /// - Returns: Array of grouped lenses
     func groupLenses(forRental rentalId: String? = nil) -> [LensGroup] {
         let lenses = rentalId != nil ? lensesForRental(rentalId!) : availableLenses
         
@@ -195,6 +213,9 @@ class DataManager: ObservableObject {
         }.sorted { $0.manufacturer < $1.manufacturer }
     }
     
+    /// Gets lenses available for a specific rental
+    /// - Parameter rentalId: The rental ID to get lenses for
+    /// - Returns: Array of lenses available at that rental
     private func lensesForRental(_ rentalId: String) -> [Lens] {
         guard let appData = appData,
               let inventory = appData.inventory[rentalId] else { return [] }
@@ -203,6 +224,9 @@ class DataManager: ObservableObject {
         return appData.lenses.filter { lensIds.contains($0.id) }
     }
     
+    /// Normalizes names for grouping (removes spaces, special characters, etc.)
+    /// - Parameter str: The string to normalize
+    /// - Returns: Normalized string
     private func normalizeName(_ str: String) -> String {
         return str
             .lowercased()
@@ -213,10 +237,16 @@ class DataManager: ObservableObject {
             .replacingOccurrences(of: "edition", with: "", options: .caseInsensitive)
     }
     
+    /// Gets lens details by ID
+    /// - Parameter id: The lens ID to search for
+    /// - Returns: Lens object if found, nil otherwise
     func lensDetails(for id: String) -> Lens? {
         return appData?.lenses.first { $0.id == id }
     }
     
+    /// Gets rentals that have a specific lens in their inventory
+    /// - Parameter lensId: The lens ID to search for
+    /// - Returns: Array of rentals that have this lens
     func rentalsForLens(_ lensId: String) -> [Rental] {
         guard let appData = appData else { return [] }
         
