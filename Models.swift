@@ -1,24 +1,23 @@
 import Foundation
 
-// MARK: - Camera API Models (v2)
+// MARK: - Модели для API v2 (Камеры и Форматы)
 
-/// Response structure for camera API containing cameras and recording formats
 struct CameraApiResponse: Codable {
     let camera: [Camera]
     let formats: [RecordingFormat]
 }
 
-/// Camera model with sensor specifications
+// ИСПРАВЛЕННАЯ СТРУКТУРА CAMERA
 struct Camera: Codable, Identifiable, Hashable {
-    let id: String
+    let id: String // БЫЛ Int, СТАЛ String
     let manufacturer: String
     let model: String
     let sensor: String
-    let sensorWidth: String
+    let sensorWidth: String // Названия свойств оставляем для удобства
     let sensorHeight: String
     let imageCircle: String
 
-    /// Coding keys for mapping JSON properties to Swift properties
+    // Добавляем CodingKeys для связи с JSON
     private enum CodingKeys: String, CodingKey {
         case id, manufacturer, model, sensor
         case sensorWidth = "sensorwidth"
@@ -27,10 +26,10 @@ struct Camera: Codable, Identifiable, Hashable {
     }
 }
 
-/// Recording format model with detailed specifications
+// ИСПРАВЛЕННАЯ СТРУКТУРА RECORDINGFORMAT
 struct RecordingFormat: Codable, Identifiable, Hashable {
-    let id: String
-    let cameraId: String
+    let id: String // БЫЛ Int, СТАЛ String
+    let cameraId: String // БЫЛ Int, СТАЛ String
     let manufacturer: String
     let model: String
     let sensorWidth: String
@@ -40,7 +39,7 @@ struct RecordingFormat: Codable, Identifiable, Hashable {
     let recordingHeight: String
     let recordingImageCircle: String
 
-    /// Coding keys for mapping JSON properties to Swift properties
+    // Добавляем CodingKeys для связи с JSON
     private enum CodingKeys: String, CodingKey {
         case id, manufacturer, model
         case cameraId = "cameraid"
@@ -54,9 +53,7 @@ struct RecordingFormat: Codable, Identifiable, Hashable {
 }
 
 
-// MARK: - Core Data Models
-
-/// Rental service information
+// MARK: - Модели данных
 struct Rental: Codable, Identifiable {
     let id: String
     let name: String
@@ -65,7 +62,6 @@ struct Rental: Codable, Identifiable {
     let website: String
 }
 
-/// Lens model with complete specifications
 struct Lens: Codable, Identifiable {
     let id: String
     let display_name: String
@@ -100,7 +96,7 @@ struct Lens: Codable, Identifiable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        // Process all fields using universal decoder
+        // Обрабатываем все поля с помощью универсального декодера
         id = try Lens.decodeFlexible(container: container, key: .id) ?? ""
         display_name = try Lens.decodeFlexible(container: container, key: .display_name) ?? ""
         manufacturer = try Lens.decodeFlexible(container: container, key: .manufacturer) ?? ""
@@ -116,47 +112,42 @@ struct Lens: Codable, Identifiable {
         squeeze_factor = try Lens.decodeFlexible(container: container, key: .squeeze_factor)
     }
     
-    /// Universal method for decoding flexible field types
-    private static func decodeFlexible(
-        container: KeyedDecodingContainer<Lens.CodingKeys>,
-        key: CodingKeys
-    ) throws -> String? {
-        // Try to decode as string
+    // Универсальный метод для декодирования любых полей
+    private static func decodeFlexible(container: KeyedDecodingContainer<Lens.CodingKeys>, key: CodingKeys) throws -> String? {
+        // Пробуем декодировать как строку
         if let stringValue = try? container.decode(String.self, forKey: key) {
             return stringValue
         }
-        // Try to decode as integer
+        // Пробуем декодировать как целое число
         else if let intValue = try? container.decode(Int.self, forKey: key) {
             return String(intValue)
         }
-        // Try to decode as double
+        // Пробуем декодировать как число с плавающей точкой
         else if let doubleValue = try? container.decode(Double.self, forKey: key) {
             return String(doubleValue)
         }
-        // Try to decode as boolean
+        // Пробуем декодировать как булево значение
         else if let boolValue = try? container.decode(Bool.self, forKey: key) {
             return boolValue ? "true" : "false"
         }
-        // Return nil if nothing works
+        // Если ничего не получилось, возвращаем nil
         else {
             return nil
         }
     }
 }
 
-/// Inventory item representing a lens in a rental service
 struct InventoryItem: Codable {
     let lens_id: String
 }
 
-/// Main application data structure
 struct AppData: Codable {
     let last_updated: String
     let rentals: [Rental]
     let lenses: [Lens]
     let inventory: [String: [InventoryItem]]
     
-    /// Custom initializer for handling lens array errors
+    // Кастомный инициализатор для обработки ошибок в массиве объективов
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -164,33 +155,28 @@ struct AppData: Codable {
         rentals = try container.decode([Rental].self, forKey: .rentals)
         inventory = try container.decode([String: [InventoryItem]].self, forKey: .inventory)
         
-        // Process lenses with error protection
+        // Обрабатываем объективы с защитой от ошибок (ИСПРАВЛЕНО: let вместо var)
         let lensesArray = try container.decode([Lens].self, forKey: .lenses)
         
-        // Filter out lenses with empty IDs
+        // Фильтруем объективы с пустым ID
         lenses = lensesArray.filter { !$0.id.isEmpty }
     }
 }
 
-// MARK: - UI Data Grouping
-
-/// Lens group for organizing lenses by manufacturer
+// MARK: - Группировка данных для UI
 struct LensGroup: Identifiable {
     let id = UUID()
     let manufacturer: String
     let series: [LensSeries]
 }
 
-/// Lens series for organizing lenses by series name
 struct LensSeries: Identifiable {
     let id = UUID()
     let name: String
     let lenses: [Lens]
 }
 
-// MARK: - Application State
-
-/// Data loading states for the application
+// MARK: - Состояния приложения (ИСПРАВЛЕНО: добавлено Equatable)
 enum DataLoadingState: Equatable {
     case idle
     case loading
@@ -198,7 +184,6 @@ enum DataLoadingState: Equatable {
     case error(String)
 }
 
-/// Active tab enumeration for navigation
 enum ActiveTab: Equatable {
     case rentalView
     case allLenses

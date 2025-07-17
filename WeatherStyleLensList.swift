@@ -5,29 +5,23 @@ struct WeatherStyleLensListView: View {
     let rentalId: String?
     let format: String
     let focalCategory: FocalCategory
-    let searchText: String
     let onSelect: (Lens) -> Void
 
-    init(rentalId: String? = nil, format: String = "", focalCategory: FocalCategory = .all, searchText: String = "", onSelect: @escaping (Lens) -> Void) {
+    init(rentalId: String? = nil, format: String = "", focalCategory: FocalCategory = .all, onSelect: @escaping (Lens) -> Void) {
         self.rentalId = rentalId
         self.format = format
         self.focalCategory = focalCategory
-        self.searchText = searchText
         self.onSelect = onSelect
     }
 
     private var filteredGroups: [LensGroup] {
         let groups = dataManager.groupLenses(forRental: rentalId)
-        guard !format.isEmpty || focalCategory != .all || !searchText.isEmpty else { return groups }
-        
+        guard !format.isEmpty || focalCategory != .all else { return groups }
         return groups.compactMap { group in
             let filteredSeries = group.series.compactMap { series in
-                let filteredLenses = series.lenses.filter { lens in
-                    let formatMatches = format.isEmpty || lens.format == format
-                    let focalMatches = focalCategory.contains(focal: lens.mainFocalValue)
-                    let searchMatches = searchText.isEmpty || lens.lens_name.localizedCaseInsensitiveContains(searchText)
-                    
-                    return formatMatches && focalMatches && searchMatches
+                let filteredLenses = series.lenses.filter {
+                    (format.isEmpty || $0.format == format)
+                    && focalCategory.contains(focal: $0.mainFocalValue)
                 }
                 return filteredLenses.isEmpty ? nil : LensSeries(name: series.name, lenses: filteredLenses)
             }
