@@ -20,7 +20,7 @@ struct AllLensesView: View {
             .ignoresSafeArea()
 
             VStack(spacing: 20) {
-                // Заголовок с эффектом света и отражения
+                // Header with light and reflection effects
                 HStack {
                     Text("Lenses")
                         .font(.system(size: 36, weight: .heavy, design: .rounded))
@@ -37,7 +37,7 @@ struct AllLensesView: View {
                 .padding(.horizontal, 28)
                 .padding(.top, 22)
 
-                // Фильтры с подсветкой активных
+                // Filters with active highlighting
                 HStack(spacing: 16) {
                     Menu {
                         Picker("Format", selection: $selectedFormat) {

@@ -126,8 +126,8 @@ struct LensDetailView: View, Identifiable {
                         }
                     }) {
                         SpecCard(
-                            title: "Действие",
-                            value: "Поиск Google",
+                            title: "Action",
+                            value: "Google Search",
                             icon: "photo.on.rectangle.angled",
                             color: .blue
                         )

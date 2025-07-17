@@ -151,6 +151,67 @@ The app integrates with remote APIs to provide up-to-date lens information:
 4. User selects lens → Detail view presented
 5. User marks favorite → Persistent storage updated
 
+## Development
+
+### Prerequisites
+- Xcode 14.0+ (for iOS development)
+- iOS 16.0+ (target deployment)
+- Swift 5.9+
+
+### Development Workflow
+
+1. **Setup**:
+   ```bash
+   git clone https://github.com/stangelika/LensDataBase.git
+   cd LensDataBase
+   ```
+
+2. **Running Tests**:
+   ```bash
+   ./scripts/test.sh
+   ```
+
+3. **Code Quality**:
+   ```bash
+   ./scripts/quality.sh
+   ```
+
+4. **Building**:
+   ```bash
+   # iOS (requires macOS)
+   xcodebuild -scheme LensDataBase -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' build
+   
+   # Swift Package Manager (cross-platform)
+   cp Package.test.swift Package.swift
+   swift build
+   ```
+
+### Code Standards
+
+- Follow Swift API Design Guidelines
+- Use SwiftUI best practices  
+- Write tests for new functionality
+- Document public APIs with `///` comments
+- Run `./scripts/quality.sh` before submitting PRs
+
+### Project Structure
+
+```
+LensDataBase/
+├── Models.swift              # Data models and structures
+├── DataService.swift         # Network service and data management
+├── MyApp.swift              # App entry point
+├── Views/                   # SwiftUI views
+│   ├── AllLensesView.swift
+│   ├── LensDetailView.swift
+│   ├── FavoritesView.swift
+│   └── ...
+├── Resources/               # JSON data files
+├── Tests/                   # Unit and integration tests
+├── scripts/                 # Development scripts
+└── .github/workflows/       # CI/CD pipelines
+```
+
 ## Contributing
 
 1. Fork the repository
@@ -167,15 +228,55 @@ The app integrates with remote APIs to provide up-to-date lens information:
 
 ## Testing
 
-Run the test suite:
+LensDataBase includes a comprehensive test suite to ensure code quality and functionality.
+
+### Running Tests
+
+#### iOS Tests (macOS only)
 ```bash
-swift test
+# Run all tests with code coverage
+./scripts/test.sh
+
+# Or run manually with Xcode
+xcodebuild -scheme LensDataBase \
+    -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
+    -configuration Debug \
+    test \
+    -enableCodeCoverage YES
+```
+
+#### Cross-Platform Tests
+```bash
+# Use the test-compatible Package.swift
+cp Package.test.swift Package.swift
+
+# Run tests with Swift Package Manager
+swift test --enable-code-coverage
 ```
 
 ### Test Coverage
-- Unit tests for data models
-- Integration tests for network services
-- UI tests for main user flows
+
+The test suite covers:
+- **Model Tests**: JSON decoding, data validation, and model behavior
+- **Data Manager Tests**: Favorites management, data loading, and lens grouping
+- **Network Service Tests**: API calls, error handling, and threading
+- **UI Logic Tests**: View models and user interactions
+
+Target coverage: **80%+** for core functionality
+
+### Code Quality
+
+Run code quality checks:
+```bash
+./scripts/quality.sh
+```
+
+This includes:
+- SwiftLint code style validation
+- SwiftFormat formatting checks
+- Security vulnerability scanning
+- Documentation coverage analysis
+- Code complexity metrics
 
 ## License
 
