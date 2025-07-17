@@ -3,7 +3,7 @@
 import Foundation
 import Combine
 
-// MARK: - Сетевой сервис (без изменений)
+// ... (NetworkService без изменений) ...
 class NetworkService {
     static let shared = NetworkService()
     
@@ -45,6 +45,7 @@ class NetworkService {
     }
 }
 
+
 // MARK: - Менеджер данных (ОБНОВЛЕН)
 class DataManager: ObservableObject {
     @Published var appData: AppData?
@@ -57,31 +58,74 @@ class DataManager: ObservableObject {
     @Published var activeTab: ActiveTab = .allLenses
     @Published var selectedRentalId: String = ""
     
-    // Новое свойство для хранения ID избранных объективов
+    // Свойства для новых функций
     @Published var favoriteLenses = Set<String>()
+    @Published var comparisonSet = Set<String>()
+    @Published var projects: [Project] = [] // <-- НОВЫЙ МАССИВ ДЛЯ ПРОЕКТОВ
+    
+    @Published var favoriteLensesList: [Lens] = []
     
     private var cancellables = Set<AnyCancellable>()
-    private let favoritesKey = "favoriteLenses" // Ключ для UserDefaults
+    private let favoritesKey = "favoriteLenses"
+    private let projectsKey = "userProjects" // <-- НОВЫЙ КЛЮЧ ДЛЯ ХРАНЕНИЯ
 
-    // Инициализатор для загрузки избранного при старте
     init() {
         loadFavorites()
+        loadProjects() // <-- ЗАГРУЖАЕМ ПРОЕКТЫ ПРИ СТАРТЕ
+    }
+    
+    // MARK: - Projects Logic
+    
+    func addProject() {
+        let newProject = Project.empty()
+        projects.append(newProject)
+        saveProjects()
+    }
+    
+    func deleteProject(at offsets: IndexSet) {
+        projects.remove(atOffsets: offsets)
+        saveProjects()
+    }
+    
+    func updateProject(_ project: Project) {
+        guard let index = projects.firstIndex(where: { $0.id == project.id }) else { return }
+        projects[index] = project
+        saveProjects()
+    }
+    
+    private func saveProjects() {
+        do {
+            let data = try JSONEncoder().encode(projects)
+            UserDefaults.standard.set(data, forKey: projectsKey)
+        } catch {
+            print("❌ Failed to save projects: \(error)")
+        }
+    }
+    
+    private func loadProjects() {
+        guard let data = UserDefaults.standard.data(forKey: projectsKey) else { return }
+        do {
+            projects = try JSONDecoder().decode([Project].self, from: data)
+        } catch {
+            print("❌ Failed to load projects: \(error)")
+        }
     }
     
     // MARK: - Favorites Logic
     
+    private func updateFavoriteLensesList() {
+        favoriteLensesList = availableLenses
+            .filter { favoriteLenses.contains($0.id) }
+            .sorted { $0.display_name < $1.display_name }
+    }
+    
     private func saveFavorites() {
-        // UserDefaults не умеет хранить Set напрямую, поэтому конвертируем в Array
         let favoritesArray = Array(favoriteLenses)
         UserDefaults.standard.set(favoritesArray, forKey: favoritesKey)
     }
 
     private func loadFavorites() {
-        // Загружаем массив строк из UserDefaults
-        guard let favoritesArray = UserDefaults.standard.array(forKey: favoritesKey) as? [String] else {
-            return
-        }
-        // Конвертируем обратно в Set
+        guard let favoritesArray = UserDefaults.standard.array(forKey: favoritesKey) as? [String] else { return }
         self.favoriteLenses = Set(favoritesArray)
     }
 
@@ -95,7 +139,25 @@ class DataManager: ObservableObject {
         } else {
             favoriteLenses.insert(lens.id)
         }
-        saveFavorites() // Сохраняем изменения каждый раз при переключении
+        saveFavorites()
+        updateFavoriteLensesList()
+    }
+    
+    // MARK: - Comparison Logic
+    
+    func isInComparison(lens: Lens) -> Bool { return comparisonSet.contains(lens.id) }
+
+    func toggleComparison(lens: Lens) {
+        if !isInComparison(lens: lens) && comparisonSet.count >= 4 { return }
+        if isInComparison(lens: lens) {
+            comparisonSet.remove(lens.id)
+        } else {
+            comparisonSet.insert(lens.id)
+        }
+    }
+
+    func clearComparison() {
+        comparisonSet.removeAll()
     }
     
     // MARK: - Data Loading
@@ -111,15 +173,16 @@ class DataManager: ObservableObject {
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?.loadingState = .error(error.localizedDescription)
-                    print("❌ Ошибка загрузки локальных данных: \(error)")
                 }
             }, receiveValue: { [weak self] (appData, cameraData) in
-                self?.appData = appData
-                self?.collectAvailableLenses()
-                self?.cameras = cameraData.camera.sorted { $0.manufacturer < $1.manufacturer }
-                self?.formats = cameraData.formats
+                guard let self = self else { return }
+                self.appData = appData
+                self.collectAvailableLenses()
+                self.cameras = cameraData.camera.sorted { $0.manufacturer < $1.manufacturer }
+                self.formats = cameraData.formats
+                self.loadingState = .loaded
                 
-                self?.loadingState = .loaded
+                self.updateFavoriteLensesList()
                 print("✅ Локальные данные успешно загружены!")
             })
             .store(in: &cancellables)
