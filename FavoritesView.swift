@@ -25,10 +25,36 @@ struct FavoritesView: View {
                                 .font(DesignSystem.Typography.largeTitle)
                                 .foregroundStyle(DesignSystem.Gradients.textAccent)
                                 .designSystemShadow(DesignSystem.Shadows.md)
-                            Spacer()
+
+                            Spacer() // Отталкивает заголовок влево, а кнопку вправо
+
+                            // ✅ ИСПРАВЛЕНО: Кнопка вынесена из ToolbarItem
+                            if !dataManager.favoriteLensesList.isEmpty {
+                                Button(action: {
+                                    withAnimation(.easeInOut) { isSelectionMode.toggle() }
+                                    if !isSelectionMode { dataManager.clearComparison() }
+                                }) {
+                                    HStack(spacing: DesignSystem.Spacing.xs) {
+                                        Image(systemName: isSelectionMode ? "checkmark.circle.fill" : "square.and.arrow.down.on.square")
+                                        Text(isSelectionMode ? "Done" : "Select")
+                                    }
+                                }
+                                .buttonStyle(
+                                    DesignSystem.CapsuleButtonStyle(
+                                        backgroundColor: isSelectionMode ? .green : .cyan,
+                                        foregroundColor: isSelectionMode ? .green : .cyan
+                                    )
+                                )
+                                // Теперь вы можете контролировать отступы этой кнопки
+                                // Например, чтобы отодвинуть ее от верхнего края, 
+                                // вы можете добавить padding к всему HStack, 
+                                // или к самой кнопке, если она в другом VStack.
+                                // Поскольку она теперь в HStack с заголовком, 
+                                // ее вертикальное положение будет зависеть от padding этого HStack.
+                            }
                         }
                         .padding(.horizontal, DesignSystem.Spacing.headerSpacing)
-                        .padding(.top, DesignSystem.Spacing.xxl)
+                        .padding(.top, DesignSystem.Spacing.xxl) // ЭТОТ PADDING ТЕПЕРЬ СМЕЩАЕТ ВЕСЬ ЗАГОЛОВОК И КНОПКУ ВНИЗ
 
                         // Check for empty favorites list
                         if dataManager.favoriteLensesList.isEmpty {
@@ -72,31 +98,8 @@ struct FavoritesView: View {
                                 .padding(.bottom, 100) // Bottom padding for floating button
                             }
                         }
-                    } // <-- Конец VStack
-                    // ✅ ИСПРАВЛЕНО: .toolbar теперь применён к VStack, чтобы избежать неоднозначности
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            if !dataManager.favoriteLensesList.isEmpty {
-                                Button(action: {
-                                    withAnimation(.easeInOut) { isSelectionMode.toggle() }
-                                    if !isSelectionMode { dataManager.clearComparison() }
-                                }) {
-                                    HStack(spacing: DesignSystem.Spacing.xs) {
-                                        Image(systemName: isSelectionMode ? "checkmark.circle.fill" : "square.and.arrow.down.on.square")
-                                        Text(isSelectionMode ? "Done" : "Select")
-                                    }
-                                    .font(DesignSystem.Typography.headline)
-                                    .foregroundColor(isSelectionMode ? .green : .cyan)
-                                    .padding(.vertical, DesignSystem.Spacing.sm)
-                                    .padding(.horizontal, DesignSystem.Spacing.md)
-                                    .background(
-                                        (isSelectionMode ? Color.green : Color.cyan).opacity(0.2)
-                                    )
-                                    .clipShape(Capsule())
-                                }
-                            }
-                        }
                     }
+                    // УДАЛЕН БЛОК .toolbar {}
                 }
                 .sheet(item: $selectedLens) { lens in
                     LensDetailView(lens: lens).environmentObject(dataManager)

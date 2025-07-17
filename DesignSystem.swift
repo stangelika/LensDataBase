@@ -122,19 +122,39 @@ struct DesignSystem {
     
     // MARK: - Shadows
     enum Shadows {
-    // Создаем псевдоним для типа тени, чтобы не повторять код
-    typealias ShadowStyle = (color: Color, radius: CGFloat, x: CGFloat, y: CGFloat)
+		// Создаем псевдоним для типа тени, чтобы не повторять код
+		typealias ShadowStyle = (color: Color, radius: CGFloat, x: CGFloat, y: CGFloat)
 
-    static let sm: ShadowStyle = (color: .black.opacity(0.1), radius: 2.0, x: 0.0, y: 1.0)
-    static let md: ShadowStyle = (color: .black.opacity(0.15), radius: 4.0, x: 0.0, y: 2.0)
-    static let lg: ShadowStyle = (color: .black.opacity(0.2), radius: 8.0, x: 0.0, y: 4.0)
-    static let xl: ShadowStyle = (color: .black.opacity(0.25), radius: 16.0, x: 0.0, y: 8.0)
+		static let sm: ShadowStyle = (color: .black.opacity(0.1), radius: 2.0, x: 0.0, y: 1.0)
+		static let md: ShadowStyle = (color: .black.opacity(0.15), radius: 4.0, x: 0.0, y: 2.0)
+		static let lg: ShadowStyle = (color: .black.opacity(0.2), radius: 8.0, x: 0.0, y: 4.0)
+		static let xl: ShadowStyle = (color: .black.opacity(0.25), radius: 16.0, x: 0.0, y: 8.0)
     
-    // Colored shadows
-    static let primaryGlow: ShadowStyle = (color: .blue.opacity(0.3), radius: 10.0, x: 0.0, y: 5.0)
-    static let accentGlow: ShadowStyle = (color: .orange.opacity(0.3), radius: 10.0, x: 0.0, y: 5.0)
-    static let successGlow: ShadowStyle = (color: .green.opacity(0.3), radius: 10.0, x: 0.0, y: 5.0)
-}
+		// Colored shadows
+		static let primaryGlow: ShadowStyle = (color: .blue.opacity(0.3), radius: 10.0, x: 0.0, y: 5.0)
+		static let accentGlow: ShadowStyle = (color: .orange.opacity(0.3), radius: 10.0, x: 0.0, y: 5.0)
+		static let successGlow: ShadowStyle = (color: .green.opacity(0.3), radius: 10.0, x: 0.0, y: 5.0)
+    }
+    
+    // MARK: - ✅ Custom Button Styles (ДОБАВЛЕНО)
+    struct CapsuleButtonStyle: ButtonStyle {
+        var backgroundColor: Color
+        var foregroundColor: Color
+
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(DesignSystem.Typography.headline)
+                // Используем ваши значения из Spacing
+                .padding(.vertical, DesignSystem.Spacing.xs) 
+                .padding(.horizontal, DesignSystem.Spacing.md)
+                .foregroundColor(foregroundColor)
+                .background(backgroundColor.opacity(0.25)) // Сделал чуть ярче
+                .clipShape(Capsule())
+                // Эффект нажатия
+                .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+                .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+        }
+    }
 }
 
 // MARK: - Design System Extensions
