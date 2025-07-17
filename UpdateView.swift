@@ -19,7 +19,7 @@ struct UpdateView: View {
             .ignoresSafeArea()
 
             VStack(spacing: 25) {
-                // Заголовок
+                // Header
                 HStack {
                     Text("Settings")
                         .font(.system(size: 36, weight: .heavy, design: .rounded))
