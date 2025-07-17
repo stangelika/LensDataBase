@@ -4,6 +4,7 @@ struct RentalView: View {
     @EnvironmentObject var dataManager: DataManager
     @State private var selectedFormat: String = ""
     @State private var selectedLens: Lens? = nil
+    @State private var searchText: String = ""
 
     var selectedRentalName: String {
         dataManager.appData?.rentals.first(where: { $0.id == dataManager.selectedRentalId })?.name ?? "Rentals"
@@ -15,6 +16,9 @@ struct RentalView: View {
             
             VStack(spacing: 20) {
                 createHeaderSection()
+                if !dataManager.selectedRentalId.isEmpty {
+                    createSearchSection()
+                }
                 createFilterSection()
                 createContentSection()
             }
@@ -57,6 +61,45 @@ struct RentalView: View {
         }
         .padding(.horizontal, 28)
         .padding(.top, 22)
+    }
+    
+    private func createSearchSection() -> some View {
+        HStack {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .foregroundColor(.white.opacity(0.6))
+                    .font(.system(size: 16, weight: .medium))
+                
+                TextField("Search lenses by name...", text: $searchText)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .foregroundColor(.white)
+                    .font(.system(size: 16, weight: .medium))
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+                
+                if !searchText.isEmpty {
+                    Button(action: {
+                        searchText = ""
+                    }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.white.opacity(0.6))
+                            .font(.system(size: 16, weight: .medium))
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                    )
+            )
+            .shadow(color: .blue.opacity(0.1), radius: 4, x: 0, y: 2)
+        }
+        .padding(.horizontal, 24)
     }
     
     private func createFilterSection() -> some View {
@@ -131,7 +174,8 @@ struct RentalView: View {
     private func createLensListView() -> some View {
         WeatherStyleLensListView(
             rentalId: dataManager.selectedRentalId,
-            format: selectedFormat
+            format: selectedFormat,
+            searchText: searchText
         ) { lens in
             selectedLens = lens
         }
