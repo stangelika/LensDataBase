@@ -1,5 +1,3 @@
-// MainTabView_Version3_Version4.swift
-
 import SwiftUI
 
 struct MainTabView: View {
@@ -7,40 +5,52 @@ struct MainTabView: View {
 
     var body: some View {
         ZStack {
-            // Фон можно оставить общим или убрать, если у каждого экрана свой
+            // Background gradient
             LinearGradient(
-                gradient: Gradient(colors: [Color(.sRGB, white: 0.09, opacity: 1), Color(.sRGB, white: 0.15, opacity: 1)]),
+                gradient: Gradient(colors: [
+                    Color(.sRGB, white: 0.09, opacity: 1),
+                    Color(.sRGB, white: 0.15, opacity: 1)
+                ]),
                 startPoint: .top,
                 endPoint: .bottom
             )
             .ignoresSafeArea()
             
             TabView(selection: $dataManager.activeTab) {
-    // Экран 1: Все объективы
-    AllLensesView()
-        .tag(ActiveTab.allLenses)
-    
-    // Экран 2: Ренталы
-    RentalView()
-        .tag(ActiveTab.rentalView)
-        
-    // Экран 3: Избранное (НОВЫЙ)
-    FavoritesView()
-        .tag(ActiveTab.favorites) // <--- ДОБАВЬТЕ ЭТОТ БЛОК
-    
-    // Экран 4: Настройки и обновление
-    UpdateView()
-        .tag(ActiveTab.updateView)
-}
+                // Tab 1: All Lenses
+                AllLensesView()
+                    .tag(ActiveTab.allLenses)
+                
+                // Tab 2: Rentals
+                RentalView()
+                    .tag(ActiveTab.rentalView)
+                    
+                // Tab 3: Favorites
+                FavoritesView()
+                    .tag(ActiveTab.favorites)
+                
+                // Tab 4: Settings and Updates
+                UpdateView()
+                    .tag(ActiveTab.updateView)
+            }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
         }
         .preferredColorScheme(.dark)
         .onAppear {
-            // Этот блок можно оставить, но основная загрузка уже не здесь
-            if dataManager.appData == nil {
-                dataManager.loadData() // Теперь загружает локальные данные
-            }
-            UITabBar.appearance().isHidden = true
+            configureTabBar()
+            loadDataIfNeeded()
+        }
+    }
+    
+    // MARK: - Private Methods
+    
+    private func configureTabBar() {
+        UITabBar.appearance().isHidden = true
+    }
+    
+    private func loadDataIfNeeded() {
+        if dataManager.appData == nil {
+            dataManager.loadData()
         }
     }
 }
