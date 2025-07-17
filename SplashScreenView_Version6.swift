@@ -13,11 +13,17 @@ struct SplashScreenView: View {
             MainTabView()
         } else {
             ZStack {
-                // Gradient dark background with "aura light"
-                DesignSystem.Gradients.splashBackground
-                    .ignoresSafeArea()
+                // Градиентный темный фон с "aura light"
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(.sRGB, red: 28/255, green: 32/255, blue: 48/255, opacity: 1),
+                        Color(.sRGB, red: 38/255, green: 36/255, blue: 97/255, opacity: 1)
+                    ]),
+                    startPoint: .topLeading, endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
 
-                // Glowing colored circle "aura"
+                // Светящийся цветной круг "аура"
                 Circle()
                     .fill(
                         RadialGradient(
@@ -33,7 +39,7 @@ struct SplashScreenView: View {
                     .blur(radius: 2)
                     .offset(x: -60, y: -120)
 
-                // Central glass card with logo and animation
+                // Центральная стеклянная карта с логотипом и анимацией
                 VStack(spacing: 0) {
                     ZStack {
                         GlassCard()
@@ -42,7 +48,7 @@ struct SplashScreenView: View {
                             .scaleEffect(glassBlur ? 1 : 0.85)
                             .animation(.easeOut(duration: 0.7), value: glassBlur)
 
-                        // Logo with pulsing and shadow
+                        // Логотип с пульсацией и shadow
                         Image(systemName: "camera.aperture")
                             .font(.system(size: 88, weight: .bold))
                             .symbolRenderingMode(.palette)
@@ -57,10 +63,10 @@ struct SplashScreenView: View {
                             .scaleEffect(logoPulse ? 1.07 : 1)
                             .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: logoPulse)
                     }
-                    .padding(.bottom, DesignSystem.Spacing.sm)
+                    .padding(.bottom, 8)
 
                     Text("Lens Data Base")
-                        .font(DesignSystem.Typography.largeTitle)
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [.white, .yellow, .orange, .purple.opacity(0.95)],
@@ -74,34 +80,34 @@ struct SplashScreenView: View {
                         .animation(.easeOut(duration: 0.8).delay(0.4), value: showSubtitle)
 
                     Text("Cinematic lens catalog & rentals")
-                        .font(DesignSystem.Typography.caption)
+                        .font(.footnote.weight(.semibold))
                         .foregroundColor(.white.opacity(0.65))
-                        .padding(.top, DesignSystem.Spacing.xs)
+                        .padding(.top, 4)
                         .opacity(showSubtitle ? 1 : 0)
                         .offset(y: showSubtitle ? 0 : 8)
                         .animation(.easeOut(duration: 0.8).delay(0.6), value: showSubtitle)
                 }
-                .padding(.top, DesignSystem.Spacing.xxl)
+                .padding(.top, 24)
 
-                // Transparent loading card and signature
+                // Прозрачная карточка загрузки и подпись
                 VStack {
                     Spacer()
                     GlassCard()
                         .frame(height: 80)
                         .overlay(
-                            VStack(spacing: DesignSystem.Spacing.sm) {
+                            VStack(spacing: 10) {
                                 if dataManager.loadingState == .loading {
-                                    HStack(spacing: DesignSystem.Spacing.md) {
+                                    HStack(spacing: 12) {
                                         ProgressView()
                                             .scaleEffect(1.1)
                                             .tint(.orange)
                                         Text("Loading data...")
-                                            .font(DesignSystem.Typography.body)
+                                            .font(.subheadline)
                                             .foregroundColor(.white.opacity(0.8))
                                     }
                                 } else if case .error(let error) = dataManager.loadingState {
                                     Text("Error: \(error)")
-                                        .font(DesignSystem.Typography.caption)
+                                        .font(.footnote)
                                         .foregroundColor(.red)
                                 }
                                 ShimmeringText(text: "Developed by Skvora007", phase: shimmerPhase)
@@ -110,10 +116,10 @@ struct SplashScreenView: View {
                                     .frame(maxWidth: .infinity)
                                     .padding(.top, 1)
                             }
-                            .padding(.vertical, DesignSystem.Spacing.sm)
+                            .padding(.vertical, 8)
                         )
-                        .padding(.horizontal, DesignSystem.Spacing.huge)
-                        .padding(.bottom, DesignSystem.Spacing.sectionSpacing)
+                        .padding(.horizontal, 40)
+                        .padding(.bottom, 36)
                 }
             }
             .onAppear {
@@ -123,7 +129,7 @@ struct SplashScreenView: View {
                     logoPulse = true
                     showSubtitle = true
                 }
-                // Start shimmer animation
+                // Запуск shimmer
                 withAnimation(Animation.linear(duration: 1.8).repeatForever(autoreverses: false)) {
                     shimmerPhase = 1.0
                 }
@@ -144,18 +150,18 @@ struct SplashScreenView: View {
     }
 }
 
-// Flexible glass card for reuse
+// Гибкий стеклянный card для переиспользования
 struct GlassCard: View {
     var body: some View {
-        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xxl, style: .continuous)
+        RoundedRectangle(cornerRadius: 32, style: .continuous)
             .fill(.ultraThinMaterial)
             .shadow(color: Color.white.opacity(0.07), radius: 16, x: 0, y: 10)
             .background(
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xxl)
+                RoundedRectangle(cornerRadius: 32)
                     .stroke(Color.white.opacity(0.13), lineWidth: 1.1)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xxl)
+                RoundedRectangle(cornerRadius: 32)
                     .stroke(
                         LinearGradient(
                             colors: [Color.orange.opacity(0.13), Color.purple.opacity(0.09), .clear],
@@ -167,7 +173,7 @@ struct GlassCard: View {
     }
 }
 
-// Shimmer effect for signature animation
+// Эффект shimmer для оживления подписи
 struct ShimmeringText: View {
     let text: String
     var phase: CGFloat

@@ -1,10 +1,9 @@
-// DataService_Version3.swift (или DataManager.swift)
+// DataService_Version3.swift
 
 import Foundation
 import Combine
-import SwiftUI // Добавляем SwiftUI для ObservableObject, если его не было
 
-// MARK: - NetworkService (Остается без изменений)
+// MARK: - Сетевой сервис (без изменений)
 class NetworkService {
     static let shared = NetworkService()
     
@@ -46,8 +45,7 @@ class NetworkService {
     }
 }
 
-
-// MARK: - Data Manager
+// MARK: - Менеджер данных (ОБНОВЛЕН)
 class DataManager: ObservableObject {
     @Published var appData: AppData?
     @Published var loadingState: DataLoadingState = .idle
@@ -59,99 +57,31 @@ class DataManager: ObservableObject {
     @Published var activeTab: ActiveTab = .allLenses
     @Published var selectedRentalId: String = ""
     
-    // Properties for new features
-    @Published var favoriteLenses = Set<String>() {
-        didSet { saveFavorites() } // Auto-save favorites
-    }
-    @Published var comparisonSet = Set<String>()
-    @Published var projects: [Project] = [] {
-        didSet { saveProjects() } // Auto-save projects on change
-    }
-    
-    @Published var favoriteLensesList: [Lens] = []
+    // Новое свойство для хранения ID избранных объективов
+    @Published var favoriteLenses = Set<String>()
     
     private var cancellables = Set<AnyCancellable>()
-    private let favoritesKey = "favoriteLenses"
-    private let projectsKey = "userProjects"
+    private let favoritesKey = "favoriteLenses" // Ключ для UserDefaults
 
+    // Инициализатор для загрузки избранного при старте
     init() {
-        // Load projects first
-        if let data = UserDefaults.standard.data(forKey: projectsKey) {
-            if let decodedProjects = try? JSONDecoder().decode([Project].self, from: data) {
-                self.projects = decodedProjects
-            } else {
-                self.projects = []
-            }
-        } else {
-            self.projects = []
-        }
-        
-        loadFavorites() // Load favorites after projects initialization
-    }
-    
-    // MARK: - Projects Logic
-    
-    func addProject() {
-        let newProject = Project.empty()
-        projects.append(newProject)
-        // saveProjects() будет вызван через didSet
-    }
-    
-    func deleteProject(at offsets: IndexSet) {
-        projects.remove(atOffsets: offsets)
-        // saveProjects() called through didSet
-    }
-    
-    func updateProject(_ project: Project) {
-        guard let index = projects.firstIndex(where: { $0.id == project.id }) else { return }
-        projects[index] = project
-        // saveProjects() called through didSet
-    }
-    
-    // Project persistence methods
-    internal func saveProjects() {
-        do {
-            let data = try JSONEncoder().encode(projects)
-            UserDefaults.standard.set(data, forKey: projectsKey)
-        } catch {
-            print("Error saving projects: \(error)")
-        }
-    }
-    
-    private func loadProjects() {
-        guard let data = UserDefaults.standard.data(forKey: projectsKey) else { return }
-        do {
-            projects = try JSONDecoder().decode([Project].self, from: data)
-        } catch {
-            print("Error loading projects: \(error)")
-        }
-    }
-    
-    // Add lens to project
-    func addLens(_ lensID: String, toProject project: Project) {
-        if let index = projects.firstIndex(where: { $0.id == project.id }) {
-            if !projects[index].lensIDs.contains(lensID) {
-                projects[index].lensIDs.append(lensID)
-                // saveProjects() called through didSet
-            }
-        }
+        loadFavorites()
     }
     
     // MARK: - Favorites Logic
     
-    private func updateFavoriteLensesList() {
-        favoriteLensesList = availableLenses
-            .filter { favoriteLenses.contains($0.id) }
-            .sorted { $0.display_name < $1.display_name }
-    }
-    
-    internal func saveFavorites() { // Сделал internal, на всякий случай
+    private func saveFavorites() {
+        // UserDefaults не умеет хранить Set напрямую, поэтому конвертируем в Array
         let favoritesArray = Array(favoriteLenses)
         UserDefaults.standard.set(favoritesArray, forKey: favoritesKey)
     }
 
     private func loadFavorites() {
-        guard let favoritesArray = UserDefaults.standard.array(forKey: favoritesKey) as? [String] else { return }
+        // Загружаем массив строк из UserDefaults
+        guard let favoritesArray = UserDefaults.standard.array(forKey: favoritesKey) as? [String] else {
+            return
+        }
+        // Конвертируем обратно в Set
         self.favoriteLenses = Set(favoritesArray)
     }
 
@@ -165,25 +95,7 @@ class DataManager: ObservableObject {
         } else {
             favoriteLenses.insert(lens.id)
         }
-        // saveFavorites() вызывается через didSet favoriteLenses
-        updateFavoriteLensesList()
-    }
-    
-    // MARK: - Comparison Logic
-    
-    func isInComparison(lens: Lens) -> Bool { return comparisonSet.contains(lens.id) }
-
-    func toggleComparison(lens: Lens) {
-        if !isInComparison(lens: lens) && comparisonSet.count >= 4 { return } // Ограничение на 4 объектива
-        if isInComparison(lens: lens) {
-            comparisonSet.remove(lens.id)
-        } else {
-            comparisonSet.insert(lens.id)
-        }
-    }
-
-    func clearComparison() {
-        comparisonSet.removeAll()
+        saveFavorites() // Сохраняем изменения каждый раз при переключении
     }
     
     // MARK: - Data Loading
@@ -192,7 +104,6 @@ class DataManager: ObservableObject {
         guard loadingState == .idle else { return }
         loadingState = .loading
         
-        // Убедитесь, что LENSDATA.json и CAMERADATA.json существуют в вашем проекте
         let lensPublisher = loadLocalJSON(from: "LENSDATA") as AnyPublisher<AppData, Error>
         let cameraPublisher = loadLocalJSON(from: "CAMERADATA") as AnyPublisher<CameraApiResponse, Error>
 
@@ -200,21 +111,22 @@ class DataManager: ObservableObject {
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?.loadingState = .error(error.localizedDescription)
+                    print("❌ Ошибка загрузки локальных данных: \(error)")
                 }
             }, receiveValue: { [weak self] (appData, cameraData) in
-                guard let self = self else { return }
-                self.appData = appData
-                self.collectAvailableLenses()
-                self.cameras = cameraData.camera.sorted { $0.manufacturer < $1.manufacturer }
-                self.formats = cameraData.formats
-                self.loadingState = .loaded
+                self?.appData = appData
+                self?.collectAvailableLenses()
+                self?.cameras = cameraData.camera.sorted { $0.manufacturer < $1.manufacturer }
+                self?.formats = cameraData.formats
                 
-                self.updateFavoriteLensesList()
+                self?.loadingState = .loaded
+                print("✅ Локальные данные успешно загружены!")
             })
             .store(in: &cancellables)
     }
 
     func refreshDataFromAPI() {
+        print("Начинаем обновление данных с сервера...")
         loadingState = .loading
         
         NetworkService.shared.fetchLensData()
@@ -226,11 +138,13 @@ class DataManager: ObservableObject {
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?.loadingState = .error(error.localizedDescription)
+                    print("❌ Ошибка при обновлении данных с сервера: \(error)")
                 }
             }, receiveValue: { [weak self] cameraResponse in
                 self?.cameras = cameraResponse.camera.sorted { $0.manufacturer < $1.manufacturer }
                 self?.formats = cameraResponse.formats
                 self?.loadingState = .loaded
+                print("✅ Данные с сервера успешно обновлены!")
             })
             .store(in: &cancellables)
     }

@@ -31,30 +31,44 @@ struct WeatherStyleLensListView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: DesignSystem.Spacing.sectionSpacing) {
+            VStack(spacing: 36) {
                 ForEach(filteredGroups) { group in
-                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.xl) {
+                    VStack(alignment: .leading, spacing: 20) {
                         HStack {
                             Text(group.manufacturer)
-                                .font(DesignSystem.Typography.title)
-                                .foregroundStyle(DesignSystem.Gradients.textPrimary)
-                                .designSystemShadow(DesignSystem.Shadows.md)
+                                .font(.system(size: 25, weight: .bold, design: .rounded))
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [.white, .blue.opacity(0.92)],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .shadow(color: .blue.opacity(0.16), radius: 4, x: 0, y: 2)
                             Spacer()
                         }
-                        .padding(.horizontal, DesignSystem.Spacing.headerSpacing)
+                        .padding(.horizontal, 28)
 
                         ForEach(group.series) { series in
                             WeatherStyleLensSeriesView(series: series, onSelect: onSelect)
                         }
                     }
+                    .padding(.bottom, 2)
                 }
             }
-            .padding(.top, DesignSystem.Spacing.lg)
-            .padding(.bottom, DesignSystem.Spacing.md)
+            .padding(.top, 16)
+            .padding(.bottom, 12)
         }
         .background(
-            DesignSystem.Gradients.secondaryBackground
-                .ignoresSafeArea()
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(.sRGB, red: 30/255, green: 32/255, blue: 54/255, opacity: 1),
+                    Color(.sRGB, red: 22/255, green: 22/255, blue: 32/255, opacity: 1)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
         )
     }
 }
@@ -73,7 +87,7 @@ struct WeatherStyleLensSeriesView: View {
             }) {
                 HStack {
                     Text(series.name)
-                        .font(DesignSystem.Typography.headline)
+                        .font(.headline.weight(.semibold))
                         .foregroundColor(.white)
                         .lineLimit(1)
                     Spacer()
@@ -81,22 +95,22 @@ struct WeatherStyleLensSeriesView: View {
                         .foregroundColor(.white.opacity(0.7))
                         .font(.system(size: 16, weight: .medium))
                 }
-                .padding(DesignSystem.Spacing.lg)
+                .padding(15)
                 .background(
                     ZStack {
-                        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.lg, style: .continuous)
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
                             .fill(.ultraThinMaterial)
-                        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.lg)
+                        RoundedRectangle(cornerRadius: 16)
                             .stroke(Color.indigo.opacity(isExpanded ? 0.32 : 0.18), lineWidth: isExpanded ? 2 : 1.2)
                     }
                 )
                 .shadow(color: .blue.opacity(isExpanded ? 0.10 : 0.04), radius: isExpanded ? 6 : 2, x: 0, y: 2)
-                .padding(.horizontal, DesignSystem.Spacing.contentInsets)
+                .padding(.horizontal, 22)
             }
             .buttonStyle(NoHighlightButtonStyle())
 
             if isExpanded {
-                VStack(spacing: DesignSystem.Spacing.md) {
+                VStack(spacing: 12) {
                     ForEach(series.lenses) { lens in
                         WeatherStyleLensRow(lens: lens)
                             .onTapGesture {
@@ -105,8 +119,8 @@ struct WeatherStyleLensSeriesView: View {
                             .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                 }
-                .padding(.horizontal, DesignSystem.Spacing.xxxl)
-                .padding(.vertical, DesignSystem.Spacing.sm)
+                .padding(.horizontal, 30)
+                .padding(.vertical, 7)
             }
         }
         .animation(.easeInOut(duration: 0.18), value: isExpanded)
@@ -117,17 +131,17 @@ struct WeatherStyleLensRow: View {
     let lens: Lens
 
     var body: some View {
-        HStack(alignment: .center, spacing: DesignSystem.Spacing.lg) {
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
+        HStack(alignment: .center, spacing: 18) {
+            VStack(alignment: .leading, spacing: 6) {
                 // Новый формат: lens_name + focal_length
                 Text("\(lens.lens_name) \(lens.focal_length)")
-                    .font(DesignSystem.Typography.headline)
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)
                     .lineLimit(1)
 
                 // Оставляем только бейдж формата (если Full Frame)
                 if lens.format.contains("FF") {
-                    HStack(spacing: DesignSystem.Spacing.sm) {
+                    HStack(spacing: 11) {
                         WeatherStyleLensBadge(
                             icon: "crop",
                             value: lens.format,
@@ -143,17 +157,17 @@ struct WeatherStyleLensRow: View {
                 .foregroundColor(.white.opacity(0.5))
                 .font(.system(size: 18, weight: .medium))
         }
-        .padding(.vertical, DesignSystem.Spacing.md)
-        .padding(.horizontal, DesignSystem.Spacing.lg)
+        .padding(.vertical, 14)
+        .padding(.horizontal, 18)
         .background(
             ZStack {
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.md, style: .continuous)
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
                     .fill(.ultraThinMaterial)
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.md)
+                RoundedRectangle(cornerRadius: 18)
                     .stroke(Color.blue.opacity(0.15), lineWidth: 1)
             }
         )
-        .designSystemShadow(DesignSystem.Shadows.sm)
+        .shadow(color: Color.blue.opacity(0.06), radius: 2, x: 0, y: 2)
         .transition(.opacity.combined(with: .scale(scale: 0.98)))
     }
 }
@@ -164,16 +178,16 @@ struct WeatherStyleLensBadge: View {
     let color: Color
 
     var body: some View {
-        HStack(spacing: DesignSystem.Spacing.xs) {
+        HStack(spacing: 6) {
             Image(systemName: icon)
                 .imageScale(.small)
                 .foregroundColor(color)
             Text(value)
-                .font(DesignSystem.Typography.caption2)
+                .font(.system(size: 14, weight: .medium, design: .rounded))
                 .foregroundColor(.white)
         }
-        .padding(.horizontal, DesignSystem.Spacing.sm)
-        .padding(.vertical, DesignSystem.Spacing.xs)
+        .padding(.horizontal, 11)
+        .padding(.vertical, 5)
         .background(
             Capsule()
                 .fill(color.opacity(0.19))

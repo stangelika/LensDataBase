@@ -8,24 +8,37 @@ struct AllLensesView: View {
 
     var body: some View {
         ZStack {
-            // Background using design system
-            DesignSystem.Gradients.primaryBackground
-                .ignoresSafeArea()
+            // Глубокий градиентный фон
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(.sRGB, red: 24/255, green: 27/255, blue: 37/255, opacity: 1),
+                    Color(.sRGB, red: 34/255, green: 37/255, blue: 57/255, opacity: 1)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
 
-            VStack(spacing: DesignSystem.Spacing.xl) {
-                // Header with consistent spacing
+            VStack(spacing: 20) {
+                // Заголовок с эффектом света и отражения
                 HStack {
                     Text("Lenses")
-                        .font(DesignSystem.Typography.largeTitle)
-                        .foregroundStyle(DesignSystem.Gradients.textSecondary)
+                        .font(.system(size: 36, weight: .heavy, design: .rounded))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.white, .purple.opacity(0.85), .blue],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
                         .shadow(color: .purple.opacity(0.18), radius: 12, x: 0, y: 6)
                     Spacer()
                 }
-                .padding(.horizontal, DesignSystem.Spacing.headerSpacing)
-                .padding(.top, DesignSystem.Spacing.xxl)
+                .padding(.horizontal, 28)
+                .padding(.top, 22)
 
-                // Filter chips with consistent spacing
-                HStack(spacing: DesignSystem.Spacing.lg) {
+                // Фильтры с подсветкой активных
+                HStack(spacing: 16) {
                     Menu {
                         Picker("Format", selection: $selectedFormat) {
                             Text("All Formats").tag("")
@@ -57,26 +70,28 @@ struct AllLensesView: View {
                         )
                     }
                 }
-                .padding(.horizontal, DesignSystem.Spacing.contentInsets)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 2)
 
-                // Content with consistent spacing
+                // Контент
                 if dataManager.loadingState == .loading {
-                    VStack(spacing: DesignSystem.Spacing.md) {
+                    VStack {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .purple))
                             .scaleEffect(1.5)
                         Text("Loading...")
-                            .font(DesignSystem.Typography.body)
                             .foregroundColor(.white.opacity(0.6))
+                            .font(.subheadline)
+                            .padding(.top, 4)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if dataManager.availableLenses.isEmpty {
-                    VStack(spacing: DesignSystem.Spacing.md) {
+                    VStack(spacing: 8) {
                         Image(systemName: "camera.metering.unknown")
                             .font(.system(size: 54))
                             .foregroundColor(.purple.opacity(0.4))
                         Text("No lenses available")
-                            .font(DesignSystem.Typography.headline)
+                            .font(.headline)
                             .foregroundColor(.white.opacity(0.7))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -141,7 +156,7 @@ extension Lens {
     }
 }
 
-// Updated filter chip with design system spacing
+// Новый стиль фильтр-чипа
 struct GlassFilterChip: View {
     let icon: String
     let title: String
@@ -149,12 +164,12 @@ struct GlassFilterChip: View {
     var isActive: Bool = false
 
     var body: some View {
-        HStack(spacing: DesignSystem.Spacing.sm) {
+        HStack(spacing: 8) {
             Image(systemName: icon)
                 .foregroundColor(accentColor)
                 .font(.system(size: 17, weight: .semibold))
             Text(title)
-                .font(DesignSystem.Typography.caption)
+                .font(.subheadline.weight(.medium))
                 .foregroundColor(.white)
                 .lineLimit(1)
             Spacer(minLength: 2)
@@ -162,19 +177,19 @@ struct GlassFilterChip: View {
                 .font(.system(size: 13, weight: .bold))
                 .foregroundColor(.white.opacity(0.7))
         }
-        .padding(.vertical, DesignSystem.Spacing.md)
-        .padding(.horizontal, DesignSystem.Spacing.lg)
+        .padding(.vertical, 11)
+        .padding(.horizontal, 18)
         .background(
             ZStack {
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.md, style: .continuous)
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
                     .fill(.ultraThinMaterial)
                     .blur(radius: 0.6)
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.md)
+                RoundedRectangle(cornerRadius: 18)
                     .stroke(isActive ? accentColor.opacity(0.7) : accentColor.opacity(0.28), lineWidth: isActive ? 2.3 : 1.3)
             }
         )
         .shadow(color: accentColor.opacity(isActive ? 0.20 : 0.07), radius: isActive ? 9 : 3, x: 0, y: 3)
-        .contentShape(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.md))
+        .contentShape(RoundedRectangle(cornerRadius: 18))
         .animation(.easeInOut(duration: 0.19), value: isActive)
     }
 }

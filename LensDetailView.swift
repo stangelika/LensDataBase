@@ -1,222 +1,199 @@
 import SwiftUI
 
 struct LensDetailView: View, Identifiable {
-    let id = UUID() // Note: for stable IDs in ForEach or NavigationLink, consider using lens.id
+    let id = UUID()
     let lens: Lens
     @EnvironmentObject var dataManager: DataManager
-    @Environment(\.dismiss) var dismiss // Using @Environment(\.dismiss) for iOS 15+
+    @Environment(\.presentationMode) var presentationMode
     @State private var showCompatibilityCheck = false
-    @State private var showingProjectSelection = false // State for showing project selection sheet
     
     var body: some View {
-        // Wrap everything in VStack to place button below ScrollView
-        VStack(spacing: 0) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xl) {
-                    // Header with back button
-                    HStack {
-                        Button(action: {
-                            dismiss() // Using dismiss()
-                        }) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding(DesignSystem.Spacing.sm)
-                                .background(Color.white.opacity(0.2))
-                                .clipShape(Circle())
-                        }
-                        
-                        Spacer()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 28) {
+                // Header with back button
+                HStack {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(10)
+                            .background(Color.white.opacity(0.2))
+                            .clipShape(Circle())
                     }
-                    .padding(.horizontal, DesignSystem.Spacing.contentInsets)
-                    .padding(.top, DesignSystem.Spacing.sm)
                     
-                    // Lens title
-                    StickyHeader(title: lens.display_name)
-                    
-                    // Header block with title and buttons
-                    HStack(alignment: .top) {
-                        // Lens name
-                        VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
-                            Text("\(lens.manufacturer) · \(lens.lens_name)")
-                                .font(DesignSystem.Typography.title3)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Spacer() // Takes all available space
-                        
-                        // Favorite button
-                        Button(action: {
-                            dataManager.toggleFavorite(lens: lens)
-                        }) {
-                            Image(systemName: dataManager.isFavorite(lens: lens) ? "star.fill" : "star")
-                                .font(.title2.weight(.bold))
-                                .foregroundColor(dataManager.isFavorite(lens: lens) ? .yellow : .gray)
-                                .padding(DesignSystem.Spacing.sm)
-                                .background(.ultraThinMaterial)
-                                .clipShape(Circle())
-                                .shadow(color: .yellow.opacity(dataManager.isFavorite(lens: lens) ? 0.3 : 0), radius: 8)
-                                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: dataManager.isFavorite(lens: lens))
-                        }
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.top, 10)
+                
+                // Lens title
+                StickyHeader(title: lens.display_name)
+                
+                // НОВЫЙ БЛОК ДЛЯ ЗАГОЛОВКА И КНОПКИ
+                HStack(alignment: .top) {
+                    // Название объектива
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("\(lens.manufacturer) · \(lens.lens_name)")
+                            .font(.title3)
+                            .foregroundColor(.secondary)
                     }
-                    .padding(.horizontal, DesignSystem.Spacing.contentInsets)
                     
-                    // Specifications grid
-                    LazyVGrid(columns: [GridItem(.flexible(), spacing: DesignSystem.Spacing.lg), GridItem(.flexible())], spacing: DesignSystem.Spacing.lg) {
-                        
-                        // Specification cards
-                        
+                    Spacer() // Занимает все свободное место
+                    
+                    // Кнопка "Избранное"
+                    Button(action: {
+                        // Вызываем нашу функцию из DataManager
+                        dataManager.toggleFavorite(lens: lens)
+                    }) {
+                        Image(systemName: dataManager.isFavorite(lens: lens) ? "star.fill" : "star")
+                            .font(.title2.weight(.bold))
+                            .foregroundColor(dataManager.isFavorite(lens: lens) ? .yellow : .gray)
+                            .padding(8)
+                            .background(.ultraThinMaterial)
+                            .clipShape(Circle())
+                            .shadow(color: .yellow.opacity(dataManager.isFavorite(lens: lens) ? 0.3 : 0), radius: 8)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: dataManager.isFavorite(lens: lens))
+                    }
+                }
+                .padding(.bottom, 8)
+                .padding(.horizontal)
+                
+                
+                // Specifications grid
+                LazyVGrid(columns: [GridItem(.flexible(), spacing: 18), GridItem(.flexible())], spacing: 18) {
+                    
+                    // --- КАРТОЧКИ С ХАРАКТЕРИСТИКАМИ ---
+                    
+                    SpecCard(
+                        title: "Фокусное расстояние",
+                        value: lens.focal_length,
+                        icon: "arrow.left.and.right",
+                        color: .blue
+                    )
+                    SpecCard(
+                        title: "Диафрагма",
+                        value: lens.aperture,
+                        icon: "camera.aperture",
+                        color: .purple
+                    )
+                    SpecCard(
+                        title: "Формат",
+                        value: lens.format,
+                        icon: "crop",
+                        color: .green
+                    )
+                    SpecCard(
+                        title: "Мин. дистанция",
+                        value: lens.close_focus_cm.isEmpty ? lens.close_focus_in : lens.close_focus_cm,
+                        icon: "ruler",
+                        color: .orange
+                    )
+                    SpecCard(
+                        title: "Круг изображения",
+                        value: lens.image_circle,
+                        icon: "circle.dashed",
+                        color: .teal
+                    )
+                    if let squeeze = lens.squeeze_factor, squeeze != "N/A" {
                         SpecCard(
-                            title: "Фокусное расстояние",
-                            value: lens.focal_length,
-                            icon: "arrow.left.and.right",
+                            title: "Коэф. сжатия",
+                            value: squeeze,
+                            icon: "aspectratio",
+                            color: .pink
+                        )
+                    }
+                    SpecCard(
+                        title: "Длина",
+                        value: lens.length,
+                        icon: "arrow.up.and.down",
+                        color: .indigo
+                    )
+                    SpecCard(
+                        title: "Передний диаметр",
+                        value: lens.front_diameter,
+                        icon: "circle",
+                        color: .brown
+                    )
+
+                    // --- КАРТОЧКИ-КНОПКИ ---
+                    
+                    Button(action: {
+                        let query = lens.display_name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? lens.display_name
+                        if let url = URL(string: "https://www.google.com/search?tbm=isch&q=\(query)") {
+                            UIApplication.shared.open(url)
+                        }
+                    }) {
+                        SpecCard(
+                            title: "Действие",
+                            value: "Поиск Google",
+                            icon: "photo.on.rectangle.angled",
                             color: .blue
                         )
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    Button(action: {
+                        showCompatibilityCheck = true
+                    }) {
                         SpecCard(
-                            title: "Диафрагма",
-                            value: lens.aperture,
-                            icon: "camera.aperture",
-                            color: .purple
-                        )
-                        SpecCard(
-                            title: "Формат",
-                            value: lens.format,
-                            icon: "crop",
+                            title: "Действие",
+                            value: "Проверить совм.",
+                            icon: "camera.metering.center.weighted",
                             color: .green
                         )
-                        SpecCard(
-                            title: "Мин. дистанция",
-                            value: lens.close_focus_cm.isEmpty ? lens.close_focus_in : lens.close_focus_cm,
-                            icon: "ruler",
-                            color: .orange
-                        )
-                        SpecCard(
-                            title: "Круг изображения",
-                            value: lens.image_circle,
-                            icon: "circle.dashed",
-                            color: .teal
-                        )
-                        if let squeeze = lens.squeeze_factor, squeeze != "N/A" {
-                            SpecCard(
-                                title: "Коэф. сжатия",
-                                value: squeeze,
-                                icon: "aspectratio",
-                                color: .pink
-                            )
-                        }
-                        SpecCard(
-                            title: "Длина",
-                            value: lens.length,
-                            icon: "arrow.up.and.down",
-                            color: .indigo
-                        )
-                        SpecCard(
-                            title: "Передний диаметр",
-                            value: lens.front_diameter,
-                            icon: "circle",
-                            color: .brown
-                        )
-
-                        // --- КАРТОЧКИ-КНОПКИ ---
-                        
-                        Button(action: {
-                            let query = lens.display_name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? lens.display_name
-                            if let url = URL(string: "https://www.google.com/search?tbm=isch&q=\(query)") {
-                                UIApplication.shared.open(url)
-                            }
-                        }) {
-                            SpecCard(
-                                title: "Действие",
-                                value: "Поиск Google",
-                                icon: "photo.on.rectangle.angled",
-                                color: .blue
-                            )
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        
-                        Button(action: {
-                            showCompatibilityCheck = true
-                        }) {
-                            SpecCard(
-                                title: "Действие",
-                                value: "Проверить совм.",
-                                icon: "camera.metering.center.weighted",
-                                color: .green
-                            )
-                        }
-                        .buttonStyle(PlainButtonStyle())
                     }
-                    .padding(.horizontal, DesignSystem.Spacing.contentInsets)
-
-                    // Rentals section
-                    let rentals = dataManager.rentalsForLens(lens.id)
-                    if !rentals.isEmpty {
-                        VStack(alignment: .leading, spacing: DesignSystem.Spacing.lg) {
-                            Text("Доступно в аренду")
-                                .font(DesignSystem.Typography.title2)
-                                .foregroundColor(.white)
-                                .padding(.leading, DesignSystem.Spacing.xs)
-                            
-                            ForEach(rentals) { rental in
-                                Button(action: {
-                                    dataManager.selectedRentalId = rental.id
-                                    dataManager.activeTab = .rentalView
-                                    dismiss() // Используем dismiss()
-                                }) {
-                                    RentalCard(rental: rental)
-                                }
-                                .buttonStyle(PlainButtonStyle())
+                    .buttonStyle(PlainButtonStyle())
+                }
+                .padding(.horizontal)
+                
+                // Rentals section
+                let rentals = dataManager.rentalsForLens(lens.id)
+                if !rentals.isEmpty {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Доступно в аренду")
+                            .font(.title2.weight(.semibold))
+                            .foregroundColor(.white)
+                            .padding(.leading, 4)
+                        
+                        ForEach(rentals) { rental in
+                            Button(action: {
+                                dataManager.selectedRentalId = rental.id
+                                dataManager.activeTab = .rentalView
+                                presentationMode.wrappedValue.dismiss()
+                            }) {
+                                RentalCard(rental: rental)
                             }
+                            .buttonStyle(PlainButtonStyle())
                         }
-                        .padding(.top, DesignSystem.Spacing.xl)
-                        .padding(.horizontal, DesignSystem.Spacing.contentInsets)
                     }
+                    .padding(.top, 20)
+                    .padding(.horizontal)
                 }
-                .padding(.bottom, DesignSystem.Spacing.xxxl)
             }
-            
-            // --- ОБНОВЛЕННАЯ И ЗАКРЕПЛЕННАЯ КНОПКА ---
-            Button(action: {
-                showingProjectSelection = true
-            }) {
-                HStack(spacing: DesignSystem.Spacing.sm) {
-                    Image(systemName: "folder.fill.badge.plus")
-                        .font(.title3.weight(.semibold))
-                    Text("Add to Project")
-                        .font(.headline.weight(.bold))
-                }
-                .foregroundColor(.white)
-                .padding(DesignSystem.Spacing.lg)
-                .frame(maxWidth: .infinity)
-                .background(DesignSystem.Gradients.buttonPrimary)
-                .cornerRadius(DesignSystem.CornerRadius.lg)
-                .designSystemShadow(DesignSystem.Shadows.primaryGlow)
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.lg)
-                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                )
-            }
-            .padding(.horizontal, DesignSystem.Spacing.contentInsets)
-            .padding(.bottom, DesignSystem.Spacing.xl)
-            .padding(.top, DesignSystem.Spacing.xs)
+            .padding(.bottom, 30)
         }
         .background(
-            DesignSystem.Gradients.detailBackground
-                .ignoresSafeArea()
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(.sRGB, red: 27/255, green: 29/255, blue: 48/255, opacity: 1),
+                    Color(.sRGB, red: 38/255, green: 36/255, blue: 97/255, opacity: 1)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
         )
         .navigationBarHidden(true)
         .fullScreenCover(isPresented: $showCompatibilityCheck) {
             CameraLensVisualizerRoot(lens: lens)
         }
-        .sheet(isPresented: $showingProjectSelection) {
-            // ВАШ КОД ДЛЯ ProjectSelectionView. Замените lensIDToAdd на lens, если нужно передать весь объект
-            ProjectSelectionView(lensIDToAdd: lens.id)
-                .environmentObject(dataManager)
-        }
     }
 }
 
-// --- ОСТАЛЬНЫЕ КОМПОНЕНТЫ (без изменений) ---
+// ... остальной код файла (SpecCard, RentalCard и т.д.) без изменений ...
+// --- ОСТАЛЬНЫЕ КОМПОНЕНТЫ ---
 
 // Закрепленный заголовок
 struct StickyHeader: View {
@@ -224,13 +201,19 @@ struct StickyHeader: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(DesignSystem.Typography.largeTitle)
-                .foregroundStyle(DesignSystem.Gradients.textPrimary)
-                .designSystemShadow(DesignSystem.Shadows.sm)
+                .font(.system(size: 33, weight: .heavy, design: .rounded))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.white, .blue],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .shadow(color: .blue.opacity(0.10), radius: 6, x: 0, y: 2)
             Spacer()
         }
-        .padding(.vertical, DesignSystem.Spacing.xs)
-        .padding(.horizontal, DesignSystem.Spacing.contentInsets)
+        .padding(.vertical, 2)
+        .padding(.horizontal)
     }
 }
 
@@ -242,7 +225,7 @@ struct SpecCard: View {
     let color: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
+        VStack(alignment: .leading, spacing: 11) {
             HStack(alignment: .center) {
                 Image(systemName: icon)
                     .font(.system(size: 15))
@@ -253,19 +236,26 @@ struct SpecCard: View {
                     )
                 
                 Text(title)
-                    .font(DesignSystem.Typography.caption)
+                    .font(.caption.weight(.medium))
                     .foregroundColor(.secondary)
             }
             Text(value)
-                .font(DesignSystem.Typography.headline)
+                .font(.system(.title3, design: .rounded).weight(.semibold))
                 .foregroundColor(.white)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
-                .padding(.leading, DesignSystem.Spacing.xs)
+                .padding(.leading, 4)
         }
-        .padding(DesignSystem.Spacing.lg)
+        .padding(16)
         .frame(maxWidth: .infinity, minHeight: 100, alignment: .leading)
-        .cardStyle()
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color.white.opacity(0.07))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+        )
     }
 }
 
@@ -274,20 +264,20 @@ struct RentalCard: View {
     let rental: Rental
     
     var body: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
+        VStack(alignment: .leading, spacing: 13) {
             HStack {
                 Text(rental.name)
-                    .font(DesignSystem.Typography.headline)
+                    .font(.headline.weight(.semibold))
                 Spacer()
                 Image(systemName: "building.2")
                     .foregroundColor(.secondary)
             }
             Text(rental.address)
-                .font(DesignSystem.Typography.body)
+                .font(.subheadline)
                 .foregroundColor(.secondary)
             Divider()
-                .padding(.vertical, DesignSystem.Spacing.xs)
-            HStack(spacing: DesignSystem.Spacing.lg) {
+                .padding(.vertical, 4)
+            HStack(spacing: 16) {
                 ContactButton(
                     label: rental.phone,
                     icon: "phone",
@@ -311,8 +301,15 @@ struct RentalCard: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .padding(DesignSystem.Spacing.lg)
-        .cardStyle()
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color.white.opacity(0.07))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+        )
     }
 }
 
@@ -325,16 +322,16 @@ struct ContactButton: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: DesignSystem.Spacing.xs) {
+            HStack(spacing: 6) {
                 Image(systemName: icon)
                     .imageScale(.small)
                 Text(label)
-                    .font(DesignSystem.Typography.caption)
+                    .font(.subheadline)
                     .lineLimit(1)
             }
             .foregroundColor(color)
-            .padding(.vertical, DesignSystem.Spacing.sm)
-            .padding(.horizontal, DesignSystem.Spacing.md)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
             .background(
                 Capsule(style: .continuous)
                     .fill(color.opacity(0.16))
