@@ -28,7 +28,7 @@ struct FavoritesView: View {
             .ignoresSafeArea()
 
             VStack(spacing: 20) {
-                // Заголовок
+                // Header
                 HStack {
                     Text("Favorites")
                         .font(.system(size: 36, weight: .heavy, design: .rounded))
@@ -65,14 +65,14 @@ struct FavoritesView: View {
                     Spacer()
                     Spacer()
                 } else {
-                    // Список избранных объективов
+                    // List of favorite lenses
                     ScrollView {
                         LazyVStack(spacing: 16) {
                             ForEach(favoriteLenses) { lens in
                                 Button(action: {
                                     self.selectedLens = lens
                                 }) {
-                                    LensRow(lens: lens) // Используем простой вид для строки
+                                    LensRow(lens: lens) // Use simple view for row
                                 }
                                 .buttonStyle(PlainButtonStyle())
                             }

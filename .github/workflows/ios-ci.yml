@@ -19,11 +19,27 @@ jobs:
       with:
         xcode-version: '15.0'
     
+    - name: Cache Swift Package Manager
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/Library/Developer/Xcode/DerivedData
+          ~/.swiftpm
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.swift') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+    
     - name: Install Dependencies
       run: |
-        # Install any dependencies if needed
-        # Currently using only system frameworks
-        echo "No additional dependencies to install"
+        # Install SwiftLint if not cached
+        if ! which swiftlint > /dev/null; then
+          brew install swiftlint
+        fi
+        echo "SwiftLint version: $(swiftlint version)"
+    
+    - name: Run SwiftLint
+      run: |
+        swiftlint --config .swiftlint.yml --reporter github-actions-logging
     
     - name: Build for iOS Simulator
       run: |
@@ -45,15 +61,23 @@ jobs:
           test \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO \
+          -enableCodeCoverage YES \
           | xcpretty
     
-    - name: Run SwiftLint
+    - name: Generate Code Coverage Report
       run: |
-        if which swiftlint > /dev/null; then
-          swiftlint --config .swiftlint.yml
-        else
-          echo "SwiftLint not installed, skipping..."
-        fi
+        xcrun xccov view --report \
+          ~/Library/Developer/Xcode/DerivedData/*/Build/ProfileData/*/Coverage.profdata \
+          --json > coverage.json
+        echo "Code coverage report generated"
+    
+    - name: Upload Coverage Reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: coverage.json
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
     
     - name: Archive build artifacts
       if: success()
@@ -63,10 +87,13 @@ jobs:
         path: |
           build/
           *.ipa
+          coverage.json
         retention-days: 30
     
     - name: Generate test report
       if: always()
       run: |
-        # Generate test coverage report if tests were run
         echo "Test execution completed"
+        if [ -f "coverage.json" ]; then
+          echo "Coverage report available"
+        fi
