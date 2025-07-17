@@ -5,6 +5,7 @@ struct AllLensesView: View {
     @State private var selectedFormat: String = ""
     @State private var selectedFocalCategory: FocalCategory = .all
     @State private var selectedLens: Lens? = nil
+    @State private var searchText: String = ""
 
     var body: some View {
         ZStack {
@@ -12,6 +13,7 @@ struct AllLensesView: View {
             
             VStack(spacing: 20) {
                 createHeaderSection()
+                createSearchSection()
                 createFilterSection()
                 createContentSection()
             }
@@ -53,6 +55,45 @@ struct AllLensesView: View {
         }
         .padding(.horizontal, 28)
         .padding(.top, 22)
+    }
+    
+    private func createSearchSection() -> some View {
+        HStack {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .foregroundColor(.white.opacity(0.6))
+                    .font(.system(size: 16, weight: .medium))
+                
+                TextField("Search lenses by name...", text: $searchText)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .foregroundColor(.white)
+                    .font(.system(size: 16, weight: .medium))
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+                
+                if !searchText.isEmpty {
+                    Button(action: {
+                        searchText = ""
+                    }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.white.opacity(0.6))
+                            .font(.system(size: 16, weight: .medium))
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                    )
+            )
+            .shadow(color: .blue.opacity(0.1), radius: 4, x: 0, y: 2)
+        }
+        .padding(.horizontal, 24)
     }
     
     private func createFilterSection() -> some View {
@@ -139,7 +180,8 @@ struct AllLensesView: View {
     private func createLensListView() -> some View {
         WeatherStyleLensListView(
             format: selectedFormat,
-            focalCategory: selectedFocalCategory
+            focalCategory: selectedFocalCategory,
+            searchText: searchText
         ) { lens in
             selectedLens = lens
         }

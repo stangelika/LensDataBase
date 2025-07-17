@@ -1,0 +1,55 @@
+name: Code Quality Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  code-quality:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.0'
+    
+    - name: Install SwiftLint
+      run: |
+        brew install swiftlint
+    
+    - name: Run SwiftLint
+      run: |
+        swiftlint --config .swiftlint.yml --reporter github-actions-logging
+    
+    - name: Run SwiftFormat (if available)
+      run: |
+        if which swiftformat > /dev/null; then
+          swiftformat --config .swiftformat --lint .
+        else
+          echo "SwiftFormat not installed, skipping..."
+        fi
+    
+    - name: Check for TODO/FIXME comments
+      run: |
+        echo "Checking for TODO/FIXME comments..."
+        find . -name "*.swift" -exec grep -H "TODO\|FIXME" {} \; || echo "No TODO/FIXME comments found"
+    
+    - name: Generate documentation
+      run: |
+        # Generate documentation if needed
+        echo "Documentation generation would go here"
+    
+    - name: Security scan
+      run: |
+        # Run security scans
+        echo "Security scan would go here"
+        # Could add tools like:
+        # - SwiftLint security rules
+        # - Dependency vulnerability scanning
+        # - Code analysis tools

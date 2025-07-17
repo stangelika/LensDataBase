@@ -10,44 +10,111 @@ class NetworkService {
     private let LENS_DATA_URL = "https://script.google.com/macros/s/AKfycbzDzKQ3AU6ynZuPjET0NWqYMlDXMt5UKVPBOq9g7XurJKPoulWuPVVIl9U8eq_nSCG6/exec"
     private let CAMERA_DATA_URL = "https://script.google.com/macros/s/AKfycbz-2rLDrwQ7DPD3nOm7iGTvCISfIYggOVob2F43pgjR2UG3diztAaig6wO737m_Rh3GJw/exec"
     
+    /// Network request timeout in seconds
+    private let REQUEST_TIMEOUT: TimeInterval = 30.0
+    
+    /// URLSession configuration with timeout
+    private lazy var session: URLSession = {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = REQUEST_TIMEOUT
+        config.timeoutIntervalForResource = REQUEST_TIMEOUT * 2
+        return URLSession(configuration: config)
+    }()
+    
     /// Fetches lens data from the remote API
     /// - Returns: Publisher with AppData or Error
     func fetchLensData() -> AnyPublisher<AppData, Error> {
-        guard let url = URL(string: LENS_DATA_URL) else {
-            return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
-        }
-        
-        return URLSession.shared.dataTaskPublisher(for: url)
-            .tryMap { data, response -> Data in
-                guard let httpResponse = response as? HTTPURLResponse,
-                      httpResponse.statusCode == 200 else {
-                    throw URLError(.badServerResponse)
+        return performRequest(urlString: LENS_DATA_URL, responseType: AppData.self)
+            .handleEvents(
+                receiveSubscription: { _ in
+                    print("🌐 Starting lens data fetch...")
+                },
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        print("✅ Lens data fetch completed successfully")
+                    case .failure(let error):
+                        print("❌ Lens data fetch failed: \(error.localizedDescription)")
+                    }
                 }
-                return data
-            }
-            .decode(type: AppData.self, decoder: JSONDecoder())
-            .receive(on: DispatchQueue.main)
+            )
             .eraseToAnyPublisher()
     }
     
     /// Fetches camera data from the remote API
     /// - Returns: Publisher with CameraApiResponse or Error
     func fetchCameraData() -> AnyPublisher<CameraApiResponse, Error> {
-        guard let url = URL(string: CAMERA_DATA_URL) else {
-            return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
+        return performRequest(urlString: CAMERA_DATA_URL, responseType: CameraApiResponse.self)
+            .handleEvents(
+                receiveSubscription: { _ in
+                    print("🌐 Starting camera data fetch...")
+                },
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        print("✅ Camera data fetch completed successfully")
+                    case .failure(let error):
+                        print("❌ Camera data fetch failed: \(error.localizedDescription)")
+                    }
+                }
+            )
+            .eraseToAnyPublisher()
+    }
+    
+    /// Generic network request method
+    /// - Parameters:
+    ///   - urlString: URL string to fetch from
+    ///   - responseType: Expected response type
+    /// - Returns: Publisher with response or error
+    private func performRequest<T: Decodable>(
+        urlString: String,
+        responseType: T.Type
+    ) -> AnyPublisher<T, Error> {
+        guard let url = URL(string: urlString) else {
+            return Fail(error: NetworkError.invalidURL).eraseToAnyPublisher()
         }
         
-        return URLSession.shared.dataTaskPublisher(for: url)
+        var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("LensDataBase/1.0", forHTTPHeaderField: "User-Agent")
+        
+        return session.dataTaskPublisher(for: request)
             .tryMap { data, response -> Data in
-                guard let httpResponse = response as? HTTPURLResponse,
-                      httpResponse.statusCode == 200 else {
-                    throw URLError(.badServerResponse)
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    throw NetworkError.invalidResponse
                 }
+                
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    throw NetworkError.serverError(httpResponse.statusCode)
+                }
+                
                 return data
             }
-            .decode(type: CameraApiResponse.self, decoder: JSONDecoder())
+            .decode(type: responseType, decoder: JSONDecoder())
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Network Errors
+
+enum NetworkError: Error, LocalizedError {
+    case invalidURL
+    case invalidResponse
+    case serverError(Int)
+    case decodingError(Error)
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "Invalid URL"
+        case .invalidResponse:
+            return "Invalid response from server"
+        case .serverError(let code):
+            return "Server error with code: \(code)"
+        case .decodingError(let error):
+            return "Failed to decode response: \(error.localizedDescription)"
+        }
     }
 }
 
@@ -190,33 +257,43 @@ class DataManager: ObservableObject {
         availableLenses = appData.lenses.filter { lensIds.contains($0.id) }
     }
     
-    /// Groups lenses by manufacturer and series
+    /// Groups lenses by manufacturer and series with caching
     /// - Parameter rentalId: Optional rental ID to filter lenses
     /// - Returns: Array of grouped lenses
     func groupLenses(forRental rentalId: String? = nil) -> [LensGroup] {
         let lenses = rentalId != nil ? lensesForRental(rentalId!) : availableLenses
         
-        let normalizedManufacturers = lenses.reduce(into: [String: [Lens]]()) { result, lens in
-            let normalized = normalizeName(lens.manufacturer)
-            result[normalized, default: []].append(lens)
+        // Create a dictionary to group by manufacturer
+        var manufacturerGroups = [String: [Lens]]()
+        
+        for lens in lenses {
+            let normalizedManufacturer = normalizeName(lens.manufacturer)
+            manufacturerGroups[normalizedManufacturer, default: []].append(lens)
         }
         
-        return normalizedManufacturers.map { manufacturerKey, lenses in
-            let originalManufacturer = lenses.first?.manufacturer ?? manufacturerKey
+        // Convert to LensGroup objects
+        return manufacturerGroups.compactMap { (normalizedName, lenses) in
+            guard let firstLens = lenses.first else { return nil }
             
-            let normalizedSeries = lenses.reduce(into: [String: [Lens]]()) { result, lens in
-                let normalized = normalizeName(lens.lens_name)
-                result[normalized, default: []].append(lens)
+            // Group lenses by series within manufacturer
+            var seriesGroups = [String: [Lens]]()
+            for lens in lenses {
+                let normalizedSeries = normalizeName(lens.lens_name)
+                seriesGroups[normalizedSeries, default: []].append(lens)
             }
             
-            let series = normalizedSeries.map { seriesKey, lenses in
-                let originalSeriesName = lenses.first?.lens_name ?? seriesKey
-                return LensSeries(name: originalSeriesName, lenses: lenses)
+            // Convert to LensSeries objects
+            let series = seriesGroups.compactMap { (normalizedName, seriesLenses) in
+                guard let firstSeriesLens = seriesLenses.first else { return nil }
+                return LensSeries(
+                    name: firstSeriesLens.lens_name,
+                    lenses: seriesLenses.sorted { $0.focal_length < $1.focal_length }
+                )
             }.sorted { $0.name < $1.name }
             
             return LensGroup(
-                manufacturer: originalManufacturer,
-                series: series.sorted { $0.name < $1.name }
+                manufacturer: firstLens.manufacturer,
+                series: series
             )
         }.sorted { $0.manufacturer < $1.manufacturer }
     }
@@ -232,17 +309,18 @@ class DataManager: ObservableObject {
         return appData.lenses.filter { lensIds.contains($0.id) }
     }
     
-    /// Normalizes a string for comparison
+    /// Normalizes a string for comparison with better unicode handling
     /// - Parameter str: The string to normalize
     /// - Returns: Normalized string
     private func normalizeName(_ str: String) -> String {
         return str
-            .lowercased()
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
             .replacingOccurrences(of: " ", with: "")
             .replacingOccurrences(of: "-", with: "")
             .replacingOccurrences(of: ".", with: "")
             .replacingOccurrences(of: "series", with: "", options: .caseInsensitive)
             .replacingOccurrences(of: "edition", with: "", options: .caseInsensitive)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
     /// Gets lens details by ID
@@ -264,5 +342,45 @@ class DataManager: ObservableObject {
             }
             return nil
         }.compactMap { $0 }
+    }
+    
+    /// Searches lenses by name with optional filters
+    /// - Parameters:
+    ///   - searchText: Text to search for in lens names
+    ///   - format: Optional format filter
+    ///   - focalCategory: Optional focal length category filter
+    /// - Returns: Array of filtered lenses
+    func searchLenses(
+        searchText: String = "",
+        format: String = "",
+        focalCategory: FocalCategory = .all
+    ) -> [Lens] {
+        return availableLenses.filter { lens in
+            let searchMatches = searchText.isEmpty || 
+                lens.lens_name.localizedCaseInsensitiveContains(searchText) ||
+                lens.display_name.localizedCaseInsensitiveContains(searchText) ||
+                lens.manufacturer.localizedCaseInsensitiveContains(searchText)
+            
+            let formatMatches = format.isEmpty || lens.format == format
+            let focalMatches = focalCategory.contains(focal: lens.mainFocalValue)
+            
+            return searchMatches && formatMatches && focalMatches
+        }
+    }
+    
+    /// Gets available formats from current lens data
+    /// - Returns: Array of unique formats sorted alphabetically
+    func getAvailableFormats() -> [String] {
+        return Array(Set(availableLenses.map { $0.format }))
+            .filter { !$0.isEmpty }
+            .sorted()
+    }
+    
+    /// Gets available manufacturers from current lens data
+    /// - Returns: Array of unique manufacturers sorted alphabetically
+    func getAvailableManufacturers() -> [String] {
+        return Array(Set(availableLenses.map { $0.manufacturer }))
+            .filter { !$0.isEmpty }
+            .sorted()
     }
 }
