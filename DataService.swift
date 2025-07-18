@@ -9,17 +9,17 @@ import Foundation
 class NetworkService {
     static let shared = NetworkService()
 
-    private let LENS_DATA_URL = "https://script.google.com/macros/s/AKfycbzDzKQ3AU6ynZuPjET0NWqYMlDXMt5UKVPBOq9g7XurJKPoulWuPVVIl9U8eq_nSCG6/exec"
-    private let CAMERA_DATA_URL = "https://script.google.com/macros/s/AKfycbz-2rLDrwQ7DPD3nOm7iGTvCISfIYggOVob2F43pgjR2UG3diztAaig6wO737m_Rh3GJw/exec"
+    private let lensDataURL = "https://script.google.com/macros/s/AKfycbzDzKQ3AU6ynZuPjET0NWqYMlDXMt5UKVPBOq9g7XurJKPoulWuPVVIl9U8eq_nSCG6/exec"
+    private let cameraDataURL = "https://script.google.com/macros/s/AKfycbz-2rLDrwQ7DPD3nOm7iGTvCISfIYggOVob2F43pgjR2UG3diztAaig6wO737m_Rh3GJw/exec"
 
     /// Fetches lens data from the remote API
     /// - Returns: Publisher that emits AppData or an error
     func fetchLensData() -> AnyPublisher<AppData, Error> {
-        guard let url = URL(string: LENS_DATA_URL) else {
+        guard let requestURL = URL(string: lensDataURL) else {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
         }
 
-        return URLSession.shared.dataTaskPublisher(for: url)
+        return URLSession.shared.dataTaskPublisher(for: requestURL)
             .tryMap { data, response -> Data in
                 guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                     throw URLError(.badServerResponse)
@@ -34,11 +34,11 @@ class NetworkService {
     /// Fetches camera data from the remote API
     /// - Returns: Publisher that emits CameraApiResponse or an error
     func fetchCameraData() -> AnyPublisher<CameraApiResponse, Error> {
-        guard let url = URL(string: CAMERA_DATA_URL) else {
+        guard let requestURL = URL(string: cameraDataURL) else {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
         }
 
-        return URLSession.shared.dataTaskPublisher(for: url)
+        return URLSession.shared.dataTaskPublisher(for: requestURL)
             .tryMap { data, response -> Data in
                 guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                     throw URLError(.badServerResponse)
@@ -236,11 +236,11 @@ class DataManager: ObservableObject {
     /// - Parameter fileName: Name of the JSON file to load
     /// - Returns: Publisher that emits decoded data or an error
     private func loadLocalJSON<T: Decodable>(from fileName: String) -> AnyPublisher<T, Error> {
-        guard let url = Bundle.main.url(forResource: fileName, withExtension: "json") else {
+        guard let requestURL = Bundle.main.url(forResource: fileName, withExtension: "json") else {
             return Fail(error: URLError(.fileDoesNotExist)).eraseToAnyPublisher()
         }
 
-        return Just(url)
+        return Just(requestURL)
             .tryMap { try Data(contentsOf: $0) }
             .decode(type: T.self, decoder: JSONDecoder())
             .receive(on: DispatchQueue.main)
@@ -261,7 +261,7 @@ class DataManager: ObservableObject {
     /// - Parameter rentalId: Optional rental ID to filter lenses for specific rental
     /// - Returns: Array of grouped lenses
     func groupLenses(forRental rentalId: String? = nil) -> [LensGroup] {
-        let lenses = rentalId != nil ? lensesForRental(rentalId!) : availableLenses
+        let lenses = rentalId.map { lensesForRental($0) } ?? availableLenses
 
         let normalizedManufacturers = lenses.reduce(into: [String: [Lens]]()) { result, lens in
             let normalized = normalizeName(lens.manufacturer)
@@ -279,10 +279,12 @@ class DataManager: ObservableObject {
             let series = normalizedSeries.map { seriesKey, lenses in
                 let originalSeriesName = lenses.first?.lens_name ?? seriesKey
                 return LensSeries(name: originalSeriesName, lenses: lenses)
-            }.sorted { $0.name < $1.name }
+            }
+            .sorted { $0.name < $1.name }
 
             return LensGroup(manufacturer: originalManufacturer, series: series.sorted { $0.name < $1.name })
-        }.sorted { $0.manufacturer < $1.manufacturer }
+        }
+        .sorted { $0.manufacturer < $1.manufacturer }
     }
 
     /// Gets lenses available for a specific rental
@@ -299,8 +301,8 @@ class DataManager: ObservableObject {
     /// Normalizes names for grouping (removes spaces, special characters, etc.)
     /// - Parameter str: The string to normalize
     /// - Returns: Normalized string
-    private func normalizeName(_ str: String) -> String {
-        str
+    private func normalizeName(_ inputString: String) -> String {
+        inputString
             .lowercased()
             .replacingOccurrences(of: " ", with: "")
             .replacingOccurrences(of: "-", with: "")
