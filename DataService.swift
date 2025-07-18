@@ -69,55 +69,15 @@ class DataManager: ObservableObject {
     /// Set of favorite lens IDs
     @Published var favoriteLenses = Set<String>()
     @Published var comparisonSet = Set<String>()
-    @Published var projects: [Project] = [] // <-- НОВЫЙ МАССИВ ДЛЯ ПРОЕКТОВ
 
     @Published var favoriteLensesList: [Lens] = []
 
     private var cancellables = Set<AnyCancellable>()
     private let favoritesKey = "favoriteLenses"
-    private let projectsKey = "userProjects" // Key for storing user projects
 
     /// Initializes the data manager and loads saved favorites
     init() {
         loadFavorites()
-        loadProjects() // Load projects at startup
-    }
-
-    // MARK: - Projects Logic
-
-    func addProject() {
-        let newProject = Project.empty()
-        projects.append(newProject)
-        saveProjects()
-    }
-
-    func deleteProject(at offsets: IndexSet) {
-        projects.remove(atOffsets: offsets)
-        saveProjects()
-    }
-
-    func updateProject(_ project: Project) {
-        guard let index = projects.firstIndex(where: { $0.id == project.id }) else { return }
-        projects[index] = project
-        saveProjects()
-    }
-
-    private func saveProjects() {
-        do {
-            let data = try JSONEncoder().encode(projects)
-            UserDefaults.standard.set(data, forKey: projectsKey)
-        } catch {
-            print("❌ Failed to save projects: \(error)")
-        }
-    }
-
-    private func loadProjects() {
-        guard let data = UserDefaults.standard.data(forKey: projectsKey) else { return }
-        do {
-            projects = try JSONDecoder().decode([Project].self, from: data)
-        } catch {
-            print("❌ Failed to load projects: \(error)")
-        }
     }
 
     // MARK: - Favorites Management

@@ -27,86 +27,84 @@ struct ComparisonView: View {
     
     var body: some View {
         ZStack {
-            // Фон
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(.sRGB, red: 24/255, green: 27/255, blue: 37/255, opacity: 1),
-                    Color(.sRGB, red: 34/255, green: 37/255, blue: 57/255, opacity: 1)
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            ).ignoresSafeArea()
+            // Use AppTheme background gradient
+            AppTheme.Gradients.primary
+                .ignoresSafeArea()
             
-            VStack(spacing: 0) {
-                // Шапка с кнопкой "Done"
+            VStack(spacing: AppTheme.Spacing.lg) {
+                // Header with AppTheme styling
                 HStack {
                     Text("Comparison")
-                        .font(.title.weight(.bold))
+                        .displayTextStyle()
                     Spacer()
                     Button("Done") {
                         presentationMode.wrappedValue.dismiss()
                     }
-                    .font(.headline.weight(.semibold))
+                    .headlineTextStyle()
                 }
-                .padding()
-                .foregroundColor(.white)
+                .padding(.horizontal, AppTheme.Spacing.lg)
+                .padding(.top, AppTheme.Spacing.md)
                 
-                // Основной контент с таблицей
-                ScrollView {
-                    // Главный HStack, который держит "липкую" колонку и скролл-область
-                    HStack(alignment: .top, spacing: 0) {
-                        
-                        // "Липкая" колонка с названиями характеристик
-                        VStack(alignment: .leading, spacing: 0) {
-                            // Пустой заголовок для выравнивания
-                            Text("Feature")
-                                .font(.headline.weight(.bold))
-                                .foregroundColor(.white)
-                                .padding(12)
-                                .frame(height: 120, alignment: .leading)
-                                .background(Color.white.opacity(0.1))
+                // Main content with table in a glass card
+                GlassCard {
+                    ScrollView {
+                        // Main HStack for sticky column and scroll area
+                        HStack(alignment: .top, spacing: 0) {
                             
-                            // Названия характеристик
-                            ForEach(specs, id: \.0) { spec in
-                                Text(spec.0)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .padding(12)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .frame(height: 60)
-                                    .background( (specs.firstIndex(where: {$0.0 == spec.0}) ?? 0) % 2 == 0 ? Color.white.opacity(0.05) : Color.clear)
+                            // Sticky column with feature names
+                            VStack(alignment: .leading, spacing: 0) {
+                                // Header for alignment
+                                Text("Feature")
+                                    .font(AppTheme.Typography.headlineMedium)
+                                    .foregroundColor(AppTheme.Colors.textPrimary)
+                                    .padding(AppTheme.Spacing.sm)
+                                    .frame(height: 120, alignment: .leading)
+                                    .background(AppTheme.Colors.surfacePrimary)
+                                
+                                // Feature names
+                                ForEach(specs, id: \.0) { spec in
+                                    Text(spec.0)
+                                        .font(AppTheme.Typography.bodyMedium)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(AppTheme.Colors.textSecondary)
+                                        .padding(AppTheme.Spacing.sm)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .frame(height: 60)
+                                        .background(isEvenRow(spec.0) ? AppTheme.Colors.surfaceSecondary : Color.clear)
+                                }
                             }
-                        }
-                        .frame(width: 140)
-                        
-                        // Горизонтальный скролл с колонками объективов
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(alignment: .top, spacing: 0) {
-                                ForEach(lensesToCompare) { lens in
-                                    // Одна колонка для одного объектива
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        // Карточка с названием объектива
-                                        VStack(alignment: .leading) {
-                                            Text(lens.display_name)
-                                                .font(.headline.weight(.bold))
-                                                .lineLimit(3)
-                                            Text(lens.manufacturer)
-                                                .font(.caption)
-                                                .opacity(0.7)
-                                        }
-                                        .foregroundColor(.white)
-                                        .padding(12)
-                                        .frame(width: 150, height: 120, alignment: .leading)
-                                        .background(Color.white.opacity(0.1))
-                                        
-                                        // Значения характеристик
-                                        ForEach(specs, id: \.0) { spec in
-                                            Text(lens[keyPath: spec.1])
-                                                .font(.system(.subheadline, design: .monospaced))
-                                                .foregroundColor(.white)
-                                                .padding(12)
-                                                .frame(width: 150, height: 60, alignment: .leading)
-                                                .background( (specs.firstIndex(where: {$0.0 == spec.0}) ?? 0) % 2 == 0 ? Color.white.opacity(0.05) : Color.clear)
+                            .frame(width: 140)
+                            
+                            // Horizontal scroll with lens columns
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(alignment: .top, spacing: 0) {
+                                    ForEach(lensesToCompare) { lens in
+                                        // One column for each lens
+                                        VStack(alignment: .leading, spacing: 0) {
+                                            // Lens name card
+                                            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+                                                Text(lens.display_name)
+                                                    .font(AppTheme.Typography.headlineMedium)
+                                                    .lineLimit(3)
+                                                    .foregroundColor(AppTheme.Colors.textPrimary)
+                                                Text(lens.manufacturer)
+                                                    .font(AppTheme.Typography.caption)
+                                                    .foregroundColor(AppTheme.Colors.textTertiary)
+                                            }
+                                            .padding(AppTheme.Spacing.sm)
+                                            .frame(width: 150, height: 120, alignment: .leading)
+                                            .background(AppTheme.Colors.surfacePrimary)
+                                            
+                                            // Feature values
+                                            ForEach(specs, id: \.0) { spec in
+                                                Text(lens[keyPath: spec.1])
+                                                    .font(AppTheme.Typography.bodyMedium)
+                                                    .fontDesign(.monospaced)
+                                                    .foregroundColor(AppTheme.Colors.textPrimary)
+                                                    .padding(AppTheme.Spacing.sm)
+                                                    .frame(width: 150, height: 60, alignment: .leading)
+                                                    .background(isEvenRow(spec.0) ? AppTheme.Colors.surfaceSecondary : Color.clear)
+                                            }
                                         }
                                     }
                                 }
@@ -114,8 +112,14 @@ struct ComparisonView: View {
                         }
                     }
                 }
+                .padding(.horizontal, AppTheme.Spacing.lg)
             }
         }
         .preferredColorScheme(.dark)
+    }
+    
+    // Helper function to determine if a row is even for alternating colors
+    private func isEvenRow(_ specName: String) -> Bool {
+        return (specs.firstIndex(where: { $0.0 == specName }) ?? 0) % 2 == 0
     }
 }

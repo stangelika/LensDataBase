@@ -26,12 +26,8 @@ struct MainTabView: View {
                 // Экран 3: Избранное
                 FavoritesView()
                     .tag(ActiveTab.favorites)
-                
-                // ЭКРАН 4: ПРОЕКТЫ (НОВЫЙ)
-                ProjectsListView()
-                    .tag(ActiveTab.projects) // <--- ДОБАВЬ ЭТОТ БЛОК
-                
-                // Экран 5: Настройки и обновление
+
+                // Экран 4: Настройки и обновление
                 UpdateView()
                     .tag(ActiveTab.updateView)
             }

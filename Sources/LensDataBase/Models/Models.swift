@@ -232,28 +232,4 @@ enum ActiveTab: Equatable {
     case allLenses
     case updateView
     case favorites 
-    case projects
-}
-// MARK: - Project Model
-
-/// Project model for organizing lenses and cameras into collections
-struct Project: Codable, Identifiable, Equatable {
-    let id: UUID
-    var name: String
-    var notes: String
-    var date: Date
-    var lensIDs: [String] // Array of lens IDs in this project
-    var cameraIDs: [String] // Array of camera IDs in this project
-    
-    /// Creates an empty project with default values
-    static func empty() -> Project {
-        Project(
-            id: UUID(),
-            name: "New Project",
-            notes: "",
-            date: Date(),
-            lensIDs: [],
-            cameraIDs: []
-        )
-    }
 }
