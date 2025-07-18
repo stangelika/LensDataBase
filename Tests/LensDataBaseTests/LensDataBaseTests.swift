@@ -34,30 +34,6 @@ final class LensDataBaseTests: XCTestCase {
         XCTAssertNil(lens.squeeze_factor)
     }
     
-    func testProjectModelCreation() {
-        // Test project model creation
-        let project = Project.empty()
-        
-        XCTAssertEqual(project.name, "New Project")
-        XCTAssertEqual(project.notes, "")
-        XCTAssertTrue(project.lensIDs.isEmpty)
-        XCTAssertTrue(project.cameraIDs.isEmpty)
-        XCTAssertNotNil(project.id)
-    }
-    
-    func testProjectModelModification() {
-        // Test project modification
-        var project = Project.empty()
-        project.name = "Modified Project"
-        project.lensIDs = ["lens-1", "lens-2"]
-        project.notes = "Test notes"
-        
-        XCTAssertEqual(project.name, "Modified Project")
-        XCTAssertEqual(project.lensIDs.count, 2)
-        XCTAssertEqual(project.lensIDs, ["lens-1", "lens-2"])
-        XCTAssertEqual(project.notes, "Test notes")
-    }
-    
     func testCameraModelCreation() {
         // Test camera model creation
         let camera = Camera(
@@ -164,11 +140,10 @@ final class LensDataBaseTests: XCTestCase {
             .allLenses,
             .rentalView,
             .favorites,
-            .projects,
             .updateView
         ]
         
-        XCTAssertEqual(allTabs.count, 5)
+        XCTAssertEqual(allTabs.count, 4)
         
         // Test each tab equals itself
         for tab in allTabs {
@@ -177,7 +152,7 @@ final class LensDataBaseTests: XCTestCase {
         
         // Test tabs are not equal to each other
         XCTAssertNotEqual(ActiveTab.allLenses, ActiveTab.rentalView)
-        XCTAssertNotEqual(ActiveTab.favorites, ActiveTab.projects)
+        XCTAssertNotEqual(ActiveTab.favorites, ActiveTab.updateView)
         XCTAssertNotEqual(ActiveTab.updateView, ActiveTab.allLenses)
     }
     

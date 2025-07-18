@@ -67,17 +67,14 @@ class DataManager: ObservableObject {
     @Published var activeTab: ActiveTab = .allLenses
     @Published var favoriteLenses: Set<String> = []
     @Published var favoriteLensesList: [Lens] = []
-    @Published var projects: [Project] = []
     @Published var selectedRentalId: String = ""
     
     private var cancellables = Set<AnyCancellable>()
     private let favoritesKey = "favoriteLenses"
-    private let projectsKey = "userProjects"
     
     /// Initializes the data manager and loads favorites
     init() {
         loadFavorites()
-        loadProjects()
     }
     
     /// Loads data from local resources or remote API
@@ -175,47 +172,6 @@ class DataManager: ObservableObject {
         return favoriteLenses.contains(lens.id)
     }
     
-    // MARK: - Projects Management
-    
-    /// Saves projects to UserDefaults
-    private func saveProjects() {
-        if let encoded = try? JSONEncoder().encode(projects) {
-            UserDefaults.standard.set(encoded, forKey: projectsKey)
-        }
-    }
-    
-    /// Loads projects from UserDefaults
-    private func loadProjects() {
-        guard let data = UserDefaults.standard.data(forKey: projectsKey),
-              let decoded = try? JSONDecoder().decode([Project].self, from: data) else {
-            return
-        }
-        projects = decoded
-    }
-    
-    /// Adds a new project
-    /// - Parameter project: The project to add
-    func addProject(_ project: Project) {
-        projects.append(project)
-        saveProjects()
-    }
-    
-    /// Updates an existing project
-    /// - Parameter project: The project to update
-    func updateProject(_ project: Project) {
-        if let index = projects.firstIndex(where: { $0.id == project.id }) {
-            projects[index] = project
-            saveProjects()
-        }
-    }
-    
-    /// Removes a project
-    /// - Parameter project: The project to remove
-    func removeProject(_ project: Project) {
-        projects.removeAll { $0.id == project.id }
-        saveProjects()
-    }
-    
     // MARK: - Lens Grouping
     
     /// Groups lenses by manufacturer and series
@@ -254,15 +210,12 @@ class DataManager {
     var activeTab: ActiveTab = .allLenses
     var favoriteLenses: Set<String> = []
     var favoriteLensesList: [Lens] = []
-    var projects: [Project] = []
     var selectedRentalId: String = ""
     
     private let favoritesKey = "favoriteLenses"
-    private let projectsKey = "userProjects"
     
     init() {
         loadFavorites()
-        loadProjects()
     }
     
     func loadData() {
@@ -309,37 +262,6 @@ class DataManager {
     
     func isFavorite(lens: Lens) -> Bool {
         return favoriteLenses.contains(lens.id)
-    }
-    
-    private func saveProjects() {
-        if let encoded = try? JSONEncoder().encode(projects) {
-            UserDefaults.standard.set(encoded, forKey: projectsKey)
-        }
-    }
-    
-    private func loadProjects() {
-        guard let data = UserDefaults.standard.data(forKey: projectsKey),
-              let decoded = try? JSONDecoder().decode([Project].self, from: data) else {
-            return
-        }
-        projects = decoded
-    }
-    
-    func addProject(_ project: Project) {
-        projects.append(project)
-        saveProjects()
-    }
-    
-    func updateProject(_ project: Project) {
-        if let index = projects.firstIndex(where: { $0.id == project.id }) {
-            projects[index] = project
-            saveProjects()
-        }
-    }
-    
-    func removeProject(_ project: Project) {
-        projects.removeAll { $0.id == project.id }
-        saveProjects()
     }
     
     func groupLenses(_ lenses: [Lens]) -> [LensGroup] {
