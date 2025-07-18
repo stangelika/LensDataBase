@@ -7,9 +7,9 @@ struct ComparisonView: View {
     // Получаем полные модели объективов из ID в сете для сравнения
     private var lensesToCompare: [Lens] {
         dataManager.comparisonSet.compactMap { lensId in
-            dataManager.availableLenses.first { $0.id == lensId }
+            dataManager.availableLenses.first(where: { $0.id == lensId })
         }
-        .sorted { $0.displayName < $1.displayName } // Сортируем для постоянства
+        .sorted(by: { $0.displayName < $1.displayName }) // Сортируем для постоянства
     }
 
     // Определяем строки нашей таблицы
