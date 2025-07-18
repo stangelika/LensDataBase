@@ -1,4 +1,8 @@
-import SwiftUI
+import Foundation
+
+#if canImport(SwiftUI)
+    import SwiftUI
+
 
 struct WeatherStyleLensListView: View {
     @EnvironmentObject var dataManager: DataManager
@@ -197,3 +201,5 @@ struct NoHighlightButtonStyle: ButtonStyle {
             .opacity(configuration.isPressed ? 0.82 : 1.0)
     }
 }
+
+#endif

@@ -1,4 +1,8 @@
-import SwiftUI
+import Foundation
+
+#if canImport(SwiftUI)
+    import SwiftUI
+
 
 struct LensDetailView: View, Identifiable {
     let id = UUID()
@@ -319,3 +323,5 @@ struct ContactButton: View {
         }
     }
 }
+
+#endif

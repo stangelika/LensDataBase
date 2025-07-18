@@ -1,4 +1,8 @@
-import SwiftUI
+import Foundation
+
+#if canImport(SwiftUI)
+    import SwiftUI
+
 
 struct RentalView: View {
     @EnvironmentObject var dataManager: DataManager
@@ -112,3 +116,5 @@ struct RentalView: View {
         .preferredColorScheme(.dark)
     }
 }
+
+#endif

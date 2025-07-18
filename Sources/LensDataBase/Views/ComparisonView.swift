@@ -1,4 +1,8 @@
-import SwiftUI
+import Foundation
+
+#if canImport(SwiftUI)
+    import SwiftUI
+
 
 struct ComparisonView: View {
     @EnvironmentObject var dataManager: DataManager
@@ -123,3 +127,5 @@ struct ComparisonView: View {
         (specs.firstIndex(where: { $0.0 == specName }) ?? 0) % 2 == 0
     }
 }
+
+#endif

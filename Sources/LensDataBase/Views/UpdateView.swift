@@ -1,4 +1,8 @@
-import SwiftUI
+import Foundation
+
+#if canImport(SwiftUI)
+    import SwiftUI
+
 
 struct UpdateView: View {
     @EnvironmentObject var dataManager: DataManager
@@ -91,3 +95,5 @@ struct UpdateView: View {
         }
     }
 }
+
+#endif

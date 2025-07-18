@@ -1,4 +1,8 @@
-import SwiftUI
+import Foundation
+
+#if canImport(SwiftUI)
+    import SwiftUI
+
 
 struct MainTabView: View {
     @EnvironmentObject var dataManager: DataManager
@@ -43,3 +47,5 @@ struct MainTabView: View {
         }
     }
 }
+
+#endif

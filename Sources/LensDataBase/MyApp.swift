@@ -1,7 +1,10 @@
-import SwiftUI
+import Foundation
 
-@main
-struct LensApp: App {
+#if canImport(SwiftUI)
+    import SwiftUI
+
+    @main
+    struct LensApp: App {
     @StateObject private var dataManager = DataManager()
 
     var body: some Scene {
@@ -30,3 +33,5 @@ struct LensApp: App {
         UITableView.appearance().backgroundColor = .clear
     }
 }
+
+#endif
