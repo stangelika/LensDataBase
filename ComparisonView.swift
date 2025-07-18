@@ -2,19 +2,22 @@
 
 import SwiftUI
 
+// Экран сравнения выбранных объективов в табличном формате
 struct ComparisonView: View {
+    // Менеджер данных для доступа к выбранным объективам
     @EnvironmentObject var dataManager: DataManager
+    // Доступ к методу закрытия модального окна
     @Environment(\.presentationMode) var presentationMode
 
-    // Получаем полные модели объективов из ID в сете для сравнения
+    // Вычисляемое свойство: получение полных моделей объективов из ID
     private var lensesToCompare: [Lens] {
         dataManager.comparisonSet.compactMap { lensId in
             dataManager.availableLenses.first { $0.id == lensId }
         }
-        .sorted { $0.display_name < $1.display_name } // Сортируем для постоянства
+        .sorted { $0.display_name < $1.display_name } // Сортируем для постоянства порядка
     }
 
-    // Определяем строки нашей таблицы
+    // Массив характеристик для сравнения с их KeyPath'ами
     private let specs: [(String, KeyPath<Lens, String>)] = [
         ("Format", \.format),
         ("Focal Length", \.focal_length),
@@ -25,9 +28,10 @@ struct ComparisonView: View {
         ("Length", \.length),
     ]
 
+    // Основное содержимое экрана
     var body: some View {
         ZStack {
-            // Фон
+            // Темный градиентный фон
             LinearGradient(
                 gradient: Gradient(colors: [
                     Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
@@ -38,11 +42,12 @@ struct ComparisonView: View {
             ).ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Шапка с кнопкой "Done"
+                // Заголовочная область с кнопкой закрытия
                 HStack {
                     Text("Comparison")
                         .font(.title.weight(.bold))
                     Spacer()
+                    // Кнопка закрытия экрана сравнения
                     Button("Done") {
                         presentationMode.wrappedValue.dismiss()
                     }
@@ -51,13 +56,13 @@ struct ComparisonView: View {
                 .padding()
                 .foregroundColor(.white)
 
-                // Основной контент с таблицей
+                // Основная область с таблицей сравнения
                 ScrollView {
-                    // Главный HStack, который держит "липкую" колонку и скролл-область
+                    // Главный горизонтальный контейнер с фиксированной и прокручиваемой частями
                     HStack(alignment: .top, spacing: 0) {
-                        // "Липкая" колонка с названиями характеристик
+                        // Фиксированная левая колонка с названиями характеристик
                         VStack(alignment: .leading, spacing: 0) {
-                            // Пустой заголовок для выравнивания
+                            // Заголовок колонки характеристик
                             Text("Feature")
                                 .font(.headline.weight(.bold))
                                 .foregroundColor(.white)
@@ -65,7 +70,7 @@ struct ComparisonView: View {
                                 .frame(height: 120, alignment: .leading)
                                 .background(Color.white.opacity(0.1))
 
-                            // Названия характеристик
+                            // Список названий характеристик для сравнения
                             ForEach(specs, id: \.0) { spec in
                                 Text(spec.0)
                                     .font(.subheadline.weight(.semibold))
@@ -73,18 +78,20 @@ struct ComparisonView: View {
                                     .padding(12)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .frame(height: 60)
+                                    // Альтернирующий фон для строк
                                     .background((specs.firstIndex(where: { $0.0 == spec.0 }) ?? 0) % 2 == 0 ? Color.white.opacity(0.05) : Color.clear)
                             }
                         }
                         .frame(width: 140)
 
-                        // Горизонтальный скролл с колонками объективов
+                        // Горизонтально прокручиваемая область с колонками объективов
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(alignment: .top, spacing: 0) {
+                                // Перебор всех объективов для сравнения
                                 ForEach(lensesToCompare) { lens in
-                                    // Одна колонка для одного объектива
+                                    // Колонка данных для одного объектива
                                     VStack(alignment: .leading, spacing: 0) {
-                                        // Карточка с названием объектива
+                                        // Заголовочная карточка с информацией об объективе
                                         VStack(alignment: .leading) {
                                             Text(lens.display_name)
                                                 .font(.headline.weight(.bold))
@@ -98,13 +105,15 @@ struct ComparisonView: View {
                                         .frame(width: 150, height: 120, alignment: .leading)
                                         .background(Color.white.opacity(0.1))
 
-                                        // Значения характеристик
+                                        // Столбец значений характеристик объектива
                                         ForEach(specs, id: \.0) { spec in
+                                            // Значение характеристики, извлеченное через KeyPath
                                             Text(lens[keyPath: spec.1])
                                                 .font(.system(.subheadline, design: .monospaced))
                                                 .foregroundColor(.white)
                                                 .padding(12)
                                                 .frame(width: 150, height: 60, alignment: .leading)
+                                                // Альтернирующий фон для строк
                                                 .background((specs.firstIndex(where: { $0.0 == spec.0 }) ?? 0) % 2 == 0 ? Color.white.opacity(0.05) : Color.clear)
                                         }
                                     }
@@ -115,6 +124,7 @@ struct ComparisonView: View {
                 }
             }
         }
+        // Принудительная темная тема
         .preferredColorScheme(.dark)
     }
 }

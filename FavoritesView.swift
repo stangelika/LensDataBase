@@ -2,18 +2,24 @@
 
 import SwiftUI
 
+// Экран избранных объективов с возможностью сравнения
 struct FavoritesView: View {
+    // Менеджер данных для доступа к избранным объективам
     @EnvironmentObject var dataManager: DataManager
+    // Выбранный объектив для детального просмотра
     @State private var selectedLens: Lens? = nil
+    // Режим выбора объективов для сравнения
     @State private var isSelectionMode = false
+    // Состояние отображения экрана сравнения
     @State private var showComparisonSheet = false
 
+    // Основное содержимое экрана
     var body: some View {
-        // Главный ZStack для размещения плавающей кнопки поверх всего
+        // Контейнер для размещения плавающей кнопки поверх контента
         ZStack {
             NavigationView {
                 ZStack {
-                    // Фон
+                    // Темный градиентный фон
                     LinearGradient(
                         gradient: Gradient(colors: [
                             Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
@@ -24,9 +30,9 @@ struct FavoritesView: View {
                     )
                     .ignoresSafeArea()
 
-                    // Основной контент
+                    // Основная область контента
                     VStack(spacing: 20) {
-                        // Кастомный заголовок
+                        // Заголовок секции с градиентным стилем
                         HStack {
                             Text("Favorites")
                                 .font(.system(size: 36, weight: .heavy, design: .rounded))
@@ -37,9 +43,10 @@ struct FavoritesView: View {
                         .padding(.horizontal, 28)
                         .padding(.top, 22)
 
-                        // Проверка на пустой список избранного
+                        // Условное отображение при отсутствии избранных объективов
                         if dataManager.favoriteLensesList.isEmpty {
                             Spacer()
+                            // Сообщение о пустом списке избранного
                             VStack(spacing: 12) {
                                 Image(systemName: "star.slash.fill")
                                     .font(.system(size: 60))
@@ -55,17 +62,22 @@ struct FavoritesView: View {
                             Spacer()
                             Spacer()
                         } else {
-                            // Список
+                            // Скроллируемый список избранных объективов
                             ScrollView {
                                 LazyVStack(spacing: 16) {
+                                    // Перебор всех избранных объективов
                                     ForEach(dataManager.favoriteLensesList) { lens in
                                         Button(action: {
+                                            // Обработка нажатия в зависимости от режима
                                             if isSelectionMode {
+                                                // В режиме выбора добавляем/убираем из сравнения
                                                 dataManager.toggleComparison(lens: lens)
                                             } else {
+                                                // В обычном режиме открываем детали объектива
                                                 selectedLens = lens
                                             }
                                         }) {
+                                            // Компонент строки объектива с индикацией выбора
                                             LensRow(
                                                 lens: lens,
                                                 isSelectionMode: isSelectionMode,
@@ -81,15 +93,20 @@ struct FavoritesView: View {
                         }
                     }
                     .sheet(item: $selectedLens) { lens in
+                        // Модальное окно с детальной информацией об объективе
                         LensDetailView(lens: lens).environmentObject(dataManager)
                     }
                     .toolbar {
+                        // Кнопка переключения режима выбора в навигационной панели
                         ToolbarItem(placement: .navigationBarTrailing) {
                             if !dataManager.favoriteLensesList.isEmpty {
                                 Button(action: {
+                                    // Переключение режима выбора с анимацией
                                     withAnimation { isSelectionMode.toggle() }
+                                    // Очистка сравнения при выходе из режима
                                     if !isSelectionMode { dataManager.clearComparison() }
                                 }) {
+                                    // Текст кнопки в зависимости от режима
                                     Text(isSelectionMode ? "Done" : "Select")
                                         .font(.headline.weight(.semibold))
                                         .foregroundColor(.accentColor)
@@ -103,10 +120,11 @@ struct FavoritesView: View {
             .navigationViewStyle(.stack)
             .preferredColorScheme(.dark)
 
-            // Плавающая кнопка "Сравнить"
+            // Плавающая кнопка сравнения (видна только при выборе 2+ объективов)
             if isSelectionMode, dataManager.comparisonSet.count > 1 {
                 VStack {
                     Spacer()
+                    // Кнопка запуска сравнения выбранных объективов
                     Button(action: {
                         showComparisonSheet = true
                     }) {
@@ -122,43 +140,58 @@ struct FavoritesView: View {
                     .padding(.horizontal, 24)
                     .padding(.bottom, 20)
                 }
+                // Анимация появления/скрытия кнопки
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        // Анимации изменения состояния
         .animation(.easeInOut, value: isSelectionMode)
         .animation(.easeInOut, value: dataManager.comparisonSet.count > 1)
         .sheet(isPresented: $showComparisonSheet, onDismiss: {
+            // Очистка после закрытия экрана сравнения
             dataManager.clearComparison()
             isSelectionMode = false
         }) {
+            // Модальное окно с экраном сравнения объективов
             ComparisonView().environmentObject(dataManager)
         }
     }
 }
 
-// Строка списка
+// Компонент строки объектива в списке избранного
 struct LensRow: View {
+    // Данные объектива для отображения
     let lens: Lens
+    // Флаг режима выбора для сравнения
     let isSelectionMode: Bool
+    // Статус выбора объектива для сравнения
     let isSelectedForComparison: Bool
 
+    // Содержимое строки
     var body: some View {
         HStack(spacing: 15) {
+            // Индикатор выбора (отображается только в режиме сравнения)
             if isSelectionMode {
                 Image(systemName: isSelectedForComparison ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
                     .foregroundColor(isSelectedForComparison ? .blue : .secondary)
             }
 
+            // Основная информация об объективе
             VStack(alignment: .leading, spacing: 4) {
+                // Название объектива
                 Text(lens.display_name)
                     .font(.headline.weight(.bold))
                     .foregroundColor(.white)
+                // Дополнительная информация: производитель и формат
                 Text("\(lens.manufacturer) • \(lens.format)")
                     .font(.subheadline)
                     .foregroundColor(.white.opacity(0.8))
             }
+            
             Spacer()
+            
+            // Стрелка навигации (скрыта в режиме выбора)
             if !isSelectionMode {
                 Image(systemName: "chevron.right")
                     .font(.callout.weight(.semibold))
@@ -167,8 +200,11 @@ struct LensRow: View {
         }
         .padding()
         .background(
+            // Многослойный фон с адаптивным стилем
             ZStack {
+                // Базовая подложка с изменяемой прозрачностью
                 Color.white.opacity(isSelectedForComparison ? 0.15 : 0.05)
+                // Цветная обводка для выбранных объективов
                 if isSelectedForComparison {
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(Color.blue, lineWidth: 2)
@@ -176,6 +212,7 @@ struct LensRow: View {
             }
         )
         .cornerRadius(16)
+        // Плавная анимация изменений состояния
         .animation(.easeInOut(duration: 0.2), value: [isSelectionMode, isSelectedForComparison])
     }
 }
