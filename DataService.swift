@@ -3,13 +3,9 @@
 import Foundation
 import Combine
 
-<<<<<<< HEAD
-// ... (NetworkService без изменений) ...
-=======
 // MARK: - Network Service
 
 /// Network service for fetching lens and camera data from remote APIs
->>>>>>> 6e49b15489ad915eadaa033286c270d5bdaa6ecf
 class NetworkService {
     static let shared = NetworkService()
     
