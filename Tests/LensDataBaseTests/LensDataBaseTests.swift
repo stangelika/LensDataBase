@@ -133,7 +133,7 @@ final class LensDataBaseTests: XCTestCase {
             .allLenses,
             .rentalView,
             .favorites,
-            .updateView
+            .updateView,
         ]
 
         XCTAssertEqual(allTabs.count, 4)
@@ -224,7 +224,7 @@ final class LensDataBaseTests: XCTestCase {
                 imageCircle: "43.3",
                 length: "90",
                 frontDiameter: "77",
-                squeezeFactor: nil)
+                squeezeFactor: nil),
         ]
 
         let series = LensSeries(name: "Prime Series", lenses: lenses)
@@ -307,7 +307,7 @@ final class LensDataBaseTests: XCTestCase {
                 imageCircle: "43.3",
                 length: "90",
                 frontDiameter: "77",
-                squeezeFactor: nil)
+                squeezeFactor: nil),
         ]
 
         let sortedByName = lenses.sorted { $0.displayName < $1.displayName }
@@ -349,7 +349,7 @@ final class LensDataBaseTests: XCTestCase {
             "squeeze_factor": null
         }
         """.utf8)
-        
+
         do {
             let lens = try JSONDecoder().decode(Lens.self, from: jsonData)
             XCTAssertEqual(lens.id, "lens-1")
