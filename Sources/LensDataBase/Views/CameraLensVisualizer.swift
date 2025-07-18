@@ -1,4 +1,8 @@
-import SwiftUI
+import Foundation
+
+#if canImport(SwiftUI)
+    import SwiftUI
+
 
 enum ExpandedPicker {
     case camera
@@ -371,3 +375,5 @@ struct ApiError: Codable {
     let success: Bool
     let error: String
 }
+
+#endif

@@ -1,4 +1,8 @@
-import SwiftUI
+import Foundation
+
+#if canImport(SwiftUI)
+    import SwiftUI
+
 
 struct SplashScreenView: View {
     @EnvironmentObject var dataManager: DataManager
@@ -191,3 +195,5 @@ struct ShimmeringText: View {
         .animation(.linear(duration: 1.8).repeatForever(autoreverses: false), value: phase)
     }
 }
+
+#endif

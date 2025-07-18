@@ -1,6 +1,9 @@
-import SwiftUI
+import Foundation
 
-/// A reusable glass morphism card component
+#if canImport(SwiftUI)
+    import SwiftUI
+
+    /// A reusable glass morphism card component
 struct GlassCard<Content: View>: View {
     let content: Content
     let cornerRadius: CGFloat
@@ -59,3 +62,5 @@ struct GlassCard_Previews: PreviewProvider {
         .preferredColorScheme(.dark)
     }
 }
+
+#endif

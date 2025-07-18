@@ -1,6 +1,9 @@
-import SwiftUI
+import Foundation
 
-/// A reusable glass filter chip component for filtering options
+#if canImport(SwiftUI)
+    import SwiftUI
+
+    /// A reusable glass filter chip component for filtering options
 struct GlassFilterChip: View {
     let title: String
     let isSelected: Bool
@@ -87,3 +90,5 @@ struct GlassFilterChip_Previews: PreviewProvider {
         .preferredColorScheme(.dark)
     }
 }
+
+#endif

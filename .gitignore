@@ -125,3 +125,15 @@ out/
 swiftlint
 swiftformat
 *.zip
+
+# macOS specific
+*.DS_Store
+
+# Build artifacts
+DerivedData/
+build/
+out/
+
+# Swift Package Manager
+.swiftpm/
+.build/

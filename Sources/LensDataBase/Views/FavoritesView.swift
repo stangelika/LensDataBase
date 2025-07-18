@@ -1,4 +1,8 @@
-import SwiftUI
+import Foundation
+
+#if canImport(SwiftUI)
+    import SwiftUI
+
 
 struct FavoritesView: View {
     @EnvironmentObject var dataManager: DataManager
@@ -177,3 +181,5 @@ struct LensRow: View {
         .animation(.easeInOut(duration: 0.2), value: [isSelectionMode, isSelectedForComparison])
     }
 }
+
+#endif

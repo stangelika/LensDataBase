@@ -1,4 +1,8 @@
-import SwiftUI
+import Foundation
+
+#if canImport(SwiftUI)
+    import SwiftUI
+
 
 struct AllLensesView: View {
     @EnvironmentObject var dataManager: DataManager
@@ -190,3 +194,5 @@ struct GlassFilterChip: View {
         .animation(.easeInOut(duration: 0.19), value: isActive)
     }
 }
+
+#endif
