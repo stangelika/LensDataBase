@@ -7,8 +7,8 @@ import Foundation
 struct AllLensesView: View {
     @EnvironmentObject var dataManager: DataManager
     @State private var selectedFormat = ""
-    @State private var selectedFocalCategory: FocalCategory = .all
-    @State private var selectedLens: Lens? = nil
+    @State private var selectedFocalCategory: FocalCategory = .allCategories
+    @State private var selectedLens: Lens?
 
     var body: some View {
         ZStack {
@@ -59,15 +59,15 @@ struct AllLensesView: View {
 
                     Menu {
                         Picker("Focal Length Category", selection: $selectedFocalCategory) {
-                            ForEach(FocalCategory.allCases, id: \.self) { cat in
-                                Text(cat.displayName).tag(cat)
+                            ForEach(FocalCategory.allCases, id: \.self) { category in
+                                Text(category.displayName).tag(category)
                             }
                         }
                     } label: {
                         GlassFilterChip(
                             icon: "arrow.left.and.right",
                             title: selectedFocalCategory.displayName,
-                            accentColor: selectedFocalCategory == .all ? .indigo : .orange,
+                            accentColor: selectedFocalCategory == .allCategories ? .indigo : .orange,
                             isActive: selectedFocalCategory != .all)
                     }
                 }
@@ -114,7 +114,7 @@ struct AllLensesView: View {
 }
 
 enum FocalCategory: String, CaseIterable, Identifiable {
-    case all
+    case allCategories
     case ultraWide
     case wide
     case standard
@@ -125,7 +125,7 @@ enum FocalCategory: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .all: "All"
+        case .allCategories: "All"
         case .ultraWide: "Ultra Wide (≤12mm)"
         case .wide: "Wide (13–35mm)"
         case .standard: "Standard (36–70mm)"
@@ -137,7 +137,7 @@ enum FocalCategory: String, CaseIterable, Identifiable {
     func contains(focal: Double?) -> Bool {
         guard let focal else { return false }
         switch self {
-        case .all: return true
+        case .allCategories: return true
         case .ultraWide: return focal <= 12
         case .wide: return focal >= 13 && focal <= 35
         case .standard: return focal >= 36 && focal <= 70
