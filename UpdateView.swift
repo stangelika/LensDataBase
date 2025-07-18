@@ -2,12 +2,15 @@
 
 import SwiftUI
 
+// Экран настроек и обновления данных приложения
 struct UpdateView: View {
+    // Менеджер данных для управления состоянием и загрузкой данных
     @EnvironmentObject var dataManager: DataManager
 
+    // Основное содержимое экрана
     var body: some View {
         ZStack {
-            // Фон как в других разделах
+            // Темный градиентный фон в стиле других экранов
             LinearGradient(
                 gradient: Gradient(colors: [
                     Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
@@ -19,7 +22,7 @@ struct UpdateView: View {
             .ignoresSafeArea()
 
             VStack(spacing: 25) {
-                // Заголовок
+                // Заголовок экрана настроек
                 HStack {
                     Text("Settings")
                         .font(.system(size: 36, weight: .heavy, design: .rounded))
@@ -36,8 +39,9 @@ struct UpdateView: View {
                 .padding(.horizontal, 28)
                 .padding(.top, 22)
 
-                // Карточка с описанием
+                // Информационная карточка о синхронизации данных
                 VStack(alignment: .leading, spacing: 12) {
+                    // Заголовок секции с иконкой
                     HStack {
                         Image(systemName: "arrow.triangle.2.circlepath.icloud.fill")
                             .font(.title2)
@@ -46,6 +50,7 @@ struct UpdateView: View {
                             .font(.headline)
                             .foregroundColor(.white)
                     }
+                    // Описание функциональности синхронизации
                     Text("The application uses a local database of lenses and cameras for quick access. Press the button below to update the data from the server. This may take some time.")
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.7))
@@ -55,13 +60,13 @@ struct UpdateView: View {
                 .background(GlassBackground())
                 .padding(.horizontal)
 
-                // Кнопка обновления
+                // Кнопка инициации обновления данных с сервера
                 Button(action: {
-                    // Вызываем функцию обновления из DataManager
+                    // Запуск процесса обновления через DataManager
                     dataManager.refreshDataFromAPI()
                 }) {
                     HStack {
-                        // Показываем индикатор загрузки или иконку
+                        // Адаптивная иконка: индикатор загрузки или стрелка обновления
                         if dataManager.loadingState == .loading {
                             ProgressView()
                                 .tint(.white)
@@ -80,9 +85,10 @@ struct UpdateView: View {
                     .shadow(color: .green.opacity(0.4), radius: 10, y: 5)
                 }
                 .padding(.horizontal)
-                .disabled(dataManager.loadingState == .loading) // Блокируем кнопку во время загрузки
+                // Блокировка кнопки во время активной загрузки
+                .disabled(dataManager.loadingState == .loading)
 
-                // Показываем сообщение об ошибке, если она есть
+                // Условное отображение сообщения об ошибке
                 if case let .error(error) = dataManager.loadingState {
                     Text("Error: \(error)")
                         .font(.caption)
@@ -93,5 +99,7 @@ struct UpdateView: View {
                 Spacer()
             }
         }
+        // Принудительная темная тема
+        .preferredColorScheme(.dark)
     }
 }
