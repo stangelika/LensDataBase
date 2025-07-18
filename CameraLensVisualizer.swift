@@ -353,12 +353,12 @@ struct GlassInfoCard: View {
 
 struct GlassBackground: View {
     var body: some View {
-        RoundedRectangle(cornerRadius: 16, style: .continuous)
+        RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium, style: .continuous)
             .fill(.ultraThinMaterial)
-            .shadow(color: Color.white.opacity(0.08), radius: 7, x: 0, y: 2)
+            .shadow(color: AppTheme.Colors.primaryText.opacity(0.08), radius: 7, x: 0, y: 2)
             .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                    .stroke(AppTheme.Colors.cardBorder.opacity(0.15), lineWidth: 1)
             )
     }
 }

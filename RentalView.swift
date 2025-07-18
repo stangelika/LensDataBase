@@ -18,34 +18,27 @@ struct RentalView: View {
     var body: some View {
         ZStack {
             // Градиентный фон в сине-фиолетовых тонах
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(.sRGB, red: 27 / 255, green: 29 / 255, blue: 48 / 255, opacity: 1),
-                    Color(.sRGB, red: 38 / 255, green: 36 / 255, blue: 97 / 255, opacity: 1),
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            AppTheme.Colors.detailViewGradient
+                .ignoresSafeArea()
             
-            VStack(spacing: 20) {
+            VStack(spacing: AppTheme.Spacing.xxl) {
                 // Заголовок с названием выбранной компании проката
                 HStack {
                     Text(selectedRentalName)
-                        .font(.system(size: 36, weight: .heavy, design: .rounded))
+                        .font(.appLargeTitle)
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [.white, .blue, .indigo],
+                                colors: [AppTheme.Colors.primaryText, AppTheme.Colors.blue, AppTheme.Colors.indigo],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
-                        .shadow(color: .blue.opacity(0.15), radius: 10, x: 0, y: 4)
+                        .shadow(color: AppTheme.Colors.blue.opacity(0.15), radius: 10, x: 0, y: 4)
                         .animation(.easeInOut(duration: 0.25), value: selectedRentalName)
                     Spacer()
                 }
-                .padding(.horizontal, 28)
-                .padding(.top, 22)
+                .padding(.horizontal, AppTheme.Spacing.xxxl)
+                .padding(.top, AppTheme.Spacing.padding22)
 
                 // Панель фильтров для выбора компании и формата
                 HStack(spacing: 16) {
@@ -63,7 +56,7 @@ struct RentalView: View {
                         GlassFilterChip(
                             icon: "building.2",
                             title: dataManager.selectedRentalId.isEmpty ? "Choose rental" : (dataManager.appData?.rentals.first { $0.id == dataManager.selectedRentalId }?.name ?? "Rental"),
-                            accentColor: dataManager.selectedRentalId.isEmpty ? .blue : .green,
+                            accentColor: dataManager.selectedRentalId.isEmpty ? AppTheme.Colors.blue : AppTheme.Colors.green,
                             isActive: !dataManager.selectedRentalId.isEmpty
                         )
                     }
@@ -82,24 +75,24 @@ struct RentalView: View {
                         GlassFilterChip(
                             icon: "crop",
                             title: selectedFormat.isEmpty ? "All Formats" : selectedFormat,
-                            accentColor: selectedFormat.isEmpty ? .blue : .green,
+                            accentColor: selectedFormat.isEmpty ? AppTheme.Colors.blue : AppTheme.Colors.green,
                             isActive: !selectedFormat.isEmpty
                         )
                     }
                 }
-                .padding(.horizontal, 24)
+                .padding(.horizontal, AppTheme.Spacing.padding24)
 
                 // Основная область контента с условным отображением
                 if dataManager.loadingState == .loading {
                     // Индикатор загрузки данных
                     VStack {
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                            .progressViewStyle(CircularProgressViewStyle(tint: AppTheme.Colors.blue))
                             .scaleEffect(1.5)
                         Text("Loading...")
-                            .foregroundColor(.white.opacity(0.6))
-                            .font(.subheadline)
-                            .padding(.top, 4)
+                            .foregroundColor(AppTheme.Colors.quaternaryText)
+                            .font(.appBody)
+                            .padding(.top, AppTheme.Spacing.sm)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if let _ = dataManager.appData, !dataManager.selectedRentalId.isEmpty {
@@ -113,11 +106,11 @@ struct RentalView: View {
                     VStack {
                         Image(systemName: "building.2")
                             .font(.system(size: 54))
-                            .foregroundColor(.blue.opacity(0.4))
-                            .padding(.bottom, 8)
+                            .foregroundColor(AppTheme.Colors.blue.opacity(0.4))
+                            .padding(.bottom, AppTheme.Spacing.md)
                         Text("Choose rental to see lenses")
-                            .font(.headline)
-                            .foregroundColor(.white.opacity(0.7))
+                            .font(.appHeadline)
+                            .foregroundColor(AppTheme.Colors.tertiaryText)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
