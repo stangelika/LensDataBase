@@ -6,7 +6,7 @@ struct LensDetailView: View, Identifiable {
     @EnvironmentObject var dataManager: DataManager
     @Environment(\.presentationMode) var presentationMode
     @State private var showCompatibilityCheck = false
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
@@ -22,15 +22,15 @@ struct LensDetailView: View, Identifiable {
                             .background(Color.white.opacity(0.2))
                             .clipShape(Circle())
                     }
-                    
+
                     Spacer()
                 }
                 .padding(.horizontal)
                 .padding(.top, 10)
-                
+
                 // Lens title
                 StickyHeader(title: lens.display_name)
-                
+
                 // НОВЫЙ БЛОК ДЛЯ ЗАГОЛОВКА И КНОПКИ
                 HStack(alignment: .top) {
                     // Название объектива
@@ -39,9 +39,9 @@ struct LensDetailView: View, Identifiable {
                             .font(.title3)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Spacer() // Занимает все свободное место
-                    
+
                     // Кнопка "Избранное"
                     Button(action: {
                         // Вызываем нашу функцию из DataManager
@@ -59,13 +59,11 @@ struct LensDetailView: View, Identifiable {
                 }
                 .padding(.bottom, 8)
                 .padding(.horizontal)
-                
-                
+
                 // Specifications grid
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 18), GridItem(.flexible())], spacing: 18) {
-                    
                     // --- КАРТОЧКИ С ХАРАКТЕРИСТИКАМИ ---
-                    
+
                     SpecCard(
                         title: "Фокусное расстояние",
                         value: lens.focal_length,
@@ -118,7 +116,7 @@ struct LensDetailView: View, Identifiable {
                     )
 
                     // --- КАРТОЧКИ-КНОПКИ ---
-                    
+
                     Button(action: {
                         let query = lens.display_name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? lens.display_name
                         if let url = URL(string: "https://www.google.com/search?tbm=isch&q=\(query)") {
@@ -133,7 +131,7 @@ struct LensDetailView: View, Identifiable {
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
-                    
+
                     Button(action: {
                         showCompatibilityCheck = true
                     }) {
@@ -147,7 +145,7 @@ struct LensDetailView: View, Identifiable {
                     .buttonStyle(PlainButtonStyle())
                 }
                 .padding(.horizontal)
-                
+
                 // Rentals section
                 let rentals = dataManager.rentalsForLens(lens.id)
                 if !rentals.isEmpty {
@@ -156,7 +154,7 @@ struct LensDetailView: View, Identifiable {
                             .font(.title2.weight(.semibold))
                             .foregroundColor(.white)
                             .padding(.leading, 4)
-                        
+
                         ForEach(rentals) { rental in
                             Button(action: {
                                 dataManager.selectedRentalId = rental.id
@@ -177,8 +175,8 @@ struct LensDetailView: View, Identifiable {
         .background(
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(.sRGB, red: 27/255, green: 29/255, blue: 48/255, opacity: 1),
-                    Color(.sRGB, red: 38/255, green: 36/255, blue: 97/255, opacity: 1)
+                    Color(.sRGB, red: 27 / 255, green: 29 / 255, blue: 48 / 255, opacity: 1),
+                    Color(.sRGB, red: 38 / 255, green: 36 / 255, blue: 97 / 255, opacity: 1),
                 ]),
                 startPoint: .top,
                 endPoint: .bottom
@@ -234,7 +232,7 @@ struct SpecCard: View {
                     .background(
                         Circle().fill(color.opacity(0.15))
                     )
-                
+
                 Text(title)
                     .font(.caption.weight(.medium))
                     .foregroundColor(.secondary)
@@ -262,7 +260,7 @@ struct SpecCard: View {
 // Карточка рентала
 struct RentalCard: View {
     let rental: Rental
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 13) {
             HStack {
@@ -319,7 +317,7 @@ struct ContactButton: View {
     let icon: String
     let color: Color
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 6) {

@@ -13,8 +13,8 @@ struct RentalView: View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(.sRGB, red: 27/255, green: 29/255, blue: 48/255, opacity: 1),
-                    Color(.sRGB, red: 38/255, green: 36/255, blue: 97/255, opacity: 1)
+                    Color(.sRGB, red: 27 / 255, green: 29 / 255, blue: 48 / 255, opacity: 1),
+                    Color(.sRGB, red: 38 / 255, green: 36 / 255, blue: 97 / 255, opacity: 1),
                 ]),
                 startPoint: .top,
                 endPoint: .bottom
@@ -59,7 +59,7 @@ struct RentalView: View {
                     Menu {
                         Picker("Format", selection: $selectedFormat) {
                             Text("All Formats").tag("")
-                            ForEach(Array(Set(dataManager.availableLenses.map { $0.format })).sorted(), id: \.self) { format in
+                            ForEach(Array(Set(dataManager.availableLenses.map(\.format))).sorted(), id: \.self) { format in
                                 Text(format).tag(format)
                             }
                         }

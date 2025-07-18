@@ -16,8 +16,8 @@ struct FavoritesView: View {
                     // Фон
                     LinearGradient(
                         gradient: Gradient(colors: [
-                            Color(.sRGB, red: 24/255, green: 27/255, blue: 37/255, opacity: 1),
-                            Color(.sRGB, red: 34/255, green: 37/255, blue: 57/255, opacity: 1)
+                            Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
+                            Color(.sRGB, red: 34 / 255, green: 37 / 255, blue: 57 / 255, opacity: 1),
                         ]),
                         startPoint: .top,
                         endPoint: .bottom
@@ -63,7 +63,7 @@ struct FavoritesView: View {
                                             if isSelectionMode {
                                                 dataManager.toggleComparison(lens: lens)
                                             } else {
-                                                self.selectedLens = lens
+                                                selectedLens = lens
                                             }
                                         }) {
                                             LensRow(
@@ -102,9 +102,9 @@ struct FavoritesView: View {
             }
             .navigationViewStyle(.stack)
             .preferredColorScheme(.dark)
-            
+
             // Плавающая кнопка "Сравнить"
-            if isSelectionMode && dataManager.comparisonSet.count > 1 {
+            if isSelectionMode, dataManager.comparisonSet.count > 1 {
                 VStack {
                     Spacer()
                     Button(action: {
@@ -136,13 +136,12 @@ struct FavoritesView: View {
     }
 }
 
-
 // Строка списка
 struct LensRow: View {
     let lens: Lens
     let isSelectionMode: Bool
     let isSelectedForComparison: Bool
-    
+
     var body: some View {
         HStack(spacing: 15) {
             if isSelectionMode {
@@ -150,7 +149,7 @@ struct LensRow: View {
                     .font(.title2)
                     .foregroundColor(isSelectedForComparison ? .blue : .secondary)
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(lens.display_name)
                     .font(.headline.weight(.bold))

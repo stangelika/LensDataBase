@@ -16,8 +16,8 @@ struct SplashScreenView: View {
                 // Градиентный темный фон с "aura light"
                 LinearGradient(
                     gradient: Gradient(colors: [
-                        Color(.sRGB, red: 28/255, green: 32/255, blue: 48/255, opacity: 1),
-                        Color(.sRGB, red: 38/255, green: 36/255, blue: 97/255, opacity: 1)
+                        Color(.sRGB, red: 28 / 255, green: 32 / 255, blue: 48 / 255, opacity: 1),
+                        Color(.sRGB, red: 38 / 255, green: 36 / 255, blue: 97 / 255, opacity: 1),
                     ]),
                     startPoint: .topLeading, endPoint: .bottomTrailing
                 )
@@ -30,7 +30,7 @@ struct SplashScreenView: View {
                             gradient: Gradient(colors: [
                                 Color.orange.opacity(0.28),
                                 Color.purple.opacity(0.16),
-                                Color.clear
+                                Color.clear,
                             ]),
                             center: .center, startRadius: 0, endRadius: 350
                         )
@@ -105,7 +105,7 @@ struct SplashScreenView: View {
                                             .font(.subheadline)
                                             .foregroundColor(.white.opacity(0.8))
                                     }
-                                } else if case .error(let error) = dataManager.loadingState {
+                                } else if case let .error(error) = dataManager.loadingState {
                                     Text("Error: \(error)")
                                         .font(.footnote)
                                         .foregroundColor(.red)
@@ -136,14 +136,14 @@ struct SplashScreenView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.1) {
                     withAnimation(.easeInOut(duration: 0.55)) {
                         if dataManager.loadingState != .loading || dataManager.appData != nil {
-                            self.isActive = true
+                            isActive = true
                         }
                     }
                 }
             }
             .onChange(of: dataManager.loadingState) { newState in
-                if newState == .loaded && !isActive {
-                    self.isActive = true
+                if newState == .loaded, !isActive {
+                    isActive = true
                 }
             }
         }
@@ -189,7 +189,7 @@ struct ShimmeringText: View {
                         gradient: Gradient(colors: [
                             .white.opacity(0.15),
                             .white.opacity(0.7),
-                            .white.opacity(0.15)
+                            .white.opacity(0.15),
                         ]),
                         startPoint: .leading,
                         endPoint: .trailing

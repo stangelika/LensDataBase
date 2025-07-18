@@ -10,8 +10,8 @@ struct UpdateView: View {
             // Фон как в других разделах
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(.sRGB, red: 24/255, green: 27/255, blue: 37/255, opacity: 1),
-                    Color(.sRGB, red: 34/255, green: 37/255, blue: 57/255, opacity: 1)
+                    Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
+                    Color(.sRGB, red: 34 / 255, green: 37 / 255, blue: 57 / 255, opacity: 1),
                 ]),
                 startPoint: .top,
                 endPoint: .bottom
@@ -83,7 +83,7 @@ struct UpdateView: View {
                 .disabled(dataManager.loadingState == .loading) // Блокируем кнопку во время загрузки
 
                 // Показываем сообщение об ошибке, если она есть
-                if case .error(let error) = dataManager.loadingState {
+                if case let .error(error) = dataManager.loadingState {
                     Text("Error: \(error)")
                         .font(.caption)
                         .foregroundColor(.red)

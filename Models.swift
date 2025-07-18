@@ -52,8 +52,8 @@ struct RecordingFormat: Codable, Identifiable, Hashable {
     }
 }
 
-
 // MARK: - Модели данных
+
 struct Rental: Codable, Identifiable {
     let id: String
     let name: String
@@ -76,7 +76,7 @@ struct Lens: Codable, Identifiable {
     let length: String
     let front_diameter: String
     let squeeze_factor: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case display_name
@@ -92,10 +92,10 @@ struct Lens: Codable, Identifiable {
         case front_diameter
         case squeeze_factor
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         // Обрабатываем все поля с помощью универсального декодера
         id = try Lens.decodeFlexible(container: container, key: .id) ?? ""
         display_name = try Lens.decodeFlexible(container: container, key: .display_name) ?? ""
@@ -111,28 +111,28 @@ struct Lens: Codable, Identifiable {
         front_diameter = try Lens.decodeFlexible(container: container, key: .front_diameter) ?? ""
         squeeze_factor = try Lens.decodeFlexible(container: container, key: .squeeze_factor)
     }
-    
+
     // Универсальный метод для декодирования любых полей
     private static func decodeFlexible(container: KeyedDecodingContainer<Lens.CodingKeys>, key: CodingKeys) throws -> String? {
         // Пробуем декодировать как строку
         if let stringValue = try? container.decode(String.self, forKey: key) {
-            return stringValue
+            stringValue
         }
         // Пробуем декодировать как целое число
         else if let intValue = try? container.decode(Int.self, forKey: key) {
-            return String(intValue)
+            String(intValue)
         }
         // Пробуем декодировать как число с плавающей точкой
         else if let doubleValue = try? container.decode(Double.self, forKey: key) {
-            return String(doubleValue)
+            String(doubleValue)
         }
         // Пробуем декодировать как булево значение
         else if let boolValue = try? container.decode(Bool.self, forKey: key) {
-            return boolValue ? "true" : "false"
+            boolValue ? "true" : "false"
         }
         // Если ничего не получилось, возвращаем nil
         else {
-            return nil
+            nil
         }
     }
 }
@@ -146,24 +146,25 @@ struct AppData: Codable {
     let rentals: [Rental]
     let lenses: [Lens]
     let inventory: [String: [InventoryItem]]
-    
+
     // Кастомный инициализатор для обработки ошибок в массиве объективов
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         last_updated = try container.decode(String.self, forKey: .last_updated)
         rentals = try container.decode([Rental].self, forKey: .rentals)
         inventory = try container.decode([String: [InventoryItem]].self, forKey: .inventory)
-        
+
         // Обрабатываем объективы с защитой от ошибок (ИСПРАВЛЕНО: let вместо var)
         let lensesArray = try container.decode([Lens].self, forKey: .lenses)
-        
+
         // Фильтруем объективы с пустым ID
         lenses = lensesArray.filter { !$0.id.isEmpty }
     }
 }
 
 // MARK: - Группировка данных для UI
+
 struct LensGroup: Identifiable {
     let id = UUID()
     let manufacturer: String
@@ -177,6 +178,7 @@ struct LensSeries: Identifiable {
 }
 
 // MARK: - Состояния приложения (ИСПРАВЛЕНО: добавлено Equatable)
+
 enum DataLoadingState: Equatable {
     case idle
     case loading
@@ -188,9 +190,10 @@ enum ActiveTab: Equatable {
     case rentalView
     case allLenses
     case updateView
-    case favorites 
+    case favorites
     case projects
 }
+
 // MARK: - Модель для Проектов
 
 struct Project: Codable, Identifiable, Equatable {
@@ -200,7 +203,7 @@ struct Project: Codable, Identifiable, Equatable {
     var date: Date
     var lensIDs: [String] // Массив ID объективов в этом проекте
     var cameraIDs: [String] // Массив ID камер в этом проекте
-    
+
     // Статический метод для создания пустого проекта
     static func empty() -> Project {
         Project(

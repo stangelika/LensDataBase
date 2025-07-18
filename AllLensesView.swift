@@ -11,8 +11,8 @@ struct AllLensesView: View {
             // Глубокий градиентный фон
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(.sRGB, red: 24/255, green: 27/255, blue: 37/255, opacity: 1),
-                    Color(.sRGB, red: 34/255, green: 37/255, blue: 57/255, opacity: 1)
+                    Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
+                    Color(.sRGB, red: 34 / 255, green: 37 / 255, blue: 57 / 255, opacity: 1),
                 ]),
                 startPoint: .top,
                 endPoint: .bottom
@@ -42,7 +42,7 @@ struct AllLensesView: View {
                     Menu {
                         Picker("Format", selection: $selectedFormat) {
                             Text("All Formats").tag("")
-                            ForEach(Array(Set(dataManager.availableLenses.map { $0.format })).sorted(), id: \.self) { format in
+                            ForEach(Array(Set(dataManager.availableLenses.map(\.format))).sorted(), id: \.self) { format in
                                 Text(format).tag(format)
                             }
                         }
@@ -121,21 +121,21 @@ enum FocalCategory: String, CaseIterable, Identifiable {
     case tele
     case superTele
 
-    var id: String { self.rawValue }
+    var id: String { rawValue }
 
     var displayName: String {
         switch self {
-        case .all: return "All"
-        case .ultraWide: return "Ultra Wide (≤12mm)"
-        case .wide: return "Wide (13–35mm)"
-        case .standard: return "Standard (36–70mm)"
-        case .tele: return "Tele (71–180mm)"
-        case .superTele: return "Super Tele (181mm+)"
+        case .all: "All"
+        case .ultraWide: "Ultra Wide (≤12mm)"
+        case .wide: "Wide (13–35mm)"
+        case .standard: "Standard (36–70mm)"
+        case .tele: "Tele (71–180mm)"
+        case .superTele: "Super Tele (181mm+)"
         }
     }
 
     func contains(focal: Double?) -> Bool {
-        guard let focal = focal else { return false }
+        guard let focal else { return false }
         switch self {
         case .all: return true
         case .ultraWide: return focal <= 12

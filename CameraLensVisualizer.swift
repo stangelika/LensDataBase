@@ -1,6 +1,6 @@
 import SwiftUI
 
- enum ExpandedPicker {
+enum ExpandedPicker {
     case camera
     case format
 }
@@ -9,12 +9,12 @@ struct CameraLensVisualizerRoot: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var dataManager: DataManager
     let lens: Lens
-    
+
     @State private var selectedCamera: Camera?
     @State private var selectedFormat: RecordingFormat?
-    
+
     @State private var activePicker: ExpandedPicker? = nil
-    
+
     var body: some View {
         NavigationView {
             ScrollView(showsIndicators: false) {
@@ -34,9 +34,9 @@ struct CameraLensVisualizerRoot: View {
                     }
                     .padding(.horizontal)
                     .padding(.top, 10)
-                    
+
                     Spacer().frame(height: 20)
-                    
+
                     // Карточка объектива
                     GlassInfoCard(
                         title: lens.display_name,
@@ -45,12 +45,12 @@ struct CameraLensVisualizerRoot: View {
                         value: "Круг изображения: \(lens.image_circle)"
                     )
                     .padding(.horizontal)
-                    
+
                     // Визуализация
                     if let format = selectedFormat {
                         ZStack {
                             Rectangle().fill(Color.clear).frame(height: 220)
-                            
+
                             GeometryReader { geo in
                                 ZStack {
                                     let lensCircleDiameter = lens.validImageCircle
@@ -82,7 +82,7 @@ struct CameraLensVisualizerRoot: View {
                         }
                         .padding(.vertical, 8)
                     }
-                    
+
                     // Блок выбора камеры и формата
                     VStack(spacing: 12) {
                         ExpandablePickerView(
@@ -102,7 +102,7 @@ struct CameraLensVisualizerRoot: View {
                                 )
                             }
                         )
-                        
+
                         if let camera = selectedCamera {
                             ExpandablePickerView(
                                 pickerId: .format,
@@ -124,7 +124,7 @@ struct CameraLensVisualizerRoot: View {
                         }
                     }
                     .padding(.horizontal)
-                    
+
                     // Информационная карточка
                     if let format = selectedFormat, let camera = selectedCamera {
                         GlassInfoCard(
@@ -138,8 +138,10 @@ struct CameraLensVisualizerRoot: View {
                                 return "\(w)x\(h) мм (диаг. \(diag))"
                             }(),
                             status: {
-                                guard let lensCircle = lens.validImageCircle,
-                                      let formatDiag = format.recordingDiagonal else {
+                                guard
+                                    let lensCircle = lens.validImageCircle,
+                                    let formatDiag = format.recordingDiagonal
+                                else {
                                     return nil
                                 }
                                 return lensCircle >= formatDiag ?
@@ -150,7 +152,7 @@ struct CameraLensVisualizerRoot: View {
                         .padding(.horizontal)
                         .transition(.opacity.combined(with: .move(edge: .bottom)))
                     }
-                    
+
                     Spacer(minLength: 20)
                 }
                 .padding(.bottom)
@@ -158,8 +160,8 @@ struct CameraLensVisualizerRoot: View {
             .background(
                 LinearGradient(
                     gradient: Gradient(colors: [
-                        Color(.sRGB, red: 28/255, green: 32/255, blue: 48/255),
-                        Color(.sRGB, red: 38/255, green: 36/255, blue: 97/255)
+                        Color(.sRGB, red: 28 / 255, green: 32 / 255, blue: 48 / 255),
+                        Color(.sRGB, red: 38 / 255, green: 36 / 255, blue: 97 / 255),
                     ]),
                     startPoint: .topLeading, endPoint: .bottomTrailing
                 )
@@ -194,7 +196,7 @@ struct ExpandablePickerView<Data, Content: View>: View where Data: Hashable, Dat
     @Binding var activePicker: ExpandedPicker?
     let selectionDisplay: (Data) -> String
     let content: (Data) -> Content
-    
+
     private var isExpanded: Bool {
         activePicker == pickerId
     }
@@ -223,11 +225,11 @@ struct ExpandablePickerView<Data, Content: View>: View where Data: Hashable, Dat
                 ScrollView {
                     VStack(spacing: 4) {
                         ForEach(data) { item in
-                            self.content(item)
+                            content(item)
                                 .onTapGesture {
                                     withAnimation(.spring(response: 0.33, dampingFraction: 0.8)) {
-                                        self.selection = item
-                                        self.activePicker = nil
+                                        selection = item
+                                        activePicker = nil
                                     }
                                 }
                         }
@@ -245,15 +247,15 @@ struct ExpandablePickerView<Data, Content: View>: View where Data: Hashable, Dat
 struct PickerRowView: View {
     let text: String
     let isSelected: Bool
-    
+
     var body: some View {
         HStack {
             Text(text)
                 .font(.subheadline.weight(isSelected ? .bold : .regular))
                 .foregroundColor(isSelected ? .blue : .white)
-            
+
             Spacer()
-            
+
             if isSelected {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(.blue)
@@ -274,7 +276,6 @@ struct PickerRowView: View {
     }
 }
 
-
 // --- ОСТАЛЬНЫЕ КОМПОНЕНТЫ ---
 
 struct GlassInfoCard: View {
@@ -282,8 +283,8 @@ struct GlassInfoCard: View {
     let subtitle: String
     let icon: String
     let value: String
-    var status: (isCompatible: Bool, statusText: String, icon: String)? = nil
-    
+    var status: (isCompatible: Bool, statusText: String, icon: String)?
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -294,7 +295,7 @@ struct GlassInfoCard: View {
                     .font(.headline.weight(.semibold))
                     .foregroundColor(.white)
                 Spacer()
-                if let status = status {
+                if let status {
                     HStack(spacing: 6) {
                         Image(systemName: status.icon)
                             .foregroundColor(status.isCompatible ? .green : .red)
@@ -345,7 +346,7 @@ extension Lens {
             .replacingOccurrences(of: "mm", with: "")
             .replacingOccurrences(of: ",", with: ".")
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         guard !cleanedValue.isEmpty, cleanedValue != "-" else { return nil }
         return Double(cleanedValue)
     }
@@ -354,20 +355,20 @@ extension Lens {
 extension RecordingFormat {
     var validRecordingWidth: Double? { cleanAndConvertToDouble(recordingWidth) }
     var validRecordingHeight: Double? { cleanAndConvertToDouble(recordingHeight) }
-    
+
     var recordingDiagonal: Double? {
         guard let width = validRecordingWidth, let height = validRecordingHeight else { return nil }
-        guard width > 0 && height > 0 else { return nil }
+        guard width > 0, height > 0 else { return nil }
         return sqrt(width * width + height * height)
     }
-    
+
     private func cleanAndConvertToDouble(_ value: String) -> Double? {
         let cleaned = value
             .lowercased()
             .replacingOccurrences(of: "mm", with: "")
             .replacingOccurrences(of: ",", with: ".")
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         guard !cleaned.isEmpty, cleaned != "-" else { return nil }
         return Double(cleaned)
     }

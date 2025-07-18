@@ -21,7 +21,7 @@ struct WeatherStyleLensListView: View {
             let filteredSeries = group.series.compactMap { series in
                 let filteredLenses = series.lenses.filter {
                     (format.isEmpty || $0.format == format)
-                    && focalCategory.contains(focal: $0.mainFocalValue)
+                        && focalCategory.contains(focal: $0.mainFocalValue)
                 }
                 return filteredLenses.isEmpty ? nil : LensSeries(name: series.name, lenses: filteredLenses)
             }
@@ -62,8 +62,8 @@ struct WeatherStyleLensListView: View {
         .background(
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(.sRGB, red: 30/255, green: 32/255, blue: 54/255, opacity: 1),
-                    Color(.sRGB, red: 22/255, green: 22/255, blue: 32/255, opacity: 1)
+                    Color(.sRGB, red: 30 / 255, green: 32 / 255, blue: 54 / 255, opacity: 1),
+                    Color(.sRGB, red: 22 / 255, green: 22 / 255, blue: 32 / 255, opacity: 1),
                 ]),
                 startPoint: .top,
                 endPoint: .bottom
