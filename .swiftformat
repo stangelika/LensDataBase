@@ -37,8 +37,7 @@
 --self remove
 --selfrequired 
 --shortoptionals always
---redundantType inferred
---redundantParens false
+--redundanttype inferred
 
 # Line breaks
 --linebreaks lf

@@ -155,7 +155,7 @@ struct LensRow: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(lens.display_name)
+                Text(lens.displayName)
                     .font(.headline.weight(.bold))
                     .foregroundColor(.white)
                 Text("\(lens.manufacturer) • \(lens.format)")

@@ -86,7 +86,7 @@ class DataManager: ObservableObject {
     private func updateFavoriteLensesList() {
         favoriteLensesList = availableLenses
             .filter { favoriteLenses.contains($0.id) }
-            .sorted { $0.display_name < $1.display_name }
+            .sorted { $0.displayName < $1.displayName }
     }
 
     /// Saves favorites to UserDefaults
@@ -232,12 +232,12 @@ class DataManager: ObservableObject {
             let originalManufacturer = lenses.first?.manufacturer ?? manufacturerKey
 
             let normalizedSeries = lenses.reduce(into: [String: [Lens]]()) { result, lens in
-                let normalized = normalizeName(lens.lens_name)
+                let normalized = normalizeName(lens.lensName)
                 result[normalized, default: []].append(lens)
             }
 
             let series = normalizedSeries.map { seriesKey, lenses in
-                let originalSeriesName = lenses.first?.lens_name ?? seriesKey
+                let originalSeriesName = lenses.first?.lensName ?? seriesKey
                 return LensSeries(name: originalSeriesName, lenses: lenses)
             }
             .sorted { $0.name < $1.name }

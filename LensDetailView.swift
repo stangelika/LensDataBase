@@ -29,13 +29,13 @@ struct LensDetailView: View, Identifiable {
                 .padding(.top, 10)
                 
                 // Lens title
-                StickyHeader(title: lens.display_name)
+                StickyHeader(title: lens.displayName)
                 
                 // НОВЫЙ БЛОК ДЛЯ ЗАГОЛОВКА И КНОПКИ
                 HStack(alignment: .top) {
                     // Название объектива
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("\(lens.manufacturer) · \(lens.lens_name)")
+                        Text("\(lens.manufacturer) · \(lens.lensName)")
                             .font(.title3)
                             .foregroundColor(.secondary)
                     }
@@ -68,7 +68,7 @@ struct LensDetailView: View, Identifiable {
                     
                     SpecCard(
                         title: "Фокусное расстояние",
-                        value: lens.focal_length,
+                        value: lens.focalLength,
                         icon: "arrow.left.and.right",
                         color: .blue
                     )
@@ -120,7 +120,7 @@ struct LensDetailView: View, Identifiable {
                     // --- КАРТОЧКИ-КНОПКИ ---
                     
                     Button(action: {
-                        let query = lens.display_name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? lens.display_name
+                        let query = lens.displayName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? lens.displayName
                         if let url = URL(string: "https://www.google.com/search?tbm=isch&q=\(query)") {
                             UIApplication.shared.open(url)
                         }

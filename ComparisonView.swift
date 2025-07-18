@@ -11,17 +11,17 @@ struct ComparisonView: View {
         dataManager.comparisonSet.compactMap { lensId in
             dataManager.availableLenses.first { $0.id == lensId }
         }
-        .sorted { $0.display_name < $1.display_name } // Сортируем для постоянства
+        .sorted { $0.displayName < $1.displayName } // Сортируем для постоянства
     }
     
     // Определяем строки нашей таблицы
     private let specs: [(String, KeyPath<Lens, String>)] = [
         ("Format", \.format),
-        ("Focal Length", \.focal_length),
+        ("Focal Length", \.focalLength),
         ("Aperture", \.aperture),
-        ("Image Circle", \.image_circle),
-        ("Close Focus", \.close_focus_cm),
-        ("Front Diameter", \.front_diameter),
+        ("Image Circle", \.imageCircle),
+        ("Close Focus", \.closeFocusCm),
+        ("Front Diameter", \.frontDiameter),
         ("Length", \.length)
     ]
     
@@ -83,7 +83,7 @@ struct ComparisonView: View {
                                         VStack(alignment: .leading, spacing: 0) {
                                             // Lens name card
                                             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-                                                Text(lens.display_name)
+                                                Text(lens.displayName)
                                                     .font(AppTheme.Typography.headlineMedium)
                                                     .lineLimit(3)
                                                     .foregroundColor(AppTheme.Colors.textPrimary)

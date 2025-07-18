@@ -133,8 +133,8 @@ struct WeatherStyleLensRow: View {
     var body: some View {
         HStack(alignment: .center, spacing: 18) {
             VStack(alignment: .leading, spacing: 6) {
-                // Новый формат: lens_name + focal_length
-                Text("\(lens.lens_name) \(lens.focal_length)")
+                // Новый формат: lensName + focalLength
+                Text("\(lens.lensName) \(lens.focalLength)")
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)
                     .lineLimit(1)
