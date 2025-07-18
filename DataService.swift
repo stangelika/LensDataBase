@@ -87,8 +87,7 @@ class DataManager: ObservableObject {
     @Published var favoriteLenses = Set<String>()
     // Функциональность сравнения: множество ID линз для сравнения (макс. 4)
     @Published var comparisonSet = Set<String>()
-    // Пользовательские проекты с наборами линз и камер
-    @Published var projects: [Project] = []
+    
 
     // Кешированный список избранных линз для быстрого доступа в UI
     @Published var favoriteLensesList: [Lens] = []
@@ -97,58 +96,15 @@ class DataManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     // Ключ для сохранения избранного в UserDefaults
     private let favoritesKey = "favoriteLenses"
-    // Ключ для сохранения проектов в UserDefaults
-    private let projectsKey = "userProjects"
+    
 
     // Инициализатор: загружаем сохраненные данные при запуске
     init() {
         loadFavorites()
-        loadProjects()
+        
     }
 
-    // MARK: - Управление проектами
-
-    // Создание нового пустого проекта и добавление в список
-    func addProject() {
-        let newProject = Project.empty()
-        projects.append(newProject)
-        saveProjects()
-    }
-
-    // Удаление проектов по индексам (для SwiftUI List с onDelete)
-    func deleteProject(at offsets: IndexSet) {
-        projects.remove(atOffsets: offsets)
-        saveProjects()
-    }
-
-    // Обновление существующего проекта
-    func updateProject(_ project: Project) {
-        // Находим проект по ID и обновляем его
-        guard let index = projects.firstIndex(where: { $0.id == project.id }) else { return }
-        projects[index] = project
-        saveProjects()
-    }
-
-    // Сохранение массива проектов в UserDefaults
-    private func saveProjects() {
-        do {
-            let data = try JSONEncoder().encode(projects)
-            UserDefaults.standard.set(data, forKey: projectsKey)
-        } catch {
-            print("❌ Failed to save projects: \(error)")
-        }
-    }
-
-    // Загрузка сохраненных проектов из UserDefaults
-    private func loadProjects() {
-        guard let data = UserDefaults.standard.data(forKey: projectsKey) else { return }
-        do {
-            projects = try JSONDecoder().decode([Project].self, from: data)
-        } catch {
-            print("❌ Failed to load projects: \(error)")
-        }
-    }
-
+    
     // MARK: - Управление избранными линзами
 
     // Обновление кешированного списка избранных линз для UI
