@@ -39,7 +39,7 @@ struct SplashScreenView: View {
                 // Центральная стеклянная карта с логотипом и анимацией
                 VStack(spacing: 0) {
                     ZStack {
-                        GlassCard()
+                        SplashGlassCard()
                             .frame(width: 230, height: 230)
                             .opacity(glassBlur ? 1 : 0)
                             .scaleEffect(glassBlur ? 1 : 0.85)
@@ -85,7 +85,7 @@ struct SplashScreenView: View {
                 // Прозрачная карточка загрузки и подпись
                 VStack {
                     Spacer()
-                    GlassCard()
+                    SplashGlassCard()
                         .frame(height: 80)
                         .overlay(
                             VStack(spacing: 10) {
@@ -143,7 +143,7 @@ struct SplashScreenView: View {
 }
 
 // Гибкий стеклянный card для переиспользования
-struct GlassCard: View {
+struct SplashGlassCard: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 32, style: .continuous)
             .fill(.ultraThinMaterial)
