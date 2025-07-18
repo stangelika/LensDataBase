@@ -20,42 +20,35 @@ struct FavoritesView: View {
             NavigationView {
                 ZStack {
                     // Темный градиентный фон
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
-                            Color(.sRGB, red: 34 / 255, green: 37 / 255, blue: 57 / 255, opacity: 1),
-                        ]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .ignoresSafeArea()
+                    AppTheme.Colors.primaryGradient
+                        .ignoresSafeArea()
 
                     // Основная область контента
-                    VStack(spacing: 20) {
+                    VStack(spacing: AppTheme.Spacing.xxl) {
                         // Заголовок секции с градиентным стилем
                         HStack {
                             Text("Favorites")
-                                .font(.system(size: 36, weight: .heavy, design: .rounded))
-                                .foregroundStyle(LinearGradient(colors: [.white, .yellow.opacity(0.85), .orange], startPoint: .leading, endPoint: .trailing))
-                                .shadow(color: .yellow.opacity(0.18), radius: 12, x: 0, y: 6)
+                                .font(.appLargeTitle)
+                                .gradientText(AppTheme.Colors.favoriteTitleGradient)
+                                .shadow(color: AppTheme.Colors.yellow.opacity(0.18), radius: 12, x: 0, y: 6)
                             Spacer()
                         }
-                        .padding(.horizontal, 28)
-                        .padding(.top, 22)
+                        .padding(.horizontal, AppTheme.Spacing.xxxl)
+                        .padding(.top, AppTheme.Spacing.padding22)
 
                         // Условное отображение при отсутствии избранных объективов
                         if dataManager.favoriteLensesList.isEmpty {
                             Spacer()
                             // Сообщение о пустом списке избранного
-                            VStack(spacing: 12) {
+                            VStack(spacing: AppTheme.Spacing.lg) {
                                 Image(systemName: "star.slash.fill")
                                     .font(.system(size: 60))
-                                    .foregroundColor(.yellow.opacity(0.6))
+                                    .foregroundColor(AppTheme.Colors.yellow.opacity(0.6))
                                 Text("No Favorites Yet")
                                     .font(.title2.weight(.bold))
                                 Text("Tap the star on a lens's detail page to add it to your favorites.")
-                                    .font(.subheadline)
-                                    .foregroundColor(.white.opacity(0.7))
+                                    .font(.appBody)
+                                    .foregroundColor(AppTheme.Colors.tertiaryText)
                                     .multilineTextAlignment(.center)
                                     .padding(.horizontal, 40)
                             }
@@ -64,7 +57,7 @@ struct FavoritesView: View {
                         } else {
                             // Скроллируемый список избранных объективов
                             ScrollView {
-                                LazyVStack(spacing: 16) {
+                                LazyVStack(spacing: AppTheme.Spacing.xl) {
                                     // Перебор всех избранных объективов
                                     ForEach(dataManager.favoriteLensesList) { lens in
                                         Button(action: {
@@ -108,9 +101,9 @@ struct FavoritesView: View {
                                 }) {
                                     // Текст кнопки в зависимости от режима
                                     Text(isSelectionMode ? "Done" : "Select")
-                                        .font(.headline.weight(.semibold))
+                                        .font(.appHeadline)
                                         .foregroundColor(.accentColor)
-                                        .padding(.trailing, 10) // <-- УВЕЛИЧЕННЫЙ ОТСТУП ДЛЯ КНОПКИ
+                                        .padding(.trailing, AppTheme.Spacing.padding10)
                                 }
                             }
                         }
@@ -129,16 +122,16 @@ struct FavoritesView: View {
                         showComparisonSheet = true
                     }) {
                         Text("Compare (\(dataManager.comparisonSet.count)) Lenses")
-                            .font(.headline.weight(.heavy))
-                            .foregroundColor(.white)
+                            .font(.appHeadline.weight(.heavy))
+                            .foregroundColor(AppTheme.Colors.primaryText)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue)
-                            .cornerRadius(16)
-                            .shadow(color: .blue.opacity(0.5), radius: 10, y: 5)
+                            .background(AppTheme.Colors.blue)
+                            .cornerRadius(AppTheme.CornerRadius.medium)
+                            .shadow(color: AppTheme.Colors.blue.opacity(0.5), radius: 10, y: 5)
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 20)
+                    .padding(.horizontal, AppTheme.Spacing.padding24)
+                    .padding(.bottom, AppTheme.Spacing.xxl)
                 }
                 // Анимация появления/скрытия кнопки
                 .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -169,24 +162,24 @@ struct LensRow: View {
 
     // Содержимое строки
     var body: some View {
-        HStack(spacing: 15) {
+        HStack(spacing: AppTheme.Spacing.padding15) {
             // Индикатор выбора (отображается только в режиме сравнения)
             if isSelectionMode {
                 Image(systemName: isSelectedForComparison ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
-                    .foregroundColor(isSelectedForComparison ? .blue : .secondary)
+                    .foregroundColor(isSelectedForComparison ? AppTheme.Colors.blue : AppTheme.Colors.captionText)
             }
 
             // Основная информация об объективе
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                 // Название объектива
                 Text(lens.display_name)
-                    .font(.headline.weight(.bold))
-                    .foregroundColor(.white)
+                    .font(.appHeadline.weight(.bold))
+                    .foregroundColor(AppTheme.Colors.primaryText)
                 // Дополнительная информация: производитель и формат
                 Text("\(lens.manufacturer) • \(lens.format)")
-                    .font(.subheadline)
-                    .foregroundColor(.white.opacity(0.8))
+                    .font(.appBody)
+                    .foregroundColor(AppTheme.Colors.secondaryText)
             }
             
             Spacer()
@@ -195,7 +188,7 @@ struct LensRow: View {
             if !isSelectionMode {
                 Image(systemName: "chevron.right")
                     .font(.callout.weight(.semibold))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(AppTheme.Colors.disabledText)
             }
         }
         .padding()
@@ -206,12 +199,12 @@ struct LensRow: View {
                 Color.white.opacity(isSelectedForComparison ? 0.15 : 0.05)
                 // Цветная обводка для выбранных объективов
                 if isSelectedForComparison {
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.blue, lineWidth: 2)
+                    RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                        .stroke(AppTheme.Colors.blue, lineWidth: 2)
                 }
             }
         )
-        .cornerRadius(16)
+        .cornerRadius(AppTheme.CornerRadius.medium)
         // Плавная анимация изменений состояния
         .animation(.easeInOut(duration: 0.2), value: [isSelectionMode, isSelectedForComparison])
     }

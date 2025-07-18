@@ -16,37 +16,24 @@ struct AllLensesView: View {
         // Контейнер с фоновым градиентом
         ZStack {
             // Темный градиентный фон с синими оттенками
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
-                    Color(.sRGB, red: 34 / 255, green: 37 / 255, blue: 57 / 255, opacity: 1),
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            AppTheme.Colors.primaryGradient
+                .ignoresSafeArea()
 
             // Основная вертикальная компоновка элементов
-            VStack(spacing: 20) {
+            VStack(spacing: AppTheme.Spacing.xxl) {
                 // Заголовок секции с градиентным стилем
                 HStack {
                     Text("Lenses")
-                        .font(.system(size: 36, weight: .heavy, design: .rounded))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.white, .purple.opacity(0.85), .blue],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .shadow(color: .purple.opacity(0.18), radius: 12, x: 0, y: 6)
+                        .font(.appLargeTitle)
+                        .gradientText(AppTheme.Colors.titleGradient)
+                        .shadow(color: AppTheme.Colors.purple.opacity(0.18), radius: 12, x: 0, y: 6)
                     Spacer()
                 }
-                .padding(.horizontal, 28)
-                .padding(.top, 22)
+                .padding(.horizontal, AppTheme.Spacing.xxxl)
+                .padding(.top, AppTheme.Spacing.padding22)
 
                 // Горизонтальная панель фильтров
-                HStack(spacing: 16) {
+                HStack(spacing: AppTheme.Spacing.xl) {
                     // Выпадающее меню выбора формата съемки
                     Menu {
                         Picker("Format", selection: $selectedFormat) {
@@ -61,7 +48,7 @@ struct AllLensesView: View {
                         GlassFilterChip(
                             icon: "crop",
                             title: selectedFormat.isEmpty ? "All Formats" : selectedFormat,
-                            accentColor: selectedFormat.isEmpty ? .purple : .green,
+                            accentColor: selectedFormat.isEmpty ? AppTheme.Colors.purple : AppTheme.Colors.green,
                             isActive: !selectedFormat.isEmpty
                         )
                     }
@@ -79,36 +66,36 @@ struct AllLensesView: View {
                         GlassFilterChip(
                             icon: "arrow.left.and.right",
                             title: selectedFocalCategory.displayName,
-                            accentColor: selectedFocalCategory == .all ? .indigo : .orange,
+                            accentColor: selectedFocalCategory == .all ? AppTheme.Colors.indigo : AppTheme.Colors.orange,
                             isActive: selectedFocalCategory != .all
                         )
                     }
                 }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 2)
+                .padding(.horizontal, AppTheme.Spacing.padding24)
+                .padding(.bottom, AppTheme.Spacing.xs)
 
                 // Основная область контента с условным отображением
                 if dataManager.loadingState == .loading {
                     // Индикатор загрузки при получении данных
                     VStack {
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .purple))
+                            .progressViewStyle(CircularProgressViewStyle(tint: AppTheme.Colors.purple))
                             .scaleEffect(1.5)
                         Text("Loading...")
-                            .foregroundColor(.white.opacity(0.6))
-                            .font(.subheadline)
-                            .padding(.top, 4)
+                            .foregroundColor(AppTheme.Colors.quaternaryText)
+                            .font(.appBody)
+                            .padding(.top, AppTheme.Spacing.sm)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if dataManager.availableLenses.isEmpty {
                     // Сообщение об отсутствии данных
-                    VStack(spacing: 8) {
+                    VStack(spacing: AppTheme.Spacing.md) {
                         Image(systemName: "camera.metering.unknown")
                             .font(.system(size: 54))
-                            .foregroundColor(.purple.opacity(0.4))
+                            .foregroundColor(AppTheme.Colors.purple.opacity(0.4))
                         Text("No lenses available")
-                            .font(.headline)
-                            .foregroundColor(.white.opacity(0.7))
+                            .font(.appHeadline)
+                            .foregroundColor(AppTheme.Colors.tertiaryText)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
@@ -195,39 +182,25 @@ struct GlassFilterChip: View {
     // Содержимое кнопки фильтра
     var body: some View {
         // Горизонтальная компоновка элементов кнопки
-        HStack(spacing: 8) {
+        HStack(spacing: AppTheme.Spacing.md) {
             // Иконка фильтра с цветовой индикацией
             Image(systemName: icon)
                 .foregroundColor(accentColor)
                 .font(.system(size: 17, weight: .semibold))
             // Текст названия фильтра
             Text(title)
-                .font(.subheadline.weight(.medium))
-                .foregroundColor(.white)
+                .font(.appBodyMedium)
+                .foregroundColor(AppTheme.Colors.primaryText)
                 .lineLimit(1)
-            Spacer(minLength: 2)
+            Spacer(minLength: AppTheme.Spacing.xs)
             // Индикатор выпадающего меню
             Image(systemName: "chevron.down")
                 .font(.system(size: 13, weight: .bold))
-                .foregroundColor(.white.opacity(0.7))
+                .foregroundColor(AppTheme.Colors.tertiaryText)
         }
-        .padding(.vertical, 11)
-        .padding(.horizontal, 18)
-        .background(
-            // Многослойный фон с материальным эффектом
-            ZStack {
-                // Базовая стеклянная подложка
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(.ultraThinMaterial)
-                    .blur(radius: 0.6)
-                // Цветная обводка с адаптивной яркостью
-                RoundedRectangle(cornerRadius: 18)
-                    .stroke(isActive ? accentColor.opacity(0.7) : accentColor.opacity(0.28), lineWidth: isActive ? 2.3 : 1.3)
-            }
-        )
-        // Тень с адаптивной интенсивностью
-        .shadow(color: accentColor.opacity(isActive ? 0.20 : 0.07), radius: isActive ? 9 : 3, x: 0, y: 3)
-        .contentShape(RoundedRectangle(cornerRadius: 18))
-        .animation(.easeInOut(duration: 0.19), value: isActive)
+        .padding(.vertical, AppTheme.Spacing.padding11)
+        .padding(.horizontal, AppTheme.Spacing.padding18)
+        .filterChip(accentColor: accentColor, isActive: isActive, cornerRadius: AppTheme.CornerRadius.large)
+        .contentShape(RoundedRectangle(cornerRadius: AppTheme.CornerRadius.large))
     }
 }

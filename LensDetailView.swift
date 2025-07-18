@@ -16,7 +16,7 @@ struct LensDetailView: View, Identifiable {
     var body: some View {
         // Скроллируемый контейнер для всего контента
         ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxxl) {
                 // Заголовочная область с кнопкой возврата
                 HStack {
                     // Кнопка закрытия детального экрана
@@ -25,16 +25,16 @@ struct LensDetailView: View, Identifiable {
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.white.opacity(0.2))
+                            .foregroundColor(AppTheme.Colors.primaryText)
+                            .padding(AppTheme.Spacing.padding10)
+                            .background(AppTheme.Colors.toolbarBackground)
                             .clipShape(Circle())
                     }
 
                     Spacer()
                 }
                 .padding(.horizontal)
-                .padding(.top, 10)
+                .padding(.top, AppTheme.Spacing.padding10)
 
                 // Компонент липкого заголовка с названием объектива
                 StickyHeader(title: lens.display_name)
@@ -42,10 +42,10 @@ struct LensDetailView: View, Identifiable {
                 // Блок с основной информацией и кнопками действий
                 HStack(alignment: .top) {
                     // Информация о производителе и модели
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.padding10) {
                         Text("\(lens.manufacturer) · \(lens.lens_name)")
                             .font(.title3)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppTheme.Colors.captionText)
                     }
 
                     Spacer() // Занимает все свободное место
@@ -58,19 +58,19 @@ struct LensDetailView: View, Identifiable {
                         // Иконка звезды с адаптивным состоянием
                         Image(systemName: dataManager.isFavorite(lens: lens) ? "star.fill" : "star")
                             .font(.title2.weight(.bold))
-                            .foregroundColor(dataManager.isFavorite(lens: lens) ? .yellow : .gray)
-                            .padding(8)
+                            .foregroundColor(dataManager.isFavorite(lens: lens) ? AppTheme.Colors.yellow : AppTheme.Colors.captionText)
+                            .padding(AppTheme.Spacing.md)
                             .background(.ultraThinMaterial)
                             .clipShape(Circle())
-                            .shadow(color: .yellow.opacity(dataManager.isFavorite(lens: lens) ? 0.3 : 0), radius: 8)
+                            .shadow(color: AppTheme.Colors.yellow.opacity(dataManager.isFavorite(lens: lens) ? 0.3 : 0), radius: 8)
                             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: dataManager.isFavorite(lens: lens))
                     }
                 }
-                .padding(.bottom, 8)
+                .padding(.bottom, AppTheme.Spacing.md)
                 .padding(.horizontal)
 
                 // Сетка технических характеристик объектива
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 18), GridItem(.flexible())], spacing: 18) {
+                LazyVGrid(columns: [GridItem(.flexible(), spacing: AppTheme.Spacing.padding18), GridItem(.flexible())], spacing: AppTheme.Spacing.padding18) {
                     // Карточки с основными техническими параметрами
 
                     // Фокусное расстояние
@@ -78,35 +78,35 @@ struct LensDetailView: View, Identifiable {
                         title: "Фокусное расстояние",
                         value: lens.focal_length,
                         icon: "arrow.left.and.right",
-                        color: .blue
+                        color: AppTheme.Colors.blue
                     )
                     // Максимальная диафрагма
                     SpecCard(
                         title: "Диафрагма",
                         value: lens.aperture,
                         icon: "camera.aperture",
-                        color: .purple
+                        color: AppTheme.Colors.purple
                     )
                     // Формат съемки
                     SpecCard(
                         title: "Формат",
                         value: lens.format,
                         icon: "crop",
-                        color: .green
+                        color: AppTheme.Colors.green
                     )
                     // Минимальная дистанция фокусировки
                     SpecCard(
                         title: "Мин. дистанция",
                         value: lens.close_focus_cm.isEmpty ? lens.close_focus_in : lens.close_focus_cm,
                         icon: "ruler",
-                        color: .orange
+                        color: AppTheme.Colors.orange
                     )
                     // Диаметр круга изображения
                     SpecCard(
                         title: "Круг изображения",
                         value: lens.image_circle,
                         icon: "circle.dashed",
-                        color: .teal
+                        color: AppTheme.Colors.teal
                     )
                     // Коэффициент сжатия для анаморфных объективов (если применимо)
                     if let squeeze = lens.squeeze_factor, squeeze != "N/A" {
@@ -114,7 +114,7 @@ struct LensDetailView: View, Identifiable {
                             title: "Коэф. сжатия",
                             value: squeeze,
                             icon: "aspectratio",
-                            color: .pink
+                            color: AppTheme.Colors.pink
                         )
                     }
                     // Длина объектива
@@ -122,14 +122,14 @@ struct LensDetailView: View, Identifiable {
                         title: "Длина",
                         value: lens.length,
                         icon: "arrow.up.and.down",
-                        color: .indigo
+                        color: AppTheme.Colors.indigo
                     )
                     // Диаметр передней линзы
                     SpecCard(
                         title: "Передний диаметр",
                         value: lens.front_diameter,
                         icon: "circle",
-                        color: .brown
+                        color: AppTheme.Colors.brown
                     )
 
                     // Интерактивные карточки с действиями
@@ -145,7 +145,7 @@ struct LensDetailView: View, Identifiable {
                             title: "Действие",
                             value: "Поиск Google",
                             icon: "photo.on.rectangle.angled",
-                            color: .blue
+                            color: AppTheme.Colors.blue
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
@@ -158,7 +158,7 @@ struct LensDetailView: View, Identifiable {
                             title: "Действие",
                             value: "Проверить совм.",
                             icon: "camera.metering.center.weighted",
-                            color: .green
+                            color: AppTheme.Colors.green
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
@@ -168,12 +168,12 @@ struct LensDetailView: View, Identifiable {
                 // Секция компаний проката, где доступен данный объектив
                 let rentals = dataManager.rentalsForLens(lens.id)
                 if !rentals.isEmpty {
-                    VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.xl) {
                         // Заголовок секции проката
                         Text("Доступно в аренду")
                             .font(.title2.weight(.semibold))
-                            .foregroundColor(.white)
-                            .padding(.leading, 4)
+                            .foregroundColor(AppTheme.Colors.primaryText)
+                            .padding(.leading, AppTheme.Spacing.sm)
 
                         // Список компаний проката с переходами
                         ForEach(rentals) { rental in
@@ -188,23 +188,16 @@ struct LensDetailView: View, Identifiable {
                             .buttonStyle(PlainButtonStyle())
                         }
                     }
-                    .padding(.top, 20)
+                    .padding(.top, AppTheme.Spacing.xxl)
                     .padding(.horizontal)
                 }
             }
-            .padding(.bottom, 30)
+            .padding(.bottom, AppTheme.Spacing.padding30)
         }
         .background(
             // Фоновый градиент для всего экрана
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(.sRGB, red: 27 / 255, green: 29 / 255, blue: 48 / 255, opacity: 1),
-                    Color(.sRGB, red: 38 / 255, green: 36 / 255, blue: 97 / 255, opacity: 1),
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            AppTheme.Colors.detailViewGradient
+                .ignoresSafeArea()
         )
         .navigationBarHidden(true)
         .fullScreenCover(isPresented: $showCompatibilityCheck) {
@@ -226,18 +219,12 @@ struct StickyHeader: View {
         HStack {
             // Название объектива с градиентным эффектом
             Text(title)
-                .font(.system(size: 33, weight: .heavy, design: .rounded))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.white, .blue],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .shadow(color: .blue.opacity(0.10), radius: 6, x: 0, y: 2)
+                .font(.appTitle)
+                .gradientText(AppTheme.Colors.stickyHeaderGradient)
+                .shadow(color: AppTheme.Colors.blue.opacity(0.10), radius: 6, x: 0, y: 2)
             Spacer()
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, AppTheme.Spacing.xs)
         .padding(.horizontal)
     }
 }
@@ -255,7 +242,7 @@ struct SpecCard: View {
 
     // Содержимое карточки
     var body: some View {
-        VStack(alignment: .leading, spacing: 11) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.padding11) {
             // Заголовочная область с иконкой
             HStack(alignment: .center) {
                 // Иконка характеристики с цветной подложкой
@@ -269,29 +256,20 @@ struct SpecCard: View {
 
                 // Название характеристики
                 Text(title)
-                    .font(.caption.weight(.medium))
-                    .foregroundColor(.secondary)
+                    .font(.appCaption)
+                    .foregroundColor(AppTheme.Colors.captionText)
             }
             // Значение характеристики
             Text(value)
                 .font(.system(.title3, design: .rounded).weight(.semibold))
-                .foregroundColor(.white)
+                .foregroundColor(AppTheme.Colors.primaryText)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
-                .padding(.leading, 4)
+                .padding(.leading, AppTheme.Spacing.sm)
         }
-        .padding(16)
+        .padding(AppTheme.Spacing.xl)
         .frame(maxWidth: .infinity, minHeight: 100, alignment: .leading)
-        .background(
-            // Полупрозрачная подложка карточки
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color.white.opacity(0.07))
-        )
-        .overlay(
-            // Тонкая обводка карточки
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color.white.opacity(0.1), lineWidth: 1)
-        )
+        .glassCard(cornerRadius: AppTheme.CornerRadius.xlarge)
     }
 }
 
@@ -307,26 +285,26 @@ struct RentalCard: View {
             HStack {
                 // Название компании проката
                 Text(rental.name)
-                    .font(.headline.weight(.semibold))
+                    .font(.appHeadline)
                 Spacer()
                 // Иконка здания для визуального акцента
                 Image(systemName: "building.2")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppTheme.Colors.captionText)
             }
             // Адрес компании
             Text(rental.address)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                .font(.appBody)
+                .foregroundColor(AppTheme.Colors.captionText)
             // Разделительная линия перед контактами
             Divider()
-                .padding(.vertical, 4)
+                .padding(.vertical, AppTheme.Spacing.sm)
             // Кнопки связи с компанией
-            HStack(spacing: 16) {
+            HStack(spacing: AppTheme.Spacing.xl) {
                 // Кнопка звонка по телефону
                 ContactButton(
                     label: rental.phone,
                     icon: "phone",
-                    color: .green,
+                    color: AppTheme.Colors.green,
                     action: {
                         if let url = URL(string: "tel://\(rental.phone.filter("0123456789+".contains))") {
                             UIApplication.shared.open(url)
@@ -337,7 +315,7 @@ struct RentalCard: View {
                 ContactButton(
                     label: "Website",
                     icon: "globe",
-                    color: .blue,
+                    color: AppTheme.Colors.blue,
                     action: {
                         if let url = URL(string: rental.website) {
                             UIApplication.shared.open(url)
@@ -348,16 +326,7 @@ struct RentalCard: View {
             .frame(maxWidth: .infinity)
         }
         .padding()
-        .background(
-            // Полупрозрачная подложка карточки
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color.white.opacity(0.07))
-        )
-        .overlay(
-            // Тонкая обводка карточки
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color.white.opacity(0.1), lineWidth: 1)
-        )
+        .glassCard(cornerRadius: AppTheme.CornerRadius.xlarge)
     }
 }
 
@@ -376,18 +345,18 @@ struct ContactButton: View {
     var body: some View {
         Button(action: action) {
             // Горизонтальная компоновка иконки и текста
-            HStack(spacing: 6) {
+            HStack(spacing: AppTheme.Spacing.padding6) {
                 // Иконка действия
                 Image(systemName: icon)
                     .imageScale(.small)
                 // Текст кнопки
                 Text(label)
-                    .font(.subheadline)
+                    .font(.appBody)
                     .lineLimit(1)
             }
             .foregroundColor(color)
-            .padding(.vertical, 8)
-            .padding(.horizontal, 12)
+            .padding(.vertical, AppTheme.Spacing.md)
+            .padding(.horizontal, AppTheme.Spacing.lg)
             .background(
                 // Цветная капсульная подложка
                 Capsule(style: .continuous)
