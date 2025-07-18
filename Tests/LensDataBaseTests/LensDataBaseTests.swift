@@ -73,6 +73,22 @@ final class LensDataBaseTests: XCTestCase {
         XCTAssertEqual(item.lensId, "lens-123")
     }
 
+    func testInventoryItemJSONDecoding() {
+        // Test inventory item JSON decoding with snake_case keys
+        let jsonData = Data("""
+        {
+            "lens_id": "lens-456"
+        }
+        """.utf8)
+
+        do {
+            let item = try JSONDecoder().decode(InventoryItem.self, from: jsonData)
+            XCTAssertEqual(item.lensId, "lens-456")
+        } catch {
+            XCTFail("Failed to decode InventoryItem JSON: \(error)")
+        }
+    }
+
     func testRecordingFormatCreation() {
         // Test recording format creation
         let format = RecordingFormat(

@@ -179,6 +179,11 @@ struct InventoryItem: Codable {
     enum CodingKeys: String, CodingKey {
         case lensId = "lens_id"
     }
+
+    /// Public initializer for creating InventoryItem instances
+    init(lensId: String) {
+        self.lensId = lensId
+    }
 }
 
 /// Main application data container

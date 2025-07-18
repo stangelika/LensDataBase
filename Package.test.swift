@@ -22,7 +22,7 @@ let package = Package(
             dependencies: [],
             path: "Sources/LensDataBase",
             resources: [
-                .copy("Resources"),
+                .copy("../../Resources"),
             ]),
         .testTarget(
             name: "LensDataBaseTests",
