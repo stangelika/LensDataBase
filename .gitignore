@@ -120,3 +120,8 @@ site/
 dist/
 build/
 out/
+
+# Tools
+swiftlint
+swiftformat
+*.zip

@@ -68,33 +68,33 @@ struct Rental: Codable, Identifiable {
 /// Lens model representing a camera lens with flexible JSON decoding
 struct Lens: Codable, Identifiable {
     let id: String
-    let display_name: String
+    let displayName: String
     let manufacturer: String
-    let lens_name: String
+    let lensName: String
     let format: String
-    let focal_length: String
+    let focalLength: String
     let aperture: String
-    let close_focus_in: String
-    let close_focus_cm: String
-    let image_circle: String
+    let closeFocusIn: String
+    let closeFocusCm: String
+    let imageCircle: String
     let length: String
-    let front_diameter: String
-    let squeeze_factor: String?
+    let frontDiameter: String
+    let squeezeFactor: String?
     
     enum CodingKeys: String, CodingKey {
         case id
-        case display_name
+        case displayName = "display_name"
         case manufacturer
-        case lens_name
+        case lensName = "lens_name"
         case format
-        case focal_length
+        case focalLength = "focal_length"
         case aperture
-        case close_focus_in
-        case close_focus_cm
-        case image_circle
+        case closeFocusIn = "close_focus_in"
+        case closeFocusCm = "close_focus_cm"
+        case imageCircle = "image_circle"
         case length
-        case front_diameter
-        case squeeze_factor
+        case frontDiameter = "front_diameter"
+        case squeezeFactor = "squeeze_factor"
     }
     
     init(from decoder: Decoder) throws {
@@ -102,18 +102,18 @@ struct Lens: Codable, Identifiable {
         
         // Process all fields using flexible decoder
         id = try Lens.decodeFlexible(container: container, key: .id) ?? ""
-        display_name = try Lens.decodeFlexible(container: container, key: .display_name) ?? ""
+        displayName = try Lens.decodeFlexible(container: container, key: .displayName) ?? ""
         manufacturer = try Lens.decodeFlexible(container: container, key: .manufacturer) ?? ""
-        lens_name = try Lens.decodeFlexible(container: container, key: .lens_name) ?? ""
+        lensName = try Lens.decodeFlexible(container: container, key: .lensName) ?? ""
         format = try Lens.decodeFlexible(container: container, key: .format) ?? ""
-        focal_length = try Lens.decodeFlexible(container: container, key: .focal_length) ?? ""
+        focalLength = try Lens.decodeFlexible(container: container, key: .focalLength) ?? ""
         aperture = try Lens.decodeFlexible(container: container, key: .aperture) ?? ""
-        close_focus_in = try Lens.decodeFlexible(container: container, key: .close_focus_in) ?? ""
-        close_focus_cm = try Lens.decodeFlexible(container: container, key: .close_focus_cm) ?? ""
-        image_circle = try Lens.decodeFlexible(container: container, key: .image_circle) ?? ""
+        closeFocusIn = try Lens.decodeFlexible(container: container, key: .closeFocusIn) ?? ""
+        closeFocusCm = try Lens.decodeFlexible(container: container, key: .closeFocusCm) ?? ""
+        imageCircle = try Lens.decodeFlexible(container: container, key: .imageCircle) ?? ""
         length = try Lens.decodeFlexible(container: container, key: .length) ?? ""
-        front_diameter = try Lens.decodeFlexible(container: container, key: .front_diameter) ?? ""
-        squeeze_factor = try Lens.decodeFlexible(container: container, key: .squeeze_factor)
+        frontDiameter = try Lens.decodeFlexible(container: container, key: .frontDiameter) ?? ""
+        squeezeFactor = try Lens.decodeFlexible(container: container, key: .squeezeFactor)
     }
     
     /// Flexible decoder that handles different JSON data types (String, Int, Double, Bool)

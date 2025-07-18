@@ -149,7 +149,7 @@ enum FocalCategory: String, CaseIterable, Identifiable {
 
 extension Lens {
     var mainFocalValue: Double? {
-        let numbers = focal_length
+        let numbers = focalLength
             .components(separatedBy: CharacterSet(charactersIn: "-– "))
             .compactMap { Double($0.filter("0123456789.".contains)) }
         return numbers.first

@@ -39,10 +39,10 @@ struct CameraLensVisualizerRoot: View {
                     
                     // Карточка объектива
                     GlassInfoCard(
-                        title: lens.display_name,
-                        subtitle: "\(lens.manufacturer) \(lens.lens_name)",
+                        title: lens.displayName,
+                        subtitle: "\(lens.manufacturer) \(lens.lensName)",
                         icon: "camera.metering.matrix",
-                        value: "Круг изображения: \(lens.image_circle)"
+                        value: "Круг изображения: \(lens.imageCircle)"
                     )
                     .padding(.horizontal)
                     
