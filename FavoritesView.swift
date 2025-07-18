@@ -16,29 +16,32 @@ struct FavoritesView: View {
                     // Фон
                     LinearGradient(
                         gradient: Gradient(colors: [
-                            Color(.sRGB, red: 24/255, green: 27/255, blue: 37/255, opacity: 1),
-                            Color(.sRGB, red: 34/255, green: 37/255, blue: 57/255, opacity: 1)
+                            Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
+                            Color(.sRGB, red: 34 / 255, green: 37 / 255, blue: 57 / 255, opacity: 1),
                         ]),
                         startPoint: .top,
                         endPoint: .bottom
                     )
                     .ignoresSafeArea()
 
-<<<<<<< HEAD
-                    // Основной контент
+                    // Main content
                     VStack(spacing: 20) {
-                        // Кастомный заголовок
+                        // Custom header
                         HStack {
                             Text("Favorites")
                                 .font(.system(size: 36, weight: .heavy, design: .rounded))
-                                .foregroundStyle(LinearGradient(colors: [.white, .yellow.opacity(0.85), .orange], startPoint: .leading, endPoint: .trailing))
+                                .foregroundStyle(LinearGradient(
+                                    colors: [.white, .yellow.opacity(0.85), .orange],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ))
                                 .shadow(color: .yellow.opacity(0.18), radius: 12, x: 0, y: 6)
                             Spacer()
                         }
                         .padding(.horizontal, 28)
                         .padding(.top, 22)
 
-                        // Проверка на пустой список избранного
+                        // Check for empty favorites list
                         if dataManager.favoriteLensesList.isEmpty {
                             Spacer()
                             VStack(spacing: 12) {
@@ -56,7 +59,7 @@ struct FavoritesView: View {
                             Spacer()
                             Spacer()
                         } else {
-                            // Список
+                            // List
                             ScrollView {
                                 LazyVStack(spacing: 16) {
                                     ForEach(dataManager.favoriteLensesList) { lens in
@@ -64,7 +67,7 @@ struct FavoritesView: View {
                                             if isSelectionMode {
                                                 dataManager.toggleComparison(lens: lens)
                                             } else {
-                                                self.selectedLens = lens
+                                                selectedLens = lens
                                             }
                                         }) {
                                             LensRow(
@@ -77,7 +80,7 @@ struct FavoritesView: View {
                                     }
                                 }
                                 .padding(.horizontal)
-                                .padding(.bottom, 100) // Отступ снизу для плавающей кнопки
+                                .padding(.bottom, 100) // Bottom padding for floating button
                             }
                         }
                     }
@@ -94,55 +97,7 @@ struct FavoritesView: View {
                                     Text(isSelectionMode ? "Done" : "Select")
                                         .font(.headline.weight(.semibold))
                                         .foregroundColor(.accentColor)
-                                        .padding(.trailing, 10) // <-- УВЕЛИЧЕННЫЙ ОТСТУП ДЛЯ КНОПКИ
-=======
-            VStack(spacing: 20) {
-                // Header
-                HStack {
-                    Text("Favorites")
-                        .font(.system(size: 36, weight: .heavy, design: .rounded))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.white, .yellow.opacity(0.85), .orange],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .shadow(color: .yellow.opacity(0.18), radius: 12, x: 0, y: 6)
-                    Spacer()
-                }
-                .padding(.horizontal, 28)
-                .padding(.top, 22)
-
-                // Проверяем, есть ли что-то в избранном
-                if favoriteLenses.isEmpty {
-                    // Заглушка, если пусто
-                    Spacer()
-                    VStack(spacing: 12) {
-                        Image(systemName: "star.slash.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(.yellow.opacity(0.6))
-                        Text("No Favorites Yet")
-                            .font(.title2.weight(.bold))
-                            .foregroundColor(.white)
-                        Text("Tap the star on a lens's detail page to add it to your favorites.")
-                            .font(.subheadline)
-                            .foregroundColor(.white.opacity(0.7))
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 40)
-                    }
-                    Spacer()
-                    Spacer()
-                } else {
-                    // List of favorite lenses
-                    ScrollView {
-                        LazyVStack(spacing: 16) {
-                            ForEach(favoriteLenses) { lens in
-                                Button(action: {
-                                    self.selectedLens = lens
-                                }) {
-                                    LensRow(lens: lens) // Use simple view for row
->>>>>>> 6e49b15489ad915eadaa033286c270d5bdaa6ecf
+                                        .padding(.trailing, 10) // Increased padding for button
                                 }
                             }
                         }
@@ -151,9 +106,9 @@ struct FavoritesView: View {
             }
             .navigationViewStyle(.stack)
             .preferredColorScheme(.dark)
-            
+
             // Плавающая кнопка "Сравнить"
-            if isSelectionMode && dataManager.comparisonSet.count > 1 {
+            if isSelectionMode, dataManager.comparisonSet.count > 1 {
                 VStack {
                     Spacer()
                     Button(action: {
@@ -185,13 +140,12 @@ struct FavoritesView: View {
     }
 }
 
-
 // Строка списка
 struct LensRow: View {
     let lens: Lens
     let isSelectionMode: Bool
     let isSelectedForComparison: Bool
-    
+
     var body: some View {
         HStack(spacing: 15) {
             if isSelectionMode {
@@ -199,7 +153,7 @@ struct LensRow: View {
                     .font(.title2)
                     .foregroundColor(isSelectedForComparison ? .blue : .secondary)
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(lens.display_name)
                     .font(.headline.weight(.bold))

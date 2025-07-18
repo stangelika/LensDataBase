@@ -37,9 +37,8 @@
 --self remove
 --selfrequired 
 --shortoptionals always
---redundanttype inferred
---redundantbackticks false
---redundantparens false
+--redundantType inferred
+--redundantParens false
 
 # Line breaks
 --linebreaks lf
@@ -68,8 +67,4 @@
 --header strip
 
 # Files to format
---exclude .build,
-          .swiftpm,
-          Carthage,
-          Pods,
-          **/Package.swift
+--exclude .build,.swiftpm,Carthage,Pods,**/Package.swift
