@@ -1,5 +1,3 @@
-// DataService.swift
-
 import Combine
 import Foundation
 
@@ -63,7 +61,7 @@ class DataManager: ObservableObject {
     @Published var formats: [RecordingFormat] = []
 
     @Published var activeTab: ActiveTab = .allLenses
-    @Published var selectedRentalId: String = ""
+    @Published var selectedRentalId = ""
 
     // Properties for new features and favorite lens management
     /// Set of favorite lens IDs
@@ -251,8 +249,9 @@ class DataManager: ObservableObject {
     /// - Parameter rentalId: The rental ID to get lenses for
     /// - Returns: Array of lenses available at that rental
     private func lensesForRental(_ rentalId: String) -> [Lens] {
-        guard let appData,
-              let inventory = appData.inventory[rentalId] else { return [] }
+        guard
+            let appData,
+            let inventory = appData.inventory[rentalId] else { return [] }
 
         let lensIds = inventory.map(\.lens_id)
         return appData.lenses.filter { lensIds.contains($0.id) }

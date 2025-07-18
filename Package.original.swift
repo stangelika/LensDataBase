@@ -6,13 +6,12 @@ let package = Package(
     name: "LensDataBase",
     platforms: [
         .iOS(.v16),
-        .macOS(.v13)
+        .macOS(.v13),
     ],
     products: [
         .library(
             name: "LensDataBase",
-            targets: ["LensDataBase"]
-        ),
+            targets: ["LensDataBase"]),
     ],
     dependencies: [
         // Add any external dependencies here
@@ -21,12 +20,9 @@ let package = Package(
         .target(
             name: "LensDataBase",
             dependencies: [],
-            path: "Sources/LensDataBase"
-        ),
+            path: "Sources/LensDataBase"),
         .testTarget(
             name: "LensDataBaseTests",
             dependencies: ["LensDataBase"],
-            path: "Tests/LensDataBaseTests"
-        ),
-    ]
-)
+            path: "Tests/LensDataBaseTests"),
+    ])

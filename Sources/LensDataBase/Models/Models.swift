@@ -110,7 +110,8 @@ struct Lens: Codable, Identifiable {
         imageCircle: String,
         length: String,
         frontDiameter: String,
-        squeezeFactor: String? = nil) {
+        squeezeFactor: String? = nil
+    ) {
         self.id = id
         self.displayName = displayName
         self.manufacturer = manufacturer
@@ -148,7 +149,8 @@ struct Lens: Codable, Identifiable {
     /// Flexible decoder that handles different JSON data types (String, Int, Double, Bool)
     private static func decodeFlexible(
         container: KeyedDecodingContainer<Lens.CodingKeys>,
-        key: CodingKeys) throws -> String? {
+        key: CodingKeys
+    ) throws -> String? {
         // Try to decode as string
         if let stringValue = try? container.decode(String.self, forKey: key) {
             stringValue

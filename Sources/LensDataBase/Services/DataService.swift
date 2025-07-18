@@ -9,8 +9,10 @@ import Foundation
     class NetworkService {
         static let shared = NetworkService()
 
-        private let lensDataURL = "https://script.google.com/macros/s/AKfycbzDzKQ3AU6ynZuPjET0NWqYMlDXMt5UKVPBOq9g7XurJKPoulWuPVVIl9U8eq_nSCG6/exec"
-        private let cameraDataURL = "https://script.google.com/macros/s/AKfycbz-2rLDrwQ7DPD3nOm7iGTvCISfIYggOVob2F43pgjR2UG3diztAaig6wO737m_Rh3GJw/exec"
+        private let lensDataURL = "https://script.google.com/macros/s/" +
+            "AKfycbzDzKQ3AU6ynZuPjET0NWqYMlDXMt5UKVPBOq9g7XurJKPoulWuPVVIl9U8eq_nSCG6/exec"
+        private let cameraDataURL = "https://script.google.com/macros/s/" +
+            "AKfycbz-2rLDrwQ7DPD3nOm7iGTvCISfIYggOVob2F43pgjR2UG3diztAaig6wO737m_Rh3GJw/exec"
 
         /// Fetches lens data from the remote API
         /// - Returns: Publisher that emits AppData or an error
@@ -186,10 +188,12 @@ import Foundation
 
                 let lensSeries = series.map { seriesName, seriesLenses in
                     LensSeries(name: seriesName, lenses: seriesLenses.sorted { $0.displayName < $1.displayName })
-                }.sorted { $0.name < $1.name }
+                }
+                .sorted { $0.name < $1.name }
 
                 return LensGroup(manufacturer: manufacturer, series: lensSeries)
-            }.sorted { $0.manufacturer < $1.manufacturer }
+            }
+            .sorted { $0.manufacturer < $1.manufacturer }
         }
     }
 
@@ -272,10 +276,12 @@ import Foundation
 
                 let lensSeries = series.map { seriesName, seriesLenses in
                     LensSeries(name: seriesName, lenses: seriesLenses.sorted { $0.displayName < $1.displayName })
-                }.sorted { $0.name < $1.name }
+                }
+                .sorted { $0.name < $1.name }
 
                 return LensGroup(manufacturer: manufacturer, series: lensSeries)
-            }.sorted { $0.manufacturer < $1.manufacturer }
+            }
+            .sorted { $0.manufacturer < $1.manufacturer }
         }
     }
 

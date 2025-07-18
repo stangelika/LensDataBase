@@ -1,5 +1,3 @@
-// GlassFilterChip.swift
-
 import SwiftUI
 
 /// A reusable glass filter chip component for filtering options
@@ -7,17 +5,16 @@ struct GlassFilterChip: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
-    
+
     init(
         title: String,
         isSelected: Bool = false,
-        action: @escaping () -> Void
-    ) {
+        action: @escaping () -> Void) {
         self.title = title
         self.isSelected = isSelected
         self.action = action
     }
-    
+
     var body: some View {
         Button(action: action) {
             Text(title)
@@ -30,36 +27,35 @@ struct GlassFilterChip: View {
                 .clipShape(Capsule())
                 .overlay(
                     Capsule()
-                        .stroke(borderColor, lineWidth: borderWidth)
-                )
+                        .stroke(borderColor, lineWidth: borderWidth))
         }
         .buttonStyle(PlainButtonStyle())
         .scaleEffect(isSelected ? 1.05 : 1.0)
         .animation(AppTheme.Animations.springFast, value: isSelected)
     }
-    
+
     private var backgroundColor: Color {
         if isSelected {
-            return AppTheme.Colors.accent.opacity(0.8)
+            AppTheme.Colors.accent.opacity(0.8)
         } else {
-            return AppTheme.Colors.surfacePrimary
+            AppTheme.Colors.surfacePrimary
         }
     }
-    
+
     private var foregroundColor: Color {
-        return AppTheme.Colors.textPrimary
+        AppTheme.Colors.textPrimary
     }
-    
+
     private var borderColor: Color {
         if isSelected {
-            return AppTheme.Colors.accent
+            AppTheme.Colors.accent
         } else {
-            return AppTheme.Colors.glassBorder
+            AppTheme.Colors.glassBorder
         }
     }
-    
+
     private var borderWidth: CGFloat {
-        return isSelected ? 2 : 1
+        isSelected ? 2 : 1
     }
 }
 
@@ -70,17 +66,17 @@ struct GlassFilterChip_Previews: PreviewProvider {
         ZStack {
             AppTheme.Gradients.primary
                 .ignoresSafeArea()
-            
+
             VStack(spacing: AppTheme.Spacing.lg) {
                 HStack(spacing: AppTheme.Spacing.sm) {
                     GlassFilterChip(title: "All", isSelected: true) {
                         print("All tapped")
                     }
-                    
+
                     GlassFilterChip(title: "Full Frame", isSelected: false) {
                         print("Full Frame tapped")
                     }
-                    
+
                     GlassFilterChip(title: "Super35", isSelected: false) {
                         print("Super35 tapped")
                     }

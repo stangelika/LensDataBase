@@ -1,5 +1,3 @@
-// MainTabView_Version3_Version4.swift
-
 import SwiftUI
 
 struct MainTabView: View {
@@ -8,21 +6,23 @@ struct MainTabView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                gradient: Gradient(colors: [Color(.sRGB, white: 0.09, opacity: 1), Color(.sRGB, white: 0.15, opacity: 1)]),
+                gradient: Gradient(colors: [
+                    Color(.sRGB, white: 0.09, opacity: 1),
+                    Color(.sRGB, white: 0.15, opacity: 1),
+                ]),
                 startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-            
+                endPoint: .bottom)
+                .ignoresSafeArea()
+
             TabView(selection: $dataManager.activeTab) {
                 // Экран 1: Все объективы
                 AllLensesView()
                     .tag(ActiveTab.allLenses)
-                
+
                 // Экран 2: Ренталы
                 RentalView()
                     .tag(ActiveTab.rentalView)
-                    
+
                 // Экран 3: Избранное
                 FavoritesView()
                     .tag(ActiveTab.favorites)

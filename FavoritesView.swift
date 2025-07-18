@@ -1,5 +1,3 @@
-// FavoritesView.swift
-
 import SwiftUI
 
 struct FavoritesView: View {
@@ -20,9 +18,8 @@ struct FavoritesView: View {
                             Color(.sRGB, red: 34 / 255, green: 37 / 255, blue: 57 / 255, opacity: 1),
                         ]),
                         startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .ignoresSafeArea()
+                        endPoint: .bottom)
+                        .ignoresSafeArea()
 
                     // Main content
                     VStack(spacing: 20) {
@@ -33,8 +30,7 @@ struct FavoritesView: View {
                                 .foregroundStyle(LinearGradient(
                                     colors: [.white, .yellow.opacity(0.85), .orange],
                                     startPoint: .leading,
-                                    endPoint: .trailing
-                                ))
+                                    endPoint: .trailing))
                                 .shadow(color: .yellow.opacity(0.18), radius: 12, x: 0, y: 6)
                             Spacer()
                         }
@@ -73,8 +69,7 @@ struct FavoritesView: View {
                                             LensRow(
                                                 lens: lens,
                                                 isSelectionMode: isSelectionMode,
-                                                isSelectedForComparison: dataManager.isInComparison(lens: lens)
-                                            )
+                                                isSelectedForComparison: dataManager.isInComparison(lens: lens))
                                         }
                                         .buttonStyle(PlainButtonStyle())
                                     }
@@ -177,8 +172,7 @@ struct LensRow: View {
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(Color.blue, lineWidth: 2)
                 }
-            }
-        )
+            })
         .cornerRadius(16)
         .animation(.easeInOut(duration: 0.2), value: [isSelectionMode, isSelectedForComparison])
     }
