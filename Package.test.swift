@@ -21,7 +21,10 @@ let package = Package(
         .target(
             name: "LensDataBase",
             dependencies: [],
-            path: "Sources/LensDataBase"
+            path: "Sources/LensDataBase",
+            resources: [
+                .copy("Resources")
+            ]
         ),
         .testTarget(
             name: "LensDataBaseTests",
