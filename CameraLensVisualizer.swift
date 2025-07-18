@@ -334,7 +334,7 @@ struct GlassBackground: View {
 
 extension Lens {
     var validImageCircle: Double? {
-        let cleanedValue = image_circle
+        let cleanedValue = imageCircle
             .lowercased()
             .replacingOccurrences(of: "mm", with: "")
             .replacingOccurrences(of: ",", with: ".")

@@ -84,15 +84,15 @@ struct LensDetailView: View, Identifiable {
                         color: .green)
                     SpecCard(
                         title: "Мин. дистанция",
-                        value: lens.close_focus_cm.isEmpty ? lens.close_focus_in : lens.close_focus_cm,
+                        value: lens.closeFocusCm.isEmpty ? lens.closeFocusIn : lens.closeFocusCm,
                         icon: "ruler",
                         color: .orange)
                     SpecCard(
                         title: "Круг изображения",
-                        value: lens.image_circle,
+                        value: lens.imageCircle,
                         icon: "circle.dashed",
                         color: .teal)
-                    if let squeeze = lens.squeeze_factor, squeeze != "N/A" {
+                    if let squeeze = lens.squeezeFactor, squeeze != "N/A" {
                         SpecCard(
                             title: "Коэф. сжатия",
                             value: squeeze,
@@ -106,7 +106,7 @@ struct LensDetailView: View, Identifiable {
                         color: .indigo)
                     SpecCard(
                         title: "Передний диаметр",
-                        value: lens.front_diameter,
+                        value: lens.frontDiameter,
                         icon: "circle",
                         color: .brown)
 
