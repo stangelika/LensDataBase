@@ -32,14 +32,8 @@ struct ComparisonView: View {
     var body: some View {
         ZStack {
             // Темный градиентный фон
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
-                    Color(.sRGB, red: 34 / 255, green: 37 / 255, blue: 57 / 255, opacity: 1),
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            ).ignoresSafeArea()
+            AppTheme.Colors.primaryGradient
+                .ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Заголовочная область с кнопкой закрытия
@@ -54,7 +48,7 @@ struct ComparisonView: View {
                     .font(.headline.weight(.semibold))
                 }
                 .padding()
-                .foregroundColor(.white)
+                .foregroundColor(AppTheme.Colors.primaryText)
 
                 // Основная область с таблицей сравнения
                 ScrollView {
@@ -64,22 +58,22 @@ struct ComparisonView: View {
                         VStack(alignment: .leading, spacing: 0) {
                             // Заголовок колонки характеристик
                             Text("Feature")
-                                .font(.headline.weight(.bold))
-                                .foregroundColor(.white)
-                                .padding(12)
+                                .font(.appHeadline.weight(.bold))
+                                .foregroundColor(AppTheme.Colors.primaryText)
+                                .padding(AppTheme.Spacing.lg)
                                 .frame(height: 120, alignment: .leading)
-                                .background(Color.white.opacity(0.1))
+                                .background(AppTheme.Colors.toolbarBackground)
 
                             // Список названий характеристик для сравнения
                             ForEach(specs, id: \.0) { spec in
                                 Text(spec.0)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .padding(12)
+                                    .font(.appBodyMedium)
+                                    .foregroundColor(AppTheme.Colors.secondaryText)
+                                    .padding(AppTheme.Spacing.lg)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .frame(height: 60)
                                     // Альтернирующий фон для строк
-                                    .background((specs.firstIndex(where: { $0.0 == spec.0 }) ?? 0) % 2 == 0 ? Color.white.opacity(0.05) : Color.clear)
+                                    .background((specs.firstIndex(where: { $0.0 == spec.0 }) ?? 0) % 2 == 0 ? AppTheme.Colors.unselectedCardBackground : Color.clear)
                             }
                         }
                         .frame(width: 140)
@@ -94,27 +88,27 @@ struct ComparisonView: View {
                                         // Заголовочная карточка с информацией об объективе
                                         VStack(alignment: .leading) {
                                             Text(lens.display_name)
-                                                .font(.headline.weight(.bold))
+                                                .font(.appHeadline.weight(.bold))
                                                 .lineLimit(3)
                                             Text(lens.manufacturer)
                                                 .font(.caption)
                                                 .opacity(0.7)
                                         }
-                                        .foregroundColor(.white)
-                                        .padding(12)
+                                        .foregroundColor(AppTheme.Colors.primaryText)
+                                        .padding(AppTheme.Spacing.lg)
                                         .frame(width: 150, height: 120, alignment: .leading)
-                                        .background(Color.white.opacity(0.1))
+                                        .background(AppTheme.Colors.toolbarBackground)
 
                                         // Столбец значений характеристик объектива
                                         ForEach(specs, id: \.0) { spec in
                                             // Значение характеристики, извлеченное через KeyPath
                                             Text(lens[keyPath: spec.1])
-                                                .font(.system(.subheadline, design: .monospaced))
-                                                .foregroundColor(.white)
-                                                .padding(12)
+                                                .font(.appMonospace)
+                                                .foregroundColor(AppTheme.Colors.primaryText)
+                                                .padding(AppTheme.Spacing.lg)
                                                 .frame(width: 150, height: 60, alignment: .leading)
                                                 // Альтернирующий фон для строк
-                                                .background((specs.firstIndex(where: { $0.0 == spec.0 }) ?? 0) % 2 == 0 ? Color.white.opacity(0.05) : Color.clear)
+                                                .background((specs.firstIndex(where: { $0.0 == spec.0 }) ?? 0) % 2 == 0 ? AppTheme.Colors.unselectedCardBackground : Color.clear)
                                         }
                                     }
                                 }

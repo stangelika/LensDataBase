@@ -44,25 +44,19 @@ struct WeatherStyleLensListView: View {
     var body: some View {
         // Скроллируемый контейнер без индикаторов
         ScrollView(showsIndicators: false) {
-            VStack(spacing: 36) {
+            VStack(spacing: AppTheme.Spacing.padding36) {
                 // Перебор всех отфильтрованных групп производителей
                 ForEach(filteredGroups) { group in
-                    VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.xxl) {
                         // Заголовок группы производителя
                         HStack {
                             Text(group.manufacturer)
-                                .font(.system(size: 25, weight: .bold, design: .rounded))
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [.white, .blue.opacity(0.92)],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
-                                .shadow(color: .blue.opacity(0.16), radius: 4, x: 0, y: 2)
+                                .font(.appTitle2)
+                                .gradientText(AppTheme.Colors.manufacturerGradient)
+                                .shadow(color: AppTheme.Colors.blue.opacity(0.16), radius: 4, x: 0, y: 2)
                             Spacer()
                         }
-                        .padding(.horizontal, 28)
+                        .padding(.horizontal, AppTheme.Spacing.xxxl)
 
                         // Перебор всех серий объективов производителя
                         ForEach(group.series) { series in
@@ -70,23 +64,16 @@ struct WeatherStyleLensListView: View {
                             WeatherStyleLensSeriesView(series: series, onSelect: onSelect)
                         }
                     }
-                    .padding(.bottom, 2)
+                    .padding(.bottom, AppTheme.Spacing.xs)
                 }
             }
-            .padding(.top, 16)
-            .padding(.bottom, 12)
+            .padding(.top, AppTheme.Spacing.xl)
+            .padding(.bottom, AppTheme.Spacing.lg)
         }
         .background(
             // Темный градиентный фон для контрастности
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(.sRGB, red: 30 / 255, green: 32 / 255, blue: 54 / 255, opacity: 1),
-                    Color(.sRGB, red: 22 / 255, green: 22 / 255, blue: 32 / 255, opacity: 1),
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            AppTheme.Colors.listViewGradient
+                .ignoresSafeArea()
         )
     }
 }
@@ -114,34 +101,42 @@ struct WeatherStyleLensSeriesView: View {
                 HStack {
                     // Название серии объективов
                     Text(series.name)
-                        .font(.headline.weight(.semibold))
-                        .foregroundColor(.white)
+                        .font(.appHeadline)
+                        .foregroundColor(AppTheme.Colors.primaryText)
                         .lineLimit(1)
                     Spacer()
                     // Индикатор состояния разворачивания
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(AppTheme.Colors.tertiaryText)
                         .font(.system(size: 16, weight: .medium))
                 }
-                .padding(15)
+                .padding(AppTheme.Spacing.padding15)
                 .background(
                     // Многослойный фон с материальным эффектом и адаптивной обводкой
                     ZStack {
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium, style: .continuous)
                             .fill(.ultraThinMaterial)
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.indigo.opacity(isExpanded ? 0.32 : 0.18), lineWidth: isExpanded ? 2 : 1.2)
+                        RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
+                            .stroke(
+                                AppTheme.Colors.indigo.opacity(isExpanded ? 0.32 : 0.18),
+                                lineWidth: isExpanded ? 2 : 1.2
+                            )
                     }
                 )
                 // Тень с адаптивной интенсивностью
-                .shadow(color: .blue.opacity(isExpanded ? 0.10 : 0.04), radius: isExpanded ? 6 : 2, x: 0, y: 2)
-                .padding(.horizontal, 22)
+                .shadow(
+                    color: AppTheme.Colors.blue.opacity(isExpanded ? 0.10 : 0.04),
+                    radius: isExpanded ? 6 : 2,
+                    x: 0,
+                    y: 2
+                )
+                .padding(.horizontal, AppTheme.Spacing.padding22)
             }
             .buttonStyle(NoHighlightButtonStyle())
 
             // Условное отображение развернутого списка объективов
             if isExpanded {
-                VStack(spacing: 12) {
+                VStack(spacing: AppTheme.Spacing.lg) {
                     // Перебор всех объективов в серии
                     ForEach(series.lenses) { lens in
                         // Компонент строки объектива
@@ -154,7 +149,7 @@ struct WeatherStyleLensSeriesView: View {
                             .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                 }
-                .padding(.horizontal, 30)
+                .padding(.horizontal, AppTheme.Spacing.padding30)
                 .padding(.vertical, 7)
             }
         }
@@ -170,22 +165,22 @@ struct WeatherStyleLensRow: View {
 
     // Содержимое строки объектива
     var body: some View {
-        HStack(alignment: .center, spacing: 18) {
+        HStack(alignment: .center, spacing: AppTheme.Spacing.padding18) {
             // Основная информация об объективе
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.padding6) {
                 // Комбинированное отображение: название + фокусное расстояние
                 Text("\(lens.lens_name) \(lens.focal_length)")
-                    .font(.system(size: 18, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white)
+                    .font(.appRounded18)
+                    .foregroundColor(AppTheme.Colors.primaryText)
                     .lineLimit(1)
 
                 // Бейдж формата (только для Full Frame)
                 if lens.format.contains("FF") {
-                    HStack(spacing: 11) {
+                    HStack(spacing: AppTheme.Spacing.padding11) {
                         WeatherStyleLensBadge(
                             icon: "crop",
                             value: lens.format,
-                            color: .green
+                            color: AppTheme.Colors.green
                         )
                     }
                 }
@@ -195,22 +190,22 @@ struct WeatherStyleLensRow: View {
 
             // Индикатор возможности перехода к деталям
             Image(systemName: "chevron.right")
-                .foregroundColor(.white.opacity(0.5))
+                .foregroundColor(AppTheme.Colors.disabledText)
                 .font(.system(size: 18, weight: .medium))
         }
-        .padding(.vertical, 14)
-        .padding(.horizontal, 18)
+        .padding(.vertical, AppTheme.Spacing.padding14)
+        .padding(.horizontal, AppTheme.Spacing.padding18)
         .background(
             // Многослойный фон с материальным эффектом
             ZStack {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.large, style: .continuous)
                     .fill(.ultraThinMaterial)
-                RoundedRectangle(cornerRadius: 18)
-                    .stroke(Color.blue.opacity(0.15), lineWidth: 1)
+                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.large)
+                    .stroke(AppTheme.Colors.blue.opacity(0.15), lineWidth: 1)
             }
         )
         // Тонкая тень для глубины
-        .shadow(color: Color.blue.opacity(0.06), radius: 2, x: 0, y: 2)
+        .shadow(color: AppTheme.Colors.blue.opacity(0.06), radius: 2, x: 0, y: 2)
         // Анимация появления/скрытия
         .transition(.opacity.combined(with: .scale(scale: 0.98)))
     }
@@ -227,17 +222,17 @@ struct WeatherStyleLensBadge: View {
 
     // Содержимое бейджа
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: AppTheme.Spacing.padding6) {
             // Иконка характеристики
             Image(systemName: icon)
                 .imageScale(.small)
                 .foregroundColor(color)
             // Значение характеристики
             Text(value)
-                .font(.system(size: 14, weight: .medium, design: .rounded))
-                .foregroundColor(.white)
+                .font(.appRounded14)
+                .foregroundColor(AppTheme.Colors.primaryText)
         }
-        .padding(.horizontal, 11)
+        .padding(.horizontal, AppTheme.Spacing.padding11)
         .padding(.vertical, 5)
         .background(
             // Цветная капсульная подложка

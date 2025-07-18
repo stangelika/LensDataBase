@@ -11,33 +11,26 @@ struct UpdateView: View {
     var body: some View {
         ZStack {
             // Темный градиентный фон в стиле других экранов
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
-                    Color(.sRGB, red: 34 / 255, green: 37 / 255, blue: 57 / 255, opacity: 1),
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            AppTheme.Colors.primaryGradient
+                .ignoresSafeArea()
 
             VStack(spacing: 25) {
                 // Заголовок экрана настроек
                 HStack {
                     Text("Settings")
-                        .font(.system(size: 36, weight: .heavy, design: .rounded))
+                        .font(.appLargeTitle)
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [.white, .green.opacity(0.85), .blue],
+                                colors: [AppTheme.Colors.primaryText, AppTheme.Colors.green.opacity(0.85), AppTheme.Colors.blue],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
                         )
-                        .shadow(color: .green.opacity(0.18), radius: 12, x: 0, y: 6)
+                        .shadow(color: AppTheme.Colors.green.opacity(0.18), radius: 12, x: 0, y: 6)
                     Spacer()
                 }
-                .padding(.horizontal, 28)
-                .padding(.top, 22)
+                .padding(.horizontal, AppTheme.Spacing.xxxl)
+                .padding(.top, AppTheme.Spacing.padding22)
 
                 // Информационная карточка о синхронизации данных
                 VStack(alignment: .leading, spacing: 12) {
@@ -45,16 +38,16 @@ struct UpdateView: View {
                     HStack {
                         Image(systemName: "arrow.triangle.2.circlepath.icloud.fill")
                             .font(.title2)
-                            .foregroundColor(.green)
+                            .foregroundColor(AppTheme.Colors.green)
                         Text("Data Synchronization")
-                            .font(.headline)
-                            .foregroundColor(.white)
+                            .font(.appHeadline)
+                            .foregroundColor(AppTheme.Colors.primaryText)
                     }
                     // Описание функциональности синхронизации
                     Text("The application uses a local database of lenses and cameras for quick access. Press the button below to update the data from the server. This may take some time.")
-                        .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.7))
-                        .lineSpacing(4)
+                        .font(.appBody)
+                        .foregroundColor(AppTheme.Colors.tertiaryText)
+                        .lineSpacing(AppTheme.Spacing.sm)
                 }
                 .padding()
                 .background(GlassBackground())
@@ -69,20 +62,20 @@ struct UpdateView: View {
                         // Адаптивная иконка: индикатор загрузки или стрелка обновления
                         if dataManager.loadingState == .loading {
                             ProgressView()
-                                .tint(.white)
+                                .tint(AppTheme.Colors.primaryText)
                         } else {
                             Image(systemName: "arrow.clockwise.circle")
-                                .font(.headline)
+                                .font(.appHeadline)
                         }
                         Text("Update from Server")
-                            .font(.headline.weight(.semibold))
+                            .font(.appHeadline)
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .foregroundColor(.white)
-                    .background(Color.green.opacity(0.8))
-                    .cornerRadius(16)
-                    .shadow(color: .green.opacity(0.4), radius: 10, y: 5)
+                    .foregroundColor(AppTheme.Colors.primaryText)
+                    .background(AppTheme.Colors.green.opacity(0.8))
+                    .cornerRadius(AppTheme.CornerRadius.medium)
+                    .shadow(color: AppTheme.Colors.green.opacity(0.4), radius: 10, y: 5)
                 }
                 .padding(.horizontal)
                 // Блокировка кнопки во время активной загрузки

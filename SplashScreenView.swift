@@ -24,22 +24,16 @@ struct SplashScreenView: View {
             // Контейнер с многослойным дизайном заставки
             ZStack {
                 // Градиентный темный фон с фиолетово-синими оттенками
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color(.sRGB, red: 28 / 255, green: 32 / 255, blue: 48 / 255, opacity: 1),
-                        Color(.sRGB, red: 38 / 255, green: 36 / 255, blue: 97 / 255, opacity: 1),
-                    ]),
-                    startPoint: .topLeading, endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
+                AppTheme.Colors.detailViewGradient
+                    .ignoresSafeArea()
 
                 // Декоративная светящаяся "аура" для создания атмосферы
                 Circle()
                     .fill(
                         RadialGradient(
                             gradient: Gradient(colors: [
-                                Color.orange.opacity(0.28),
-                                Color.purple.opacity(0.16),
+                                AppTheme.Colors.orange.opacity(0.28),
+                                AppTheme.Colors.purple.opacity(0.16),
                                 Color.clear,
                             ]),
                             center: .center, startRadius: 0, endRadius: 350
@@ -66,28 +60,28 @@ struct SplashScreenView: View {
                             .symbolRenderingMode(.palette)
                             .foregroundStyle(
                                 LinearGradient(
-                                    colors: [Color.orange, Color.yellow, Color.purple.opacity(0.9)],
+                                    colors: [AppTheme.Colors.orange, AppTheme.Colors.yellow, AppTheme.Colors.purple.opacity(0.9)],
                                     startPoint: .topLeading, endPoint: .bottomTrailing
                                 ),
-                                Color.white
+                                AppTheme.Colors.primaryText
                             )
-                            .shadow(color: .orange.opacity(0.22), radius: 20, x: 0, y: 6)
+                            .shadow(color: AppTheme.Colors.orange.opacity(0.22), radius: 20, x: 0, y: 6)
                             .scaleEffect(logoPulse ? 1.07 : 1)
                             .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: logoPulse)
                     }
-                    .padding(.bottom, 8)
+                    .padding(.bottom, AppTheme.Spacing.md)
 
                     // Основное название приложения с градиентным текстом
                     Text("Lens Data Base")
                         .font(.system(size: 34, weight: .bold, design: .rounded))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [.white, .yellow, .orange, .purple.opacity(0.95)],
+                                colors: [AppTheme.Colors.primaryText, AppTheme.Colors.yellow, AppTheme.Colors.orange, AppTheme.Colors.purple.opacity(0.95)],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
                         )
-                        .shadow(color: .orange.opacity(0.09), radius: 5, x: 0, y: 3)
+                        .shadow(color: AppTheme.Colors.orange.opacity(0.09), radius: 5, x: 0, y: 3)
                         .opacity(showSubtitle ? 1 : 0)
                         .offset(y: showSubtitle ? 0 : 10)
                         .animation(.easeOut(duration: 0.8).delay(0.4), value: showSubtitle)
@@ -95,13 +89,13 @@ struct SplashScreenView: View {
                     // Подзаголовок с описанием функциональности
                     Text("Cinematic lens catalog & rentals")
                         .font(.footnote.weight(.semibold))
-                        .foregroundColor(.white.opacity(0.65))
-                        .padding(.top, 4)
+                        .foregroundColor(AppTheme.Colors.tertiaryText.opacity(0.65))
+                        .padding(.top, AppTheme.Spacing.sm)
                         .opacity(showSubtitle ? 1 : 0)
                         .offset(y: showSubtitle ? 0 : 8)
                         .animation(.easeOut(duration: 0.8).delay(0.6), value: showSubtitle)
                 }
-                .padding(.top, 24)
+                .padding(.top, AppTheme.Spacing.padding24)
 
                 // Нижняя область с индикатором загрузки и подписью разработчика
                 VStack {
@@ -114,13 +108,13 @@ struct SplashScreenView: View {
                                 // Условное отображение состояния загрузки
                                 if dataManager.loadingState == .loading {
                                     // Индикатор загрузки с текстом
-                                    HStack(spacing: 12) {
+                                    HStack(spacing: AppTheme.Spacing.lg) {
                                         ProgressView()
                                             .scaleEffect(1.1)
-                                            .tint(.orange)
+                                            .tint(AppTheme.Colors.orange)
                                         Text("Loading data...")
-                                            .font(.subheadline)
-                                            .foregroundColor(.white.opacity(0.8))
+                                            .font(.appBody)
+                                            .foregroundColor(AppTheme.Colors.secondaryText)
                                     }
                                 } else if case let .error(error) = dataManager.loadingState {
                                     // Отображение ошибки загрузки
@@ -135,10 +129,10 @@ struct SplashScreenView: View {
                                     .frame(maxWidth: .infinity)
                                     .padding(.top, 1)
                             }
-                            .padding(.vertical, 8)
+                            .padding(.vertical, AppTheme.Spacing.md)
                         )
                         .padding(.horizontal, 40)
-                        .padding(.bottom, 36)
+                        .padding(.bottom, AppTheme.Spacing.padding36)
                 }
             }
             .onAppear {
@@ -181,18 +175,18 @@ struct GlassCard: View {
         // Основная форма карточки с закругленными углами
         RoundedRectangle(cornerRadius: 32, style: .continuous)
             .fill(.ultraThinMaterial)
-            .shadow(color: Color.white.opacity(0.07), radius: 16, x: 0, y: 10)
+            .shadow(color: AppTheme.Colors.primaryText.opacity(0.07), radius: 16, x: 0, y: 10)
             .background(
                 // Тонкая белая обводка для четкости краев
                 RoundedRectangle(cornerRadius: 32)
-                    .stroke(Color.white.opacity(0.13), lineWidth: 1.1)
+                    .stroke(AppTheme.Colors.cardBorder.opacity(0.13), lineWidth: 1.1)
             )
             .overlay(
                 // Градиентная обводка для создания световых акцентов
                 RoundedRectangle(cornerRadius: 32)
                     .stroke(
                         LinearGradient(
-                            colors: [Color.orange.opacity(0.13), Color.purple.opacity(0.09), .clear],
+                            colors: [AppTheme.Colors.orange.opacity(0.13), AppTheme.Colors.purple.opacity(0.09), .clear],
                             startPoint: .topLeading, endPoint: .bottomTrailing
                         ),
                         lineWidth: 2

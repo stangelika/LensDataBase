@@ -12,12 +12,8 @@ struct MainTabView: View {
         // Контейнер с фоновым градиентом
         ZStack {
             // Темный градиентный фон для всего экрана
-            LinearGradient(
-                gradient: Gradient(colors: [Color(.sRGB, white: 0.09, opacity: 1), Color(.sRGB, white: 0.15, opacity: 1)]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            AppTheme.Colors.mainTabGradient
+                .ignoresSafeArea()
 
             // Основной контейнер вкладок с постраничной навигацией
             TabView(selection: $dataManager.activeTab) {
