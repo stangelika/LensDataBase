@@ -46,7 +46,7 @@ struct AllLensesView: View {
                                 }
                         }
                     } label: {
-                        GlassFilterChip(
+                        FilterChip(
                             icon: "crop",
                             title: selectedFormat.isEmpty ? "All Formats" : selectedFormat,
                             accentColor: selectedFormat.isEmpty ? .purple : .green,
@@ -60,7 +60,7 @@ struct AllLensesView: View {
                             }
                         }
                     } label: {
-                        GlassFilterChip(
+                        FilterChip(
                             icon: "arrow.left.and.right",
                             title: selectedFocalCategory.displayName,
                             accentColor: selectedFocalCategory == .all ? .indigo : .orange,
@@ -149,44 +149,5 @@ extension Lens {
             .components(separatedBy: CharacterSet(charactersIn: "-– "))
             .compactMap { Double($0.filter("0123456789.".contains)) }
         return numbers.first
-    }
-}
-
-// Новый стиль фильтр-чипа
-struct GlassFilterChip: View {
-    let icon: String
-    let title: String
-    let accentColor: Color
-    var isActive = false
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: icon)
-                .foregroundColor(accentColor)
-                .font(.system(size: 17, weight: .semibold))
-            Text(title)
-                .font(.subheadline.weight(.medium))
-                .foregroundColor(.white)
-                .lineLimit(1)
-            Spacer(minLength: 2)
-            Image(systemName: "chevron.down")
-                .font(.system(size: 13, weight: .bold))
-                .foregroundColor(.white.opacity(0.7))
-        }
-        .padding(.vertical, 11)
-        .padding(.horizontal, 18)
-        .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(.ultraThinMaterial)
-                    .blur(radius: 0.6)
-                RoundedRectangle(cornerRadius: 18)
-                    .stroke(
-                        isActive ? accentColor.opacity(0.7) : accentColor.opacity(0.28),
-                        lineWidth: isActive ? 2.3 : 1.3)
-            })
-        .shadow(color: accentColor.opacity(isActive ? 0.20 : 0.07), radius: isActive ? 9 : 3, x: 0, y: 3)
-        .contentShape(RoundedRectangle(cornerRadius: 18))
-        .animation(.easeInOut(duration: 0.19), value: isActive)
     }
 }
