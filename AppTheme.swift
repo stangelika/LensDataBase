@@ -86,7 +86,14 @@ struct AppTheme {
         static let selectedCardBackground = Color.white.opacity(0.15)
         static let unselectedCardBackground = Color.white.opacity(0.05)
         static let toolbarBackground = Color.white.opacity(0.1)
-        static let materialBackground = Color.ultraThinMaterial
+        static let materialBackground: Color = {
+    if #available(iOS 15.0, *) {
+        return Color(uiColor: .systemBackground).opacity(0.7)
+    } else {
+        return Color.white.opacity(0.07)
+    }
+}()
+
         
         // Text Colors
         static let primaryText = Color.white
