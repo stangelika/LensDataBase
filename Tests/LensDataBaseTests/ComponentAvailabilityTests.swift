@@ -5,6 +5,8 @@ import XCTest
 import SwiftUI
 
 /// Tests to ensure all components are properly accessible and don't have naming conflicts
+/// This test suite specifically prevents the "cannot find X in scope" errors that were
+/// occurring during iPad compilation
 final class ComponentAvailabilityTests: XCTestCase {
     
     /// Test that all UI components can be instantiated without scope issues
@@ -78,6 +80,35 @@ final class ComponentAvailabilityTests: XCTestCase {
         // Test that manager classes exist
         XCTAssertNotNil(DataManager.self)
         XCTAssertNotNil(NetworkService.self)
+    }
+    
+    /// Test specific to the original iPad compilation issue
+    func testOriginalIssueResolution() throws {
+        // This test specifically addresses the "cannot find GlassCard inscope" issue
+        // If this test compiles and runs, it means the scope issue is resolved
+        
+        // Test that GlassCard type is available (original issue)
+        let glassCardType = GlassCard<Text>.self
+        XCTAssertNotNil(glassCardType)
+        
+        // Test that it can be used in a generic context (common iPad issue)
+        func createGlassCard<Content: View>(@ViewBuilder content: () -> Content) -> GlassCard<Content> {
+            return GlassCard(content: content)
+        }
+        
+        let testCard = createGlassCard { Text("Test") }
+        XCTAssertNotNil(testCard)
+    }
+    
+    /// Test that all critical enums are accessible
+    func testEnumAvailability() throws {
+        // Test that enums used across the app are accessible
+        XCTAssertNotNil(DataLoadingState.self)
+        XCTAssertNotNil(ActiveTab.self)
+        
+        // Test enum cases
+        XCTAssertEqual(DataLoadingState.idle, DataLoadingState.idle)
+        XCTAssertEqual(ActiveTab.allLenses, ActiveTab.allLenses)
     }
 }
 
