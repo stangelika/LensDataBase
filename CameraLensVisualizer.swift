@@ -1,26 +1,37 @@
 import SwiftUI
 
+// Перечисление типов развернутых селекторов
 enum ExpandedPicker {
-    case camera
-    case format
+    case camera    // Селектор камеры
+    case format    // Селектор формата записи
 }
 
+// Корневой экран визуализатора совместимости камер и объективов
 struct CameraLensVisualizerRoot: View {
+    // Доступ к методу закрытия модального окна
     @Environment(\.presentationMode) var presentationMode
+    // Менеджер данных для доступа к камерам и форматам
     @EnvironmentObject var dataManager: DataManager
+    // Объектив для проверки совместимости
     let lens: Lens
 
+    // Выбранная камера для сравнения
     @State private var selectedCamera: Camera?
+    // Выбранный формат записи для анализа
     @State private var selectedFormat: RecordingFormat?
 
+    // Активный развернутый селектор
     @State private var activePicker: ExpandedPicker? = nil
 
+    // Основное содержимое экрана
     var body: some View {
         NavigationView {
+            // Скроллируемый контейнер без индикаторов
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
-                    // Шапка
+                    // Заголовочная область с кнопкой закрытия
                     HStack {
+                        // Кнопка возврата к предыдущему экрану
                         Button(action: { presentationMode.wrappedValue.dismiss() }) {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 20, weight: .bold))
@@ -29,6 +40,7 @@ struct CameraLensVisualizerRoot: View {
                                 .background(Color.white.opacity(0.2))
                                 .clipShape(Circle())
                         }
+                        // Заголовок экрана
                         Text("Проверка совместимости").font(.title3.weight(.semibold)).foregroundColor(.white)
                         Spacer()
                     }
@@ -37,7 +49,7 @@ struct CameraLensVisualizerRoot: View {
 
                     Spacer().frame(height: 20)
 
-                    // Карточка объектива
+                    // Информационная карточка выбранного объектива
                     GlassInfoCard(
                         title: lens.display_name,
                         subtitle: "\(lens.manufacturer) \(lens.lens_name)",
@@ -46,19 +58,26 @@ struct CameraLensVisualizerRoot: View {
                     )
                     .padding(.horizontal)
 
-                    // Визуализация
+                    // Область визуализации совместимости (при выборе формата)
                     if let format = selectedFormat {
+                        // Контейнер для графической визуализации совместимости
                         ZStack {
+                            // Фоновый прямоугольник для определения размеров
                             Rectangle().fill(Color.clear).frame(height: 220)
 
+                            // Геометрический ридер для адаптивного масштабирования
                             GeometryReader { geo in
                                 ZStack {
+                                    // Извлечение данных для расчета масштабирования
                                     let lensCircleDiameter = lens.validImageCircle
                                     let formatDiagonal = format.recordingDiagonal
                                     let maxDimension = max(lensCircleDiameter ?? 0, formatDiagonal ?? 0)
 
+                                    // Отрисовка элементов при наличии валидных данных
                                     if maxDimension > 0 {
                                         let scaleFactor = geo.size.height / (maxDimension * 1.2)
+                                        
+                                        // Круг изображения объектива (синий)
                                         if let ic = lensCircleDiameter {
                                             let circleDiameter = CGFloat(ic) * CGFloat(scaleFactor)
                                             Circle()
@@ -67,6 +86,8 @@ struct CameraLensVisualizerRoot: View {
                                                 .frame(width: circleDiameter, height: circleDiameter)
                                                 .position(x: geo.size.width / 2, y: geo.size.height / 2)
                                         }
+                                        
+                                        // Прямоугольник формата записи (желтый)
                                         if let w = format.validRecordingWidth, let h = format.validRecordingHeight {
                                             let rectWidth = CGFloat(w) * CGFloat(scaleFactor)
                                             let rectHeight = CGFloat(h) * CGFloat(scaleFactor)
@@ -83,8 +104,9 @@ struct CameraLensVisualizerRoot: View {
                         .padding(.vertical, 8)
                     }
 
-                    // Блок выбора камеры и формата
+                    // Интерактивные селекторы камеры и формата записи
                     VStack(spacing: 12) {
+                        // Развертываемый селектор выбора камеры
                         ExpandablePickerView(
                             pickerId: .camera,
                             title: "Камера",
@@ -93,9 +115,11 @@ struct CameraLensVisualizerRoot: View {
                             selection: $selectedCamera,
                             activePicker: $activePicker,
                             selectionDisplay: { camera in
+                                // Формат отображения выбранной камеры
                                 "\(camera.manufacturer) \(camera.model)"
                             },
                             content: { camera in
+                                // Компонент строки камеры в селекторе
                                 PickerRowView(
                                     text: "\(camera.manufacturer) \(camera.model)",
                                     isSelected: selectedCamera?.id == camera.id
