@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AllLensesView: View {
     @EnvironmentObject var dataManager: DataManager
-    @State private var selectedFormat: String = ""
+    @State private var selectedFormat = ""
     @State private var selectedFocalCategory: FocalCategory = .all
     @State private var selectedLens: Lens? = nil
 
@@ -11,13 +11,12 @@ struct AllLensesView: View {
             // Глубокий градиентный фон
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(.sRGB, red: 24/255, green: 27/255, blue: 37/255, opacity: 1),
-                    Color(.sRGB, red: 34/255, green: 37/255, blue: 57/255, opacity: 1)
+                    Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
+                    Color(.sRGB, red: 34 / 255, green: 37 / 255, blue: 57 / 255, opacity: 1),
                 ]),
                 startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+                endPoint: .bottom)
+                .ignoresSafeArea()
 
             VStack(spacing: 20) {
                 // Header with light and reflection effects
@@ -28,9 +27,7 @@ struct AllLensesView: View {
                             LinearGradient(
                                 colors: [.white, .purple.opacity(0.85), .blue],
                                 startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
+                                endPoint: .trailing))
                         .shadow(color: .purple.opacity(0.18), radius: 12, x: 0, y: 6)
                     Spacer()
                 }
@@ -42,17 +39,18 @@ struct AllLensesView: View {
                     Menu {
                         Picker("Format", selection: $selectedFormat) {
                             Text("All Formats").tag("")
-                            ForEach(Array(Set(dataManager.availableLenses.map { $0.format })).sorted(), id: \.self) { format in
-                                Text(format).tag(format)
-                            }
+                            ForEach(
+                                Array(Set(dataManager.availableLenses.map(\.format))).sorted(),
+                                id: \.self) { format in
+                                    Text(format).tag(format)
+                                }
                         }
                     } label: {
                         GlassFilterChip(
                             icon: "crop",
                             title: selectedFormat.isEmpty ? "All Formats" : selectedFormat,
                             accentColor: selectedFormat.isEmpty ? .purple : .green,
-                            isActive: !selectedFormat.isEmpty
-                        )
+                            isActive: !selectedFormat.isEmpty)
                     }
 
                     Menu {
@@ -66,8 +64,7 @@ struct AllLensesView: View {
                             icon: "arrow.left.and.right",
                             title: selectedFocalCategory.displayName,
                             accentColor: selectedFocalCategory == .all ? .indigo : .orange,
-                            isActive: selectedFocalCategory != .all
-                        )
+                            isActive: selectedFocalCategory != .all)
                     }
                 }
                 .padding(.horizontal, 24)
@@ -98,10 +95,9 @@ struct AllLensesView: View {
                 } else {
                     WeatherStyleLensListView(
                         format: selectedFormat,
-                        focalCategory: selectedFocalCategory
-                    ) { lens in
-                        selectedLens = lens
-                    }
+                        focalCategory: selectedFocalCategory) { lens in
+                            selectedLens = lens
+                        }
                 }
             }
             .sheet(item: $selectedLens) { lens in
@@ -125,17 +121,17 @@ enum FocalCategory: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .all: return "All"
-        case .ultraWide: return "Ultra Wide (≤12mm)"
-        case .wide: return "Wide (13–35mm)"
-        case .standard: return "Standard (36–70mm)"
-        case .tele: return "Tele (71–180mm)"
-        case .superTele: return "Super Tele (181mm+)"
+        case .all: "All"
+        case .ultraWide: "Ultra Wide (≤12mm)"
+        case .wide: "Wide (13–35mm)"
+        case .standard: "Standard (36–70mm)"
+        case .tele: "Tele (71–180mm)"
+        case .superTele: "Super Tele (181mm+)"
         }
     }
 
     func contains(focal: Double?) -> Bool {
-        guard let focal = focal else { return false }
+        guard let focal else { return false }
         switch self {
         case .all: return true
         case .ultraWide: return focal <= 12
@@ -161,7 +157,7 @@ struct GlassFilterChip: View {
     let icon: String
     let title: String
     let accentColor: Color
-    var isActive: Bool = false
+    var isActive = false
 
     var body: some View {
         HStack(spacing: 8) {
@@ -185,9 +181,10 @@ struct GlassFilterChip: View {
                     .fill(.ultraThinMaterial)
                     .blur(radius: 0.6)
                 RoundedRectangle(cornerRadius: 18)
-                    .stroke(isActive ? accentColor.opacity(0.7) : accentColor.opacity(0.28), lineWidth: isActive ? 2.3 : 1.3)
-            }
-        )
+                    .stroke(
+                        isActive ? accentColor.opacity(0.7) : accentColor.opacity(0.28),
+                        lineWidth: isActive ? 2.3 : 1.3)
+            })
         .shadow(color: accentColor.opacity(isActive ? 0.20 : 0.07), radius: isActive ? 9 : 3, x: 0, y: 3)
         .contentShape(RoundedRectangle(cornerRadius: 18))
         .animation(.easeInOut(duration: 0.19), value: isActive)

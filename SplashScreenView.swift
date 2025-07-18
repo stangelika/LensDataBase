@@ -16,12 +16,11 @@ struct SplashScreenView: View {
                 // Градиентный темный фон с "aura light"
                 LinearGradient(
                     gradient: Gradient(colors: [
-                        Color(.sRGB, red: 28/255, green: 32/255, blue: 48/255, opacity: 1),
-                        Color(.sRGB, red: 38/255, green: 36/255, blue: 97/255, opacity: 1)
+                        Color(.sRGB, red: 28 / 255, green: 32 / 255, blue: 48 / 255, opacity: 1),
+                        Color(.sRGB, red: 38 / 255, green: 36 / 255, blue: 97 / 255, opacity: 1),
                     ]),
-                    startPoint: .topLeading, endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
+                    startPoint: .topLeading, endPoint: .bottomTrailing)
+                    .ignoresSafeArea()
 
                 // Светящийся цветной круг "аура"
                 Circle()
@@ -30,11 +29,9 @@ struct SplashScreenView: View {
                             gradient: Gradient(colors: [
                                 Color.orange.opacity(0.28),
                                 Color.purple.opacity(0.16),
-                                Color.clear
+                                Color.clear,
                             ]),
-                            center: .center, startRadius: 0, endRadius: 350
-                        )
-                    )
+                            center: .center, startRadius: 0, endRadius: 350))
                     .frame(width: 430, height: 430)
                     .blur(radius: 2)
                     .offset(x: -60, y: -120)
@@ -55,10 +52,8 @@ struct SplashScreenView: View {
                             .foregroundStyle(
                                 LinearGradient(
                                     colors: [Color.orange, Color.yellow, Color.purple.opacity(0.9)],
-                                    startPoint: .topLeading, endPoint: .bottomTrailing
-                                ),
-                                Color.white
-                            )
+                                    startPoint: .topLeading, endPoint: .bottomTrailing),
+                                Color.white)
                             .shadow(color: .orange.opacity(0.22), radius: 20, x: 0, y: 6)
                             .scaleEffect(logoPulse ? 1.07 : 1)
                             .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: logoPulse)
@@ -71,9 +66,7 @@ struct SplashScreenView: View {
                             LinearGradient(
                                 colors: [.white, .yellow, .orange, .purple.opacity(0.95)],
                                 startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
+                                endPoint: .trailing))
                         .shadow(color: .orange.opacity(0.09), radius: 5, x: 0, y: 3)
                         .opacity(showSubtitle ? 1 : 0)
                         .offset(y: showSubtitle ? 0 : 10)
@@ -116,8 +109,7 @@ struct SplashScreenView: View {
                                     .frame(maxWidth: .infinity)
                                     .padding(.top, 1)
                             }
-                            .padding(.vertical, 8)
-                        )
+                            .padding(.vertical, 8))
                         .padding(.horizontal, 40)
                         .padding(.bottom, 36)
                 }
@@ -142,7 +134,7 @@ struct SplashScreenView: View {
                 }
             }
             .onChange(of: dataManager.loadingState) { newState in
-                if newState == .loaded && !isActive {
+                if newState == .loaded, !isActive {
                     self.isActive = true
                 }
             }
@@ -158,18 +150,14 @@ struct GlassCard: View {
             .shadow(color: Color.white.opacity(0.07), radius: 16, x: 0, y: 10)
             .background(
                 RoundedRectangle(cornerRadius: 32)
-                    .stroke(Color.white.opacity(0.13), lineWidth: 1.1)
-            )
+                    .stroke(Color.white.opacity(0.13), lineWidth: 1.1))
             .overlay(
                 RoundedRectangle(cornerRadius: 32)
                     .stroke(
                         LinearGradient(
                             colors: [Color.orange.opacity(0.13), Color.purple.opacity(0.09), .clear],
-                            startPoint: .topLeading, endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 2
-                    )
-            )
+                            startPoint: .topLeading, endPoint: .bottomTrailing),
+                        lineWidth: 2))
     }
 }
 
@@ -189,16 +177,14 @@ struct ShimmeringText: View {
                         gradient: Gradient(colors: [
                             .white.opacity(0.15),
                             .white.opacity(0.7),
-                            .white.opacity(0.15)
+                            .white.opacity(0.15),
                         ]),
                         startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                    .frame(width: 120, height: 12)
-                    .rotationEffect(.degrees(20))
-                    .offset(x: (phase * 200) - 100)
-                    .mask(Text(text))
-                )
+                        endPoint: .trailing)
+                        .frame(width: 120, height: 12)
+                        .rotationEffect(.degrees(20))
+                        .offset(x: (phase * 200) - 100)
+                        .mask(Text(text)))
                 .opacity(0.95)
         }
         .clipped()

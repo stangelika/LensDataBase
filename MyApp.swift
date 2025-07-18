@@ -3,7 +3,7 @@ import SwiftUI
 @main
 struct LensApp: App {
     @StateObject private var dataManager = DataManager()
-    
+
     var body: some Scene {
         WindowGroup {
             SplashScreenView()
@@ -14,7 +14,7 @@ struct LensApp: App {
                 }
         }
     }
-    
+
     /// Configures the app's UI appearance
     private func setupAppearance() {
         // Configure navigation bar appearance
@@ -22,10 +22,10 @@ struct LensApp: App {
         appearance.configureWithTransparentBackground()
         appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
         appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
-        
+
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
-        
+
         // Configure general view appearance
         UITableView.appearance().backgroundColor = .clear
     }

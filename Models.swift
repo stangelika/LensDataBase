@@ -53,7 +53,6 @@ struct RecordingFormat: Codable, Identifiable, Hashable {
     }
 }
 
-
 // MARK: - Core Data Models
 
 /// Rental service model representing a camera equipment rental company
@@ -80,7 +79,7 @@ struct Lens: Codable, Identifiable {
     let length: String
     let frontDiameter: String
     let squeezeFactor: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case displayName = "display_name"
@@ -96,10 +95,10 @@ struct Lens: Codable, Identifiable {
         case frontDiameter = "front_diameter"
         case squeezeFactor = "squeeze_factor"
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         // Process all fields using flexible decoder
         id = try Lens.decodeFlexible(container: container, key: .id) ?? ""
         displayName = try Lens.decodeFlexible(container: container, key: .displayName) ?? ""
@@ -115,28 +114,30 @@ struct Lens: Codable, Identifiable {
         frontDiameter = try Lens.decodeFlexible(container: container, key: .frontDiameter) ?? ""
         squeezeFactor = try Lens.decodeFlexible(container: container, key: .squeezeFactor)
     }
-    
+
     /// Flexible decoder that handles different JSON data types (String, Int, Double, Bool)
-    private static func decodeFlexible(container: KeyedDecodingContainer<Lens.CodingKeys>, key: CodingKeys) throws -> String? {
+    private static func decodeFlexible(
+        container: KeyedDecodingContainer<Lens.CodingKeys>,
+        key: CodingKeys) throws -> String? {
         // Try to decode as string
         if let stringValue = try? container.decode(String.self, forKey: key) {
-            return stringValue
+            stringValue
         }
         // Try to decode as integer
         else if let intValue = try? container.decode(Int.self, forKey: key) {
-            return String(intValue)
+            String(intValue)
         }
         // Try to decode as double
         else if let doubleValue = try? container.decode(Double.self, forKey: key) {
-            return String(doubleValue)
+            String(doubleValue)
         }
         // Try to decode as boolean
         else if let boolValue = try? container.decode(Bool.self, forKey: key) {
-            return boolValue ? "true" : "false"
+            boolValue ? "true" : "false"
         }
         // Return nil if all attempts fail
         else {
-            return nil
+            nil
         }
     }
 }
@@ -152,18 +153,18 @@ struct AppData: Codable {
     let rentals: [Rental]
     let lenses: [Lens]
     let inventory: [String: [InventoryItem]]
-    
+
     /// Custom initializer to handle lens array parsing with error protection
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         last_updated = try container.decode(String.self, forKey: .last_updated)
         rentals = try container.decode([Rental].self, forKey: .rentals)
         inventory = try container.decode([String: [InventoryItem]].self, forKey: .inventory)
-        
+
         // Process lenses with error protection
         let lensesArray = try container.decode([Lens].self, forKey: .lenses)
-        
+
         // Filter out lenses with empty IDs
         lenses = lensesArray.filter { !$0.id.isEmpty }
     }
@@ -200,5 +201,5 @@ enum ActiveTab: Equatable {
     case rentalView
     case allLenses
     case updateView
-    case favorites 
+    case favorites
 }

@@ -7,7 +7,6 @@ import Foundation
 
     /// Centralized theme system for the LensDataBase app
     enum AppTheme {
-
         // MARK: - Colors
 
         enum Colors {
@@ -144,7 +143,6 @@ import Foundation
     // MARK: - View Modifiers
 
     extension View {
-
         /// Applies glass morphism effect to the view
         func glassEffect() -> some View {
             self
@@ -219,7 +217,6 @@ import Foundation
 
     /// Theme constants for non-SwiftUI platforms
     public enum AppTheme {
-
         // MARK: - Spacing
 
         public enum Spacing {

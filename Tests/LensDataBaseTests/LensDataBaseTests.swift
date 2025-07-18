@@ -3,7 +3,6 @@ import Foundation
 import XCTest
 
 final class LensDataBaseTests: XCTestCase {
-
     // MARK: - Model Tests
 
     func testLensModelInitialization() {
@@ -134,7 +133,7 @@ final class LensDataBaseTests: XCTestCase {
             .allLenses,
             .rentalView,
             .favorites,
-            .updateView,
+            .updateView
         ]
 
         XCTAssertEqual(allTabs.count, 4)
@@ -225,7 +224,7 @@ final class LensDataBaseTests: XCTestCase {
                 imageCircle: "43.3",
                 length: "90",
                 frontDiameter: "77",
-                squeezeFactor: nil),
+                squeezeFactor: nil)
         ]
 
         let series = LensSeries(name: "Prime Series", lenses: lenses)
@@ -308,7 +307,7 @@ final class LensDataBaseTests: XCTestCase {
                 imageCircle: "43.3",
                 length: "90",
                 frontDiameter: "77",
-                squeezeFactor: nil),
+                squeezeFactor: nil)
         ]
 
         let sortedByName = lenses.sorted { $0.displayName < $1.displayName }
@@ -333,7 +332,7 @@ final class LensDataBaseTests: XCTestCase {
 
     func testLensJSONDecoding() {
         // Test lens JSON decoding with various data types
-        let jsonData = """
+        let jsonData = Data("""
         {
             "id": "lens-1",
             "display_name": "Test Lens",
@@ -349,12 +348,8 @@ final class LensDataBaseTests: XCTestCase {
             "front_diameter": 72,
             "squeeze_factor": null
         }
-        """.data(using: .utf8)
-        guard let jsonData else {
-            XCTFail("Failed to convert JSON string to data")
-            return
-        }
-
+        """.utf8)
+        
         do {
             let lens = try JSONDecoder().decode(Lens.self, from: jsonData)
             XCTAssertEqual(lens.id, "lens-1")

@@ -1,5 +1,3 @@
-// GlassCard.swift
-
 import SwiftUI
 
 /// A reusable glass morphism card component
@@ -7,17 +5,16 @@ struct GlassCard<Content: View>: View {
     let content: Content
     let cornerRadius: CGFloat
     let padding: CGFloat
-    
+
     init(
         cornerRadius: CGFloat = AppTheme.CornerRadius.md,
         padding: CGFloat = AppTheme.Spacing.lg,
-        @ViewBuilder content: () -> Content
-    ) {
+        @ViewBuilder content: () -> Content) {
         self.cornerRadius = cornerRadius
         self.padding = padding
         self.content = content()
     }
-    
+
     var body: some View {
         content
             .padding(padding)
@@ -33,17 +30,18 @@ struct GlassCard_Previews: PreviewProvider {
         ZStack {
             AppTheme.Gradients.primary
                 .ignoresSafeArea()
-            
+
             VStack(spacing: AppTheme.Spacing.lg) {
                 GlassCard {
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                         Text("Sample Card")
                             .headlineTextStyle()
-                        Text("This is a sample glass card component with some content to demonstrate the glass morphism effect.")
+                        Text(
+                            "This is a sample glass card component with some content to demonstrate the glass morphism effect.")
                             .secondaryTextStyle()
                     }
                 }
-                
+
                 GlassCard(cornerRadius: AppTheme.CornerRadius.xl) {
                     HStack {
                         Image(systemName: "camera.fill")

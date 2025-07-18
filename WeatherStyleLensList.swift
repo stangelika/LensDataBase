@@ -7,7 +7,11 @@ struct WeatherStyleLensListView: View {
     let focalCategory: FocalCategory
     let onSelect: (Lens) -> Void
 
-    init(rentalId: String? = nil, format: String = "", focalCategory: FocalCategory = .all, onSelect: @escaping (Lens) -> Void) {
+    init(
+        rentalId: String? = nil,
+        format: String = "",
+        focalCategory: FocalCategory = .all,
+        onSelect: @escaping (Lens) -> Void) {
         self.rentalId = rentalId
         self.format = format
         self.focalCategory = focalCategory
@@ -21,7 +25,7 @@ struct WeatherStyleLensListView: View {
             let filteredSeries = group.series.compactMap { series in
                 let filteredLenses = series.lenses.filter {
                     (format.isEmpty || $0.format == format)
-                    && focalCategory.contains(focal: $0.mainFocalValue)
+                        && focalCategory.contains(focal: $0.mainFocalValue)
                 }
                 return filteredLenses.isEmpty ? nil : LensSeries(name: series.name, lenses: filteredLenses)
             }
@@ -41,9 +45,7 @@ struct WeatherStyleLensListView: View {
                                     LinearGradient(
                                         colors: [.white, .blue.opacity(0.92)],
                                         startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
+                                        endPoint: .trailing))
                                 .shadow(color: .blue.opacity(0.16), radius: 4, x: 0, y: 2)
                             Spacer()
                         }
@@ -62,21 +64,19 @@ struct WeatherStyleLensListView: View {
         .background(
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(.sRGB, red: 30/255, green: 32/255, blue: 54/255, opacity: 1),
-                    Color(.sRGB, red: 22/255, green: 22/255, blue: 32/255, opacity: 1)
+                    Color(.sRGB, red: 30 / 255, green: 32 / 255, blue: 54 / 255, opacity: 1),
+                    Color(.sRGB, red: 22 / 255, green: 22 / 255, blue: 32 / 255, opacity: 1),
                 ]),
                 startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-        )
+                endPoint: .bottom)
+                .ignoresSafeArea())
     }
 }
 
 struct WeatherStyleLensSeriesView: View {
     let series: LensSeries
     let onSelect: (Lens) -> Void
-    @State private var isExpanded: Bool = false
+    @State private var isExpanded = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -102,8 +102,7 @@ struct WeatherStyleLensSeriesView: View {
                             .fill(.ultraThinMaterial)
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(Color.indigo.opacity(isExpanded ? 0.32 : 0.18), lineWidth: isExpanded ? 2 : 1.2)
-                    }
-                )
+                    })
                 .shadow(color: .blue.opacity(isExpanded ? 0.10 : 0.04), radius: isExpanded ? 6 : 2, x: 0, y: 2)
                 .padding(.horizontal, 22)
             }
@@ -145,8 +144,7 @@ struct WeatherStyleLensRow: View {
                         WeatherStyleLensBadge(
                             icon: "crop",
                             value: lens.format,
-                            color: .green
-                        )
+                            color: .green)
                     }
                 }
             }
@@ -165,8 +163,7 @@ struct WeatherStyleLensRow: View {
                     .fill(.ultraThinMaterial)
                 RoundedRectangle(cornerRadius: 18)
                     .stroke(Color.blue.opacity(0.15), lineWidth: 1)
-            }
-        )
+            })
         .shadow(color: Color.blue.opacity(0.06), radius: 2, x: 0, y: 2)
         .transition(.opacity.combined(with: .scale(scale: 0.98)))
     }
@@ -190,8 +187,7 @@ struct WeatherStyleLensBadge: View {
         .padding(.vertical, 5)
         .background(
             Capsule()
-                .fill(color.opacity(0.19))
-        )
+                .fill(color.opacity(0.19)))
     }
 }
 

@@ -1,11 +1,9 @@
-// ComparisonView.swift
-
 import SwiftUI
 
 struct ComparisonView: View {
     @EnvironmentObject var dataManager: DataManager
     @Environment(\.presentationMode) var presentationMode
-    
+
     // Получаем полные модели объективов из ID в сете для сравнения
     private var lensesToCompare: [Lens] {
         dataManager.comparisonSet.compactMap { lensId in
@@ -13,7 +11,7 @@ struct ComparisonView: View {
         }
         .sorted { $0.displayName < $1.displayName } // Сортируем для постоянства
     }
-    
+
     // Определяем строки нашей таблицы
     private let specs: [(String, KeyPath<Lens, String>)] = [
         ("Format", \.format),
@@ -22,15 +20,15 @@ struct ComparisonView: View {
         ("Image Circle", \.imageCircle),
         ("Close Focus", \.closeFocusCm),
         ("Front Diameter", \.frontDiameter),
-        ("Length", \.length)
+        ("Length", \.length),
     ]
-    
+
     var body: some View {
         ZStack {
             // Use AppTheme background gradient
             AppTheme.Gradients.primary
                 .ignoresSafeArea()
-            
+
             VStack(spacing: AppTheme.Spacing.lg) {
                 // Header with AppTheme styling
                 HStack {
@@ -44,13 +42,13 @@ struct ComparisonView: View {
                 }
                 .padding(.horizontal, AppTheme.Spacing.lg)
                 .padding(.top, AppTheme.Spacing.md)
-                
+
                 // Main content with table in a glass card
                 GlassCard {
                     ScrollView {
                         // Main HStack for sticky column and scroll area
                         HStack(alignment: .top, spacing: 0) {
-                            
+
                             // Sticky column with feature names
                             VStack(alignment: .leading, spacing: 0) {
                                 // Header for alignment
@@ -60,7 +58,7 @@ struct ComparisonView: View {
                                     .padding(AppTheme.Spacing.sm)
                                     .frame(height: 120, alignment: .leading)
                                     .background(AppTheme.Colors.surfacePrimary)
-                                
+
                                 // Feature names
                                 ForEach(specs, id: \.0) { spec in
                                     Text(spec.0)
@@ -74,7 +72,7 @@ struct ComparisonView: View {
                                 }
                             }
                             .frame(width: 140)
-                            
+
                             // Horizontal scroll with lens columns
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(alignment: .top, spacing: 0) {
@@ -94,7 +92,7 @@ struct ComparisonView: View {
                                             .padding(AppTheme.Spacing.sm)
                                             .frame(width: 150, height: 120, alignment: .leading)
                                             .background(AppTheme.Colors.surfacePrimary)
-                                            
+
                                             // Feature values
                                             ForEach(specs, id: \.0) { spec in
                                                 Text(lens[keyPath: spec.1])
@@ -103,7 +101,9 @@ struct ComparisonView: View {
                                                     .foregroundColor(AppTheme.Colors.textPrimary)
                                                     .padding(AppTheme.Spacing.sm)
                                                     .frame(width: 150, height: 60, alignment: .leading)
-                                                    .background(isEvenRow(spec.0) ? AppTheme.Colors.surfaceSecondary : Color.clear)
+                                                    .background(isEvenRow(spec.0)
+                                                        ? AppTheme.Colors.surfaceSecondary
+                                                        : Color.clear)
                                             }
                                         }
                                     }
@@ -117,9 +117,9 @@ struct ComparisonView: View {
         }
         .preferredColorScheme(.dark)
     }
-    
+
     // Helper function to determine if a row is even for alternating colors
     private func isEvenRow(_ specName: String) -> Bool {
-        return (specs.firstIndex(where: { $0.0 == specName }) ?? 0) % 2 == 0
+        (specs.firstIndex(where: { $0.0 == specName }) ?? 0) % 2 == 0
     }
 }
