@@ -20,7 +20,7 @@ struct RentalView: View {
             // Градиентный фон в сине-фиолетовых тонах
             AppTheme.Colors.detailViewGradient
                 .ignoresSafeArea()
-            
+
             VStack(spacing: AppTheme.Spacing.xxl) {
                 // Заголовок с названием выбранной компании проката
                 HStack {
@@ -60,7 +60,7 @@ struct RentalView: View {
                             isActive: !dataManager.selectedRentalId.isEmpty
                         )
                     }
-                    
+
                     // Выпадающее меню выбора формата съемки
                     Menu {
                         Picker("Format", selection: $selectedFormat) {
@@ -97,10 +97,23 @@ struct RentalView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if let _ = dataManager.appData, !dataManager.selectedRentalId.isEmpty {
                     // Список объективов выбранной компании проката
-                    WeatherStyleLensListView(rentalId: dataManager.selectedRentalId, format: selectedFormat) { lens in
-                        // Callback для открытия детального экрана объектива
-                        selectedLens = lens
-                    }
+                    // НОВОЕ: Передаем уже отфильтрованные и сгруппированные линзы
+                    WeatherStyleLensListView(
+                        lensesSource: dataManager.groupLenses(forRental: dataManager.selectedRentalId).compactMap { group in
+                            // Дополнительная фильтрация по формату, если selectedFormat не пуст
+                            let filteredSeries = group.series.compactMap { series in
+                                let filteredLenses = series.lenses.filter {
+                                    selectedFormat.isEmpty || $0.format == selectedFormat
+                                }
+                                return filteredLenses.isEmpty ? nil : LensSeries(name: series.name, lenses: filteredLenses)
+                            }
+                            return filteredSeries.isEmpty ? nil : LensGroup(manufacturer: group.manufacturer, series: filteredSeries)
+                        },
+                        onSelect: { lens in
+                            // Callback для открытия детального экрана объектива
+                            selectedLens = lens
+                        }
+                    )
                 } else {
                     // Сообщение-подсказка при отсутствии выбранной компании
                     VStack {

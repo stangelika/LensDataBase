@@ -213,7 +213,7 @@ struct LensDetailView: View, Identifiable {
 struct StickyHeader: View {
     // Текст заголовка
     let title: String
-    
+
     // Содержимое заголовка
     var body: some View {
         HStack {

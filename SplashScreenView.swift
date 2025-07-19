@@ -158,12 +158,12 @@ struct SplashScreenView: View {
                     }
                 }
             }
-            .onChange(of: dataManager.loadingState) { newState in
-                // Реакция на завершение загрузки данных
-                if newState == .loaded, !isActive {
-                    isActive = true
-                }
-            }
+            .onChange(of: dataManager.loadingState) { oldState, newState in
+    if newState == .loaded, !isActive {
+        isActive = true
+    }
+}
+
         }
     }
 }

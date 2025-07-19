@@ -39,32 +39,41 @@ struct ComparisonView: View {
                 // Заголовочная область с кнопкой закрытия
                 HStack {
                     Text("Comparison")
-                        .font(.title.weight(.bold))
+                        .font(.appTitle.weight(.bold)) // Используем шрифт из темы
+                        .gradientText(AppTheme.Colors.favoriteTitleGradient) // Градиент как на экране избранного
+
                     Spacer()
-                    // Кнопка закрытия экрана сравнения
-                    Button("Done") {
+                    Button(action: {
                         presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Text("Done")
+                            .font(.appHeadline.weight(.bold))
+                            .foregroundColor(AppTheme.Colors.primaryText)
+                            .padding(.vertical, AppTheme.Spacing.md)
+                            .padding(.horizontal, AppTheme.Spacing.xl)
+                            .background(
+                                RoundedRectangle(cornerRadius: AppTheme.CornerRadius.small, style: .continuous)
+                                    .fill(.ultraThinMaterial)
+                            )
                     }
-                    .font(.headline.weight(.semibold))
                 }
                 .padding()
                 .foregroundColor(AppTheme.Colors.primaryText)
 
                 // Основная область с таблицей сравнения
                 ScrollView {
-                    // Главный горизонтальный контейнер с фиксированной и прокручиваемой частями
+                    // Главный горизонтальный контейнер
                     HStack(alignment: .top, spacing: 0) {
                         // Фиксированная левая колонка с названиями характеристик
                         VStack(alignment: .leading, spacing: 0) {
-                            // Заголовок колонки характеристик
+                            // Заголовок колонки
                             Text("Feature")
                                 .font(.appHeadline.weight(.bold))
                                 .foregroundColor(AppTheme.Colors.primaryText)
                                 .padding(AppTheme.Spacing.lg)
                                 .frame(height: 120, alignment: .leading)
-                                .background(AppTheme.Colors.toolbarBackground)
 
-                            // Список названий характеристик для сравнения
+                            // Список названий характеристик
                             ForEach(specs, id: \.0) { spec in
                                 Text(spec.0)
                                     .font(.appBodyMedium)
@@ -72,53 +81,54 @@ struct ComparisonView: View {
                                     .padding(AppTheme.Spacing.lg)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .frame(height: 60)
-                                    // Альтернирующий фон для строк
-                                    .background((specs.firstIndex(where: { $0.0 == spec.0 }) ?? 0) % 2 == 0 ? AppTheme.Colors.unselectedCardBackground : Color.clear)
                             }
                         }
                         .frame(width: 140)
+                        .glassCard(cornerRadius: AppTheme.CornerRadius.medium) // Применяем стиль GlassCard
 
                         // Горизонтально прокручиваемая область с колонками объективов
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(alignment: .top, spacing: 0) {
-                                // Перебор всех объективов для сравнения
+                            HStack(alignment: .top, spacing: AppTheme.Spacing.lg) {
                                 ForEach(lensesToCompare) { lens in
                                     // Колонка данных для одного объектива
                                     VStack(alignment: .leading, spacing: 0) {
-                                        // Заголовочная карточка с информацией об объективе
-                                        VStack(alignment: .leading) {
-                                            Text(lens.display_name)
-                                                .font(.appHeadline.weight(.bold))
-                                                .lineLimit(3)
-                                            Text(lens.manufacturer)
-                                                .font(.caption)
-                                                .opacity(0.7)
-                                        }
-                                        .foregroundColor(AppTheme.Colors.primaryText)
-                                        .padding(AppTheme.Spacing.lg)
-                                        .frame(width: 150, height: 120, alignment: .leading)
-                                        .background(AppTheme.Colors.toolbarBackground)
+                                        // Заголовочная ячейка с названием объектива
+                                        ComparisonCell(
+                                            text: "\(lens.display_name)\n\(lens.manufacturer)",
+                                            isHeader: true
+                                        )
 
-                                        // Столбец значений характеристик объектива
+                                        // Ячейки со значениями характеристик
                                         ForEach(specs, id: \.0) { spec in
-                                            // Значение характеристики, извлеченное через KeyPath
-                                            Text(lens[keyPath: spec.1])
-                                                .font(.appMonospace)
-                                                .foregroundColor(AppTheme.Colors.primaryText)
-                                                .padding(AppTheme.Spacing.lg)
-                                                .frame(width: 150, height: 60, alignment: .leading)
-                                                // Альтернирующий фон для строк
-                                                .background((specs.firstIndex(where: { $0.0 == spec.0 }) ?? 0) % 2 == 0 ? AppTheme.Colors.unselectedCardBackground : Color.clear)
+                                            ComparisonCell(text: lens[keyPath: spec.1])
                                         }
                                     }
+                                    .glassCard(cornerRadius: AppTheme.CornerRadius.medium) // Применяем стиль GlassCard
                                 }
                             }
+                            .padding(.leading, AppTheme.Spacing.lg)
                         }
                     }
+                    .padding()
                 }
             }
         }
-        // Принудительная темная тема
         .preferredColorScheme(.dark)
+    }
+}
+
+// Переиспользуемый компонент для ячеек таблицы сравнения
+struct ComparisonCell: View {
+    let text: String
+    var isHeader: Bool = false // Флаг для стилизации заголовка
+
+    var body: some View {
+        Text(text)
+            .font(isHeader ? .appHeadline.weight(.bold) : .appMonospace)
+            .foregroundColor(AppTheme.Colors.primaryText)
+            .padding(AppTheme.Spacing.lg)
+            .frame(width: 150, height: isHeader ? 120 : 60, alignment: .leading)
+            .background(isHeader ? AppTheme.Colors.toolbarBackground : Color.clear)
+            .lineLimit(isHeader ? 3 : 2)
     }
 }

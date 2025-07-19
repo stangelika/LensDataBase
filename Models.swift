@@ -89,7 +89,7 @@ struct Rental: Codable, Identifiable {
 }
 
 // Модель объектива с полной технической информацией
-struct Lens: Codable, Identifiable {
+struct Lens: Codable, Identifiable, Hashable {
     // Уникальный идентификатор объектива
     let id: String
     // Отображаемое название для UI
@@ -251,4 +251,3 @@ enum ActiveTab: Equatable {
     case favorites // Экран избранных объективов
     case projects // Экран проектов
 }
-

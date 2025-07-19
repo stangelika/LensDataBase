@@ -2,8 +2,8 @@ import SwiftUI
 
 // Перечисление типов развернутых селекторов
 enum ExpandedPicker {
-    case camera    // Селектор камеры
-    case format    // Селектор формата записи
+    case camera // Селектор камеры
+    case format // Селектор формата записи
 }
 
 // Корневой экран визуализатора совместимости камер и объективов
@@ -76,7 +76,7 @@ struct CameraLensVisualizerRoot: View {
                                     // Отрисовка элементов при наличии валидных данных
                                     if maxDimension > 0 {
                                         let scaleFactor = geo.size.height / (maxDimension * 1.2)
-                                        
+
                                         // Круг изображения объектива (синий)
                                         if let ic = lensCircleDiameter {
                                             let circleDiameter = CGFloat(ic) * CGFloat(scaleFactor)
@@ -86,7 +86,7 @@ struct CameraLensVisualizerRoot: View {
                                                 .frame(width: circleDiameter, height: circleDiameter)
                                                 .position(x: geo.size.width / 2, y: geo.size.height / 2)
                                         }
-                                        
+
                                         // Прямоугольник формата записи (желтый)
                                         if let w = format.validRecordingWidth, let h = format.validRecordingHeight {
                                             let rectWidth = CGFloat(w) * CGFloat(scaleFactor)
@@ -199,11 +199,12 @@ struct CameraLensVisualizerRoot: View {
             .navigationBarHidden(true)
         }
         .navigationViewStyle(.stack)
-        .onChange(of: selectedCamera) { camera in
-            if let cam = camera {
-                selectedFormat = dataManager.formats.first(where: { $0.cameraId == cam.id })
-            }
-        }
+        .onChange(of: selectedCamera) { _, newCamera in
+    if let cam = newCamera {
+        selectedFormat = dataManager.formats.first(where: { $0.cameraId == cam.id })
+    }
+}
+
     }
 }
 

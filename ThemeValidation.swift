@@ -1,11 +1,10 @@
 import SwiftUI
 
 // Simple validation to ensure AppTheme is properly configured
-struct AppThemeValidation {
-    
+enum AppThemeValidation {
     static func validateTheme() -> Bool {
         var isValid = true
-        
+
         // Test Colors
         let testGradients = [
             AppTheme.Colors.primaryGradient,
@@ -15,9 +14,9 @@ struct AppThemeValidation {
             AppTheme.Colors.titleGradient,
             AppTheme.Colors.favoriteTitleGradient,
             AppTheme.Colors.manufacturerGradient,
-            AppTheme.Colors.stickyHeaderGradient
+            AppTheme.Colors.stickyHeaderGradient,
         ]
-        
+
         // Test Spacing
         let testSpacings: [CGFloat] = [
             AppTheme.Spacing.xs,
@@ -26,17 +25,17 @@ struct AppThemeValidation {
             AppTheme.Spacing.lg,
             AppTheme.Spacing.xl,
             AppTheme.Spacing.xxl,
-            AppTheme.Spacing.xxxl
+            AppTheme.Spacing.xxxl,
         ]
-        
+
         // Test Corner Radius
         let testRadii: [CGFloat] = [
             AppTheme.CornerRadius.small,
             AppTheme.CornerRadius.medium,
             AppTheme.CornerRadius.large,
-            AppTheme.CornerRadius.xlarge
+            AppTheme.CornerRadius.xlarge,
         ]
-        
+
         // Validate that all spacings are positive
         for spacing in testSpacings {
             if spacing <= 0 {
@@ -44,7 +43,7 @@ struct AppThemeValidation {
                 isValid = false
             }
         }
-        
+
         // Validate that all radii are positive
         for radius in testRadii {
             if radius <= 0 {
@@ -52,7 +51,7 @@ struct AppThemeValidation {
                 isValid = false
             }
         }
-        
+
         // Test Font Extensions
         let testFonts: [Font] = [
             .appLargeTitle,
@@ -64,18 +63,18 @@ struct AppThemeValidation {
             .appCaption,
             .appMonospace,
             .appRounded18,
-            .appRounded14
+            .appRounded14,
         ]
-        
+
         print("✅ Theme validation completed with \(testGradients.count) gradients, \(testSpacings.count) spacings, \(testRadii.count) radii, and \(testFonts.count) fonts")
-        
+
         return isValid
     }
-    
+
     static func printThemeUsageReport() {
         print("📊 AppTheme Usage Report:")
         print("- Colors: \(Mirror(reflecting: AppTheme.Colors.self).children.count) properties")
-        print("- Spacing: \(Mirror(reflecting: AppTheme.Spacing.self).children.count) properties") 
+        print("- Spacing: \(Mirror(reflecting: AppTheme.Spacing.self).children.count) properties")
         print("- Corner Radius: \(Mirror(reflecting: AppTheme.CornerRadius.self).children.count) properties")
         print("- Font Extensions: 10 custom fonts defined")
         print("- View Modifiers: 4 reusable modifiers")
@@ -88,12 +87,12 @@ struct ThemeShowcaseView: View {
         ZStack {
             AppTheme.Colors.primaryGradient
                 .ignoresSafeArea()
-            
+
             VStack(spacing: AppTheme.Spacing.xxl) {
                 Text("Theme Showcase")
                     .font(.appLargeTitle)
                     .gradientText(AppTheme.Colors.titleGradient)
-                
+
                 HStack(spacing: AppTheme.Spacing.xl) {
                     VStack {
                         Text("Sample Card")
@@ -105,7 +104,7 @@ struct ThemeShowcaseView: View {
                     }
                     .padding(AppTheme.Spacing.xl)
                     .glassCard()
-                    
+
                     VStack {
                         Text("Another Card")
                             .font(.appHeadline)
@@ -117,7 +116,7 @@ struct ThemeShowcaseView: View {
                     .padding(AppTheme.Spacing.xl)
                     .glassCard()
                 }
-                
+
                 Text("Filter Chip Example")
                     .font(.appBodyMedium)
                     .foregroundColor(AppTheme.Colors.primaryText)

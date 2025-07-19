@@ -2,51 +2,33 @@ import SwiftUI
 
 // Компонент отображения списка объективов в стиле погодного приложения с фильтрацией
 struct WeatherStyleLensListView: View {
-    // Менеджер данных для доступа к объективам
-    @EnvironmentObject var dataManager: DataManager
-    // ID компании проката для фильтрации (опционально)
-    let rentalId: String?
-    // Фильтр по формату съемки
-    let format: String
-    // Фильтр по категории фокусного расстояния
-    let focalCategory: FocalCategory
+    // УДАЛЕНО: @EnvironmentObject var dataManager: DataManager (больше не нужен напрямую для filteredGroups)
+    // УДАЛЕНО: let rentalId: String?
+    // УДАЛЕНО: let format: String
+    // УДАЛЕНО: let focalCategory: FocalCategory
+
+    // НОВОЕ СВОЙСТВО: Уже отфильтрованные и сгруппированные линзы, поступающие извне (DataManager)
+    let lensesSource: [LensGroup]
     // Callback для обработки выбора объектива
     let onSelect: (Lens) -> Void
 
-    // Инициализатор с настройками фильтрации
-    init(rentalId: String? = nil, format: String = "", focalCategory: FocalCategory = .all, onSelect: @escaping (Lens) -> Void) {
-        self.rentalId = rentalId
-        self.format = format
-        self.focalCategory = focalCategory
+    // Инициализатор упрощен, теперь принимает только lensesSource и onSelect
+    init(lensesSource: [LensGroup], onSelect: @escaping (Lens) -> Void) {
+        self.lensesSource = lensesSource
         self.onSelect = onSelect
     }
 
-    // Вычисляемое свойство: отфильтрованные группы объективов
-    private var filteredGroups: [LensGroup] {
-        let groups = dataManager.groupLenses(forRental: rentalId)
-        // Если нет активных фильтров, возвращаем все группы
-        guard !format.isEmpty || focalCategory != .all else { return groups }
-        // Применяем фильтры к группам объективов
-        return groups.compactMap { group in
-            let filteredSeries = group.series.compactMap { series in
-                let filteredLenses = series.lenses.filter {
-                    // Фильтрация по формату и категории фокусного расстояния
-                    (format.isEmpty || $0.format == format)
-                        && focalCategory.contains(focal: $0.mainFocalValue)
-                }
-                return filteredLenses.isEmpty ? nil : LensSeries(name: series.name, lenses: filteredLenses)
-            }
-            return filteredSeries.isEmpty ? nil : LensGroup(manufacturer: group.manufacturer, series: filteredSeries)
-        }
-    }
+    // УДАЛЕНО: private var filteredGroups: [LensGroup] { ... }
+    // Логика фильтрации и группировки теперь находится в DataManager.groupedAndFilteredLenses
 
     // Основное содержимое компонента
     var body: some View {
         // Скроллируемый контейнер без индикаторов
         ScrollView(showsIndicators: false) {
-            VStack(spacing: AppTheme.Spacing.padding36) {
+            // ИЗМЕНЕНО: Заменен VStack на LazyVStack для повышения производительности
+            LazyVStack(spacing: AppTheme.Spacing.padding36) {
                 // Перебор всех отфильтрованных групп производителей
-                ForEach(filteredGroups) { group in
+                ForEach(lensesSource) { group in // ИСПОЛЬЗУЕМ lensesSource
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.xxl) {
                         // Заголовок группы производителя
                         HStack {
@@ -59,9 +41,12 @@ struct WeatherStyleLensListView: View {
                         .padding(.horizontal, AppTheme.Spacing.xxxl)
 
                         // Перебор всех серий объективов производителя
-                        ForEach(group.series) { series in
-                            // Компонент отображения серии объективов в погодном стиле
-                            WeatherStyleLensSeriesView(series: series, onSelect: onSelect)
+                        // ИЗМЕНЕНО: Заменен ForEach внутри Vstack на LazyVStack для дальнейшей оптимизации
+                        LazyVStack(spacing: AppTheme.Spacing.xxl) {
+                            ForEach(group.series) { series in
+                                // Компонент отображения серии объективов в погодном стиле
+                                WeatherStyleLensSeriesView(series: series, onSelect: onSelect)
+                            }
                         }
                     }
                     .padding(.bottom, AppTheme.Spacing.xs)
@@ -136,7 +121,8 @@ struct WeatherStyleLensSeriesView: View {
 
             // Условное отображение развернутого списка объективов
             if isExpanded {
-                VStack(spacing: AppTheme.Spacing.lg) {
+                // ИЗМЕНЕНО: Заменен VStack на LazyVStack для ленивой загрузки элементов серии
+                LazyVStack(spacing: AppTheme.Spacing.lg) {
                     // Перебор всех объективов в серии
                     ForEach(series.lenses) { lens in
                         // Компонент строки объектива

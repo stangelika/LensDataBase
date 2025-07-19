@@ -4,12 +4,12 @@ import SwiftUI
 struct AllLensesView: View {
     // Менеджер данных для доступа к объективам и функциональности
     @EnvironmentObject var dataManager: DataManager
-    // Выбранный формат для фильтрации объективов
-    @State private var selectedFormat: String = ""
-    // Выбранная категория фокусного расстояния
-    @State private var selectedFocalCategory: FocalCategory = .all
     // Выбранный объектив для детального просмотра
     @State private var selectedLens: Lens? = nil
+    
+    // УДАЛЕНО: @State private var selectedFormat: String = ""
+    // УДАЛЕНО: @State private var selectedFocalCategory: FocalCategory = .all
+    // УДАЛЕНО: @State private var showOnlyRentable: Bool = true
 
     // Основное содержимое экрана
     var body: some View {
@@ -36,7 +36,7 @@ struct AllLensesView: View {
                 HStack(spacing: AppTheme.Spacing.xl) {
                     // Выпадающее меню выбора формата съемки
                     Menu {
-                        Picker("Format", selection: $selectedFormat) {
+                        Picker("Format", selection: $dataManager.allLensesSelectedFormat) { // Привязка к DataManager
                             Text("All Formats").tag("")
                             // Динамический список доступных форматов из данных
                             ForEach(Array(Set(dataManager.availableLenses.map(\.format))).sorted(), id: \.self) { format in
@@ -47,15 +47,15 @@ struct AllLensesView: View {
                         // Кнопка фильтрации по формату с визуальной обратной связью
                         GlassFilterChip(
                             icon: "crop",
-                            title: selectedFormat.isEmpty ? "All Formats" : selectedFormat,
-                            accentColor: selectedFormat.isEmpty ? AppTheme.Colors.purple : AppTheme.Colors.green,
-                            isActive: !selectedFormat.isEmpty
+                            title: dataManager.allLensesSelectedFormat.isEmpty ? "All Formats" : dataManager.allLensesSelectedFormat,
+                            accentColor: dataManager.allLensesSelectedFormat.isEmpty ? AppTheme.Colors.purple : AppTheme.Colors.green,
+                            isActive: !dataManager.allLensesSelectedFormat.isEmpty
                         )
                     }
 
                     // Выпадающее меню выбора категории фокусного расстояния
                     Menu {
-                        Picker("Focal Length Category", selection: $selectedFocalCategory) {
+                        Picker("Focal Length Category", selection: $dataManager.allLensesSelectedFocalCategory) { // Привязка к DataManager
                             // Перебор всех доступных категорий фокусного расстояния
                             ForEach(FocalCategory.allCases, id: \.self) { cat in
                                 Text(cat.displayName).tag(cat)
@@ -65,9 +65,23 @@ struct AllLensesView: View {
                         // Кнопка фильтрации по фокусному расстоянию
                         GlassFilterChip(
                             icon: "arrow.left.and.right",
-                            title: selectedFocalCategory.displayName,
-                            accentColor: selectedFocalCategory == .all ? AppTheme.Colors.indigo : AppTheme.Colors.orange,
-                            isActive: selectedFocalCategory != .all
+                            title: dataManager.allLensesSelectedFocalCategory.displayName,
+                            accentColor: dataManager.allLensesSelectedFocalCategory == .all ? AppTheme.Colors.indigo : AppTheme.Colors.orange,
+                            isActive: dataManager.allLensesSelectedFocalCategory != .all
+                        )
+                    }
+                    
+                    // НОВЫЙ UI-ЭЛЕМЕНТ: Кнопка-тумблер для фильтра "только в аренде"
+                    Button(action: {
+                        withAnimation {
+                            dataManager.allLensesShowOnlyRentable.toggle() // Привязка к DataManager
+                        }
+                    }) {
+                        GlassFilterChip(
+                            icon: "building.2",
+                            title: "In Rental",
+                            accentColor: AppTheme.Colors.blue,
+                            isActive: dataManager.allLensesShowOnlyRentable
                         )
                     }
                 }
@@ -101,8 +115,7 @@ struct AllLensesView: View {
                 } else {
                     // Главный компонент отображения списка объективов с примененными фильтрами
                     WeatherStyleLensListView(
-                        format: selectedFormat,
-                        focalCategory: selectedFocalCategory
+                        lensesSource: dataManager.groupedAndFilteredLenses // Передаем уже готовые данные
                     ) { lens in
                         // Callback для открытия детального экрана объектива
                         selectedLens = lens
