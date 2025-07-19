@@ -1,43 +1,38 @@
-// MainTabView.swift
 
 import SwiftUI
 
-// Главный экран с вкладками для навигации по приложению
 struct MainTabView: View {
-    // Менеджер данных для доступа к состоянию приложения
     @EnvironmentObject var dataManager: DataManager
-
-    // Основное содержимое экрана
 
     var body: some View {
         ZStack {
-            // Фон, который будет на весь экран
             AppTheme.Colors.mainTabGradient
-                .ignoresSafeArea()
+            .ignoresSafeArea()
 
-            // TabView со всеми экранами
             TabView(selection: $dataManager.activeTab) {
                 AllLensesView()
-                    .tag(ActiveTab.allLenses)
+                .tag(ActiveTab.allLenses)
 
                 RentalView()
-                    .tag(ActiveTab.rentalView)
+                .tag(ActiveTab.rentalView)
 
                 FavoritesView()
-                    .tag(ActiveTab.favorites)
+                .tag(ActiveTab.favorites)
 
                 UpdateView()
-                    .tag(ActiveTab.updateView)
+                .tag(ActiveTab.updateView)
             }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
         }
-        .ignoresSafeArea() // <--- ВОТ КЛЮЧЕВОЕ ИЗМЕНЕНИЕ
+        .ignoresSafeArea()
         .preferredColorScheme(.dark)
         .onAppear {
-            if dataManager.appData == nil {
+            if dataManager.appData    == nil {
                 dataManager.loadData()
             }
             UITabBar.appearance().isHidden = true
         }
+
     }
+
 }
