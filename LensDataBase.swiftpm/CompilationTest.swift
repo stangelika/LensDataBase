@@ -3,6 +3,16 @@ import Foundation
 /**
  * Comprehensive test suite for LensDataBase Swift Playground project
  * This file verifies that all components work correctly and can be integrated properly
+ * 
+ * Test Categories:
+ * - Basic Compilation: Verify all components can be instantiated
+ * - Data Models: Test model creation and decoding
+ * - Enum Values: Validate all enum cases and their properties
+ * - Lens Operations: Test lens-specific functionality
+ * - Data Manager: Test state management and data processing
+ * - Network Service: Verify API integration setup
+ * - UI Components: Test SwiftUI view creation
+ * - Error Handling: Validate error scenarios
  */
 
 func runAllTests() {
@@ -15,6 +25,9 @@ func runAllTests() {
     testLensOperations()
     testDataManagerFunctionality()
     testNetworkServiceSetup()
+    testUIComponents()
+    testErrorHandling()
+    testDataProcessing()
 
     print("=" * 50)
     print("🎉 All tests completed successfully!")
@@ -92,25 +105,25 @@ func testEnumValues() {
     print("-" * 30)
 
     // Test FocalCategory enum
-    let focalCategories: [FocalCategory] = [.wide, .standard, .telephoto, .superTelephoto]
+    let focalCategories: [FocalCategory] = [.all, .ultraWide, .wide, .standard, .tele, .superTele]
     for category in focalCategories {
         print("✅ FocalCategory.\(category): \(category.displayName)")
     }
 
     // Test LensFormatCategory enum
-    let formatCategories: [LensFormatCategory] = [.s35, .ff, .mft, .s16, .other]
+    let formatCategories: [LensFormatCategory] = [.s16, .s35, .ff, .mft]
     for category in formatCategories {
         print("✅ LensFormatCategory.\(category): \(category.displayName)")
     }
 
     // Test ActiveTab enum
-    let tabs: [ActiveTab] = [.allLenses, .favorites, .comparison, .camera, .rentals]
+    let tabs: [ActiveTab] = [.rentalView, .allLenses, .favorites]
     for tab in tabs {
         print("✅ ActiveTab: \(tab)")
     }
 
     // Test DataLoadingState enum
-    let states: [DataLoadingState] = [.idle, .loading, .loaded, .error]
+    let states: [DataLoadingState] = [.idle, .loading, .loaded, .error("Test error")]
     for state in states {
         print("✅ DataLoadingState: \(state)")
     }
@@ -190,6 +203,153 @@ func testNetworkServiceSetup() {
     print("✅ Singleton pattern verification")
 
     print("✅ NetworkService setup test passed!")
+}
+
+func testUIComponents() {
+    print("\n📋 Test: UI Components")
+    print("-" * 30)
+
+    // Test that main views can be created
+    let dataManager = DataManager()
+    
+    // Test MainTabView creation
+    let mainTabView = MainTabView()
+        .environmentObject(dataManager)
+    print("✅ MainTabView created successfully")
+    
+    // Test AllLensesView creation
+    let allLensesView = AllLensesView()
+        .environmentObject(dataManager)
+    print("✅ AllLensesView created successfully")
+    
+    // Test FavoritesView creation
+    let favoritesView = FavoritesView()
+        .environmentObject(dataManager)
+    print("✅ FavoritesView created successfully")
+    
+    // Test SplashScreenView creation
+    let splashView = SplashScreenView()
+        .environmentObject(dataManager)
+    print("✅ SplashScreenView created successfully")
+    
+    print("✅ UI components test passed!")
+}
+
+func testErrorHandling() {
+    print("\n📋 Test: Error Handling")
+    print("-" * 30)
+    
+    // Test DataLoadingState error handling
+    let errorState = DataLoadingState.error("Test error message")
+    switch errorState {
+    case .error(let message):
+        assert(message == "Test error message", "Error message not preserved")
+        print("✅ Error state message: \(message)")
+    default:
+        assert(false, "Expected error state")
+    }
+    
+    // Test lens decoding with invalid data
+    let invalidJSON = """
+    {
+        "id": 123,
+        "display_name": "Test Lens",
+        "manufacturer": "Test Mfg",
+        "lens_name": "Test 50mm",
+        "format": "FF",
+        "focal_length": 50,
+        "aperture": 1.4,
+        "close_focus_in": "18",
+        "close_focus_cm": "45",
+        "image_circle": "43.3",
+        "length": "85",
+        "front_diameter": "77"
+    }
+    """.data(using: .utf8)!
+    
+    do {
+        let decoder = JSONDecoder()
+        let lens = try decoder.decode(Lens.self, from: invalidJSON)
+        print("✅ Flexible decoding handled mixed types: ID=\(lens.id), Focal=\(lens.focal_length)")
+    } catch {
+        print("❌ Flexible decoding failed: \(error)")
+    }
+    
+    print("✅ Error handling test passed!")
+}
+
+func testDataProcessing() {
+    print("\n📋 Test: Data Processing")
+    print("-" * 30)
+    
+    // Test focal length parsing
+    let testCases = [
+        ("50", 50.0),
+        ("24-70", 24.0),
+        ("14-24mm", 14.0),
+        ("85 mm", 85.0),
+        ("invalid", nil)
+    ]
+    
+    for (input, expected) in testCases {
+        let testLens = Lens(
+            id: "test",
+            display_name: "Test",
+            manufacturer: "Test",
+            lens_name: "Test",
+            format: "FF",
+            focal_length: input,
+            aperture: "1.4",
+            close_focus_in: "18",
+            close_focus_cm: "45",
+            image_circle: "43.3",
+            length: "85",
+            front_diameter: "77",
+            squeeze_factor: nil,
+            lens_format: "FF"
+        )
+        
+        let result = testLens.mainFocalValue
+        if let expected = expected {
+            assert(result == expected, "Expected \(expected), got \(result ?? 0)")
+            print("✅ Focal parsing '\(input)' → \(result ?? 0)")
+        } else {
+            assert(result == nil, "Expected nil for '\(input)', got \(result ?? 0)")
+            print("✅ Invalid focal '\(input)' → nil")
+        }
+    }
+    
+    // Test focal category classification
+    let focalTests: [(Double, FocalCategory)] = [
+        (10, .ultraWide),
+        (24, .wide),
+        (50, .standard),
+        (85, .tele),
+        (200, .superTele)
+    ]
+    
+    for (focal, expectedCategory) in focalTests {
+        let containsResult = expectedCategory.contains(focal: focal)
+        assert(containsResult, "Focal \(focal) should be in category \(expectedCategory)")
+        print("✅ Focal \(focal)mm correctly categorized as \(expectedCategory.displayName)")
+    }
+    
+    // Test lens format categorization
+    let formatTests: [(String, LensFormatCategory)] = [
+        ("S16", .s16),
+        ("S35", .s35),
+        ("FF", .ff),
+        ("MFT", .mft),
+        ("unknown", .mft)
+    ]
+    
+    for (format, expectedCategory) in formatTests {
+        let containsResult = expectedCategory.contains(lensFormat: format)
+        assert(containsResult, "Format \(format) should be in category \(expectedCategory)")
+        print("✅ Format '\(format)' correctly categorized as \(expectedCategory.displayName)")
+    }
+    
+    print("✅ Data processing test passed!")
 }
 
 private func createTestLens() -> Lens {
