@@ -31,7 +31,7 @@ struct CameraLensVisualizerRoot: View {
                             .background(Color.white.opacity(0.2))
                             .clipShape(Circle())
                         }
-                        Text("Проверка совместимости").font(.title3.weight(.semibold)).foregroundColor(.white)
+                        Text("Compatibility Check").font(.title3.weight(.semibold)).foregroundColor(.white)
                         Spacer()
                     }
                     .padding(.horizontal)
@@ -40,7 +40,7 @@ struct CameraLensVisualizerRoot: View {
                     Spacer().frame(height: 20)
 
                     GlassInfoCard(
-                    title: lens.display_name, subtitle: "\(lens.manufacturer) \(lens.lens_name)", icon: "camera.metering.matrix", value: "Круг изображения: \(lens.image_circle)"
+                    title: lens.display_name, subtitle: "\(lens.manufacturer) \(lens.lens_name)", icon: "camera.metering.matrix", value: "Image Circle: \(lens.image_circle)"
                     )
                     .padding(.horizontal)
 
@@ -87,7 +87,7 @@ struct CameraLensVisualizerRoot: View {
                     }
                     VStack(spacing: 12) {
                         ExpandablePickerView(
-                        pickerId: .camera, title: "Камера", icon: "camera", data: dataManager.cameras, selection: $selectedCamera, activePicker: $activePicker, selectionDisplay: {
+                        pickerId: .camera, title: "Camera", icon: "camera", data: dataManager.cameras, selection: $selectedCamera, activePicker: $activePicker, selectionDisplay: {
                             camera in
 
                             "\(camera.manufacturer) \(camera.model)"
@@ -102,7 +102,7 @@ struct CameraLensVisualizerRoot: View {
 
                         if let camera = selectedCamera {
                             ExpandablePickerView(
-                            pickerId: .format, title: "Формат", icon: "aspectratio", data: dataManager.formats.filter {
+                            pickerId: .format, title: "Format", icon: "aspectratio", data: dataManager.formats.filter {
                                 $0.cameraId    == camera.id
                             }, selection: $selectedFormat, activePicker: $activePicker, selectionDisplay: {
                                 format in
@@ -204,7 +204,7 @@ struct ExpandablePickerView<Data, Content: View>: View where Data: Hashable, Dat
                     Image(systemName: icon).font(.headline.weight(.semibold)).foregroundColor(.white.opacity(0.8)).frame(width: 20)
                     Text(title).font(.headline).foregroundColor(.white.opacity(0.6))
                     Spacer()
-                    Text(selection    != nil ? selectionDisplay(selection!): "Выберите...").font(.headline.weight(.medium)).foregroundColor(.white).lineLimit(1)
+                    Text(selection    != nil ? selectionDisplay(selection!): "Select...").font(.headline.weight(.medium)).foregroundColor(.white).lineLimit(1)
                     Image(systemName: "chevron.up.chevron.down").font(.system(size: 14, weight: .bold)).foregroundColor(.white.opacity(0.7)).rotationEffect(.degrees(isExpanded ? 180: 0))
                 }
                 .padding(.horizontal, 16)

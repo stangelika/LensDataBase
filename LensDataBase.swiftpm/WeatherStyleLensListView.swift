@@ -45,7 +45,6 @@ struct WeatherStyleLensSeriesView: View {
     var body: some View {
         VStack(spacing: 0) {
             Button(action: {
-                print("👉 Раскрываю серию: \(series.name), линз: \(series.lenses.count)")
                 isExpanded.toggle()
             }) {
                 HStack {

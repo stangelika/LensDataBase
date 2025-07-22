@@ -12,6 +12,10 @@ func testBasicCompilation() {
     let testLens = createTestLens()
     print("✅ Lens model: \(testLens.display_name)")
     
+    // Test lens extension works
+    let focalValue = testLens.mainFocalValue
+    print("✅ Lens extension mainFocalValue: \(focalValue ?? 0)")
+    
     // Test data manager can be created
     let dataManager = DataManager()
     print("✅ DataManager created successfully")
@@ -24,8 +28,15 @@ func testBasicCompilation() {
     let focalCategory = FocalCategory.standard
     print("✅ FocalCategory: \(focalCategory.displayName)")
     
+    let lensFormatCategory = LensFormatCategory.ff
+    print("✅ LensFormatCategory: \(lensFormatCategory.displayName)")
+    
     let activeTab = ActiveTab.allLenses
     print("✅ ActiveTab: \(activeTab)")
+    
+    // Test data loading state
+    let loadingState = DataLoadingState.idle
+    print("✅ DataLoadingState: \(loadingState)")
     
     print("🎉 All basic compilation tests passed!")
 }

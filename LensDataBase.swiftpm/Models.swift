@@ -229,3 +229,33 @@ extension Lens {
         return numbers.first
     }
 }
+
+enum LensFormatCategory: String, CaseIterable, Identifiable {
+    case s16
+    case s35
+    case ff
+    case mft
+
+    var id: String { rawValue }
+    var displayName: String {
+        switch self {
+        case .s16: return "S16"
+        case .s35: return "S35 / S35+"
+        case .ff:  return "FF / VV / LF / 65"
+        case .mft: return "MFT / No Data / Unknown"
+        }
+    }
+    func contains(lensFormat: String?) -> Bool {
+        guard let format = lensFormat?.lowercased() else { return false }
+        switch self {
+        case .s16:
+            return format.contains("s16")
+        case .s35:
+            return format.contains("s35")
+        case .ff:
+            return format.contains("ff") || format.contains("vv") || format.contains("lf") || format.contains("65")
+        case .mft:
+            return format.contains("mft") || format.contains("nodata") || format.contains("unknown") || format.isEmpty
+        }
+    }
+}
