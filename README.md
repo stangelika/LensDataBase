@@ -42,7 +42,7 @@ A comprehensive Swift Playground application for browsing and managing professio
 #### Option 1: Swift Playgrounds (Recommended for Users)
 1. Download the Swift Playgrounds app from the App Store
 2. Clone or download this repository
-3. Open `LensDataBase.swiftpm` in Swift Playgrounds
+3. Open `LensDataBase.swiftpm` (original) or `LensDataBase-Refactored.swiftpm` (modern architecture) in Swift Playgrounds
 4. Tap the play button to run the app
 
 #### Option 2: Xcode (For Development)
@@ -51,12 +51,34 @@ A comprehensive Swift Playground application for browsing and managing professio
    git clone https://github.com/stangelika/LensDataBase.git
    cd LensDataBase
    ```
-2. Open `LensDataBase.swiftpm` in Xcode
+2. Open `LensDataBase.swiftpm` or `LensDataBase-Refactored.swiftpm` in Xcode
 3. Select your target device/simulator
 4. Build and run (⌘+R)
 
+## 🆕 Refactored Version
+
+This repository now includes a completely refactored version (`LensDataBase-Refactored.swiftpm`) that demonstrates modern Swift and SwiftUI patterns:
+
+### Key Improvements
+- **Clean Architecture**: Separation of Domain, Data, and Presentation layers
+- **Protocol-Oriented Design**: Better abstraction and testability
+- **Modern Concurrency**: Async/await instead of Combine
+- **Dependency Injection**: Loose coupling and easier testing
+- **@Observable**: Modern SwiftUI state management (iOS 17+)
+- **Enhanced Error Handling**: Typed errors with meaningful messages
+- **Smart Caching**: Intelligent cache management with expiration
+
+### Architectural Benefits
+- **Better Testability**: Dependency injection enables comprehensive unit testing
+- **Maintainability**: Modular structure makes changes safer and easier
+- **Performance**: Improved caching and loading strategies
+- **Scalability**: Architecture supports feature additions without major refactoring
+
+For detailed information about the refactoring, see [REFACTORING_DOCUMENTATION.md](REFACTORING_DOCUMENTATION.md).
+
 ## 📁 Project Structure
 
+### Original Implementation
 ```
 LensDataBase.swiftpm/
 ├── 📱 App Core
@@ -93,19 +115,80 @@ LensDataBase.swiftpm/
     └── ThemeValidation.swift    # Theme system validation
 ```
 
+### Refactored Implementation (Clean Architecture)
+```
+LensDataBase-Refactored.swiftpm/
+├── 📱 App Entry
+│   └── App.swift                # Modern app entry point
+│
+├── 🏗️ Domain Layer (Business Logic)
+│   ├── Models/
+│   │   └── DomainModels.swift   # Pure business entities
+│   ├── Repository/
+│   │   └── RepositoryProtocols.swift # Data access abstractions
+│   └── UseCases/
+│       └── DomainUseCases.swift # Business logic implementation
+│
+├── 📊 Data Layer (Data Access)
+│   ├── Models/
+│   │   └── APIModels.swift      # API response models
+│   ├── Repository/
+│   │   └── RepositoryImplementations.swift # Concrete repositories
+│   ├── Services/
+│   │   └── NetworkService.swift # Modern async networking + caching
+│   └── DependencyContainer.swift # Dependency injection
+│
+├── 🎨 Presentation Layer (UI)
+│   ├── ViewModels/
+│   │   ├── LensListViewModel.swift     # Feature-specific view models
+│   │   └── FeatureViewModels.swift     # Additional view models
+│   └── Views/
+│       ├── ContentView.swift           # Main navigation
+│       ├── AppTheme.swift              # Modern design system
+│       ├── FeatureViews.swift          # Feature-specific views
+│       └── LensDetailView.swift        # Enhanced detail view
+│
+└── 📦 Resources
+    └── CAMERADATA.json          # Local data files
+```
+
 ## 🔧 Architecture
 
-### Data Flow
+### Original Architecture (MVVM)
 ```
 API/Local Data → NetworkService → DataManager → SwiftUI Views
 ```
 
+### Refactored Architecture (Clean Architecture)
+```
+┌─────────────────────────────────────────────────────────┐
+│                  Presentation Layer                     │
+│  SwiftUI Views ←→ ViewModels (@Observable)              │
+└─────────────────────────────────────────────────────────┘
+                          ↕ Use Cases
+┌─────────────────────────────────────────────────────────┐
+│                    Domain Layer                         │
+│  Business Logic ←→ Domain Models ←→ Repository Protocols│
+└─────────────────────────────────────────────────────────┘
+                          ↕ Repositories
+┌─────────────────────────────────────────────────────────┐
+│                     Data Layer                          │
+│  Network Service ←→ Cache Service ←→ API Models         │
+└─────────────────────────────────────────────────────────┘
+```
+
 ### Key Components
 
-#### 🗃️ Data Layer
+#### 🗃️ Original Data Layer
 - **Models.swift**: Defines all data structures (Lens, Camera, Rental, etc.)
 - **NetworkService.swift**: Handles API communication and data fetching
 - **DataManager.swift**: Manages app state, filtering, and data transformation
+
+#### 🗃️ Refactored Data Layer (Clean Architecture)
+- **Domain Models**: Pure business entities with no external dependencies
+- **Use Cases**: Encapsulated business logic (LensUseCase, FavoritesUseCase, etc.)
+- **Repository Pattern**: Abstract data access with concrete implementations
+- **Dependency Injection**: Loose coupling and better testability
 
 #### 🎨 Presentation Layer
 - **MainTabView.swift**: Top-level navigation container
@@ -113,11 +196,12 @@ API/Local Data → NetworkService → DataManager → SwiftUI Views
 - **LensDetailView.swift**: Comprehensive lens specifications and details
 - **FavoritesView.swift**: Personal lens collection management
 
-#### 🎯 Business Logic
-- **Filtering System**: Advanced lens filtering by focal length, format, manufacturer
-- **Favorites Management**: Persistent user preferences with local storage
-- **Search Functionality**: Real-time lens search across multiple attributes
-- **Comparison Engine**: Side-by-side lens specification comparison
+#### 🎯 Business Logic Improvements
+- **Use Cases Pattern**: Clean separation of business logic
+- **Protocol-Oriented Design**: Better abstraction and testability
+- **Async/Await**: Modern concurrency instead of Combine
+- **Enhanced Error Handling**: Typed errors with meaningful messages
+- **Smart Caching**: Intelligent cache management with expiration
 
 ## 🧪 Testing
 

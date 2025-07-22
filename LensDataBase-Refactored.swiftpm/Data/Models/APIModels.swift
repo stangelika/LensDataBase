@@ -37,6 +37,39 @@ struct APILens: Codable {
     let squeeze_factor: String?
     let lens_format: String?
     
+    // Standard initializer
+    init(
+        id: String,
+        display_name: String,
+        manufacturer: String,
+        lens_name: String,
+        format: String,
+        focal_length: String,
+        aperture: String,
+        close_focus_in: String,
+        close_focus_cm: String,
+        image_circle: String,
+        length: String,
+        front_diameter: String,
+        squeeze_factor: String? = nil,
+        lens_format: String? = nil
+    ) {
+        self.id = id
+        self.display_name = display_name
+        self.manufacturer = manufacturer
+        self.lens_name = lens_name
+        self.format = format
+        self.focal_length = focal_length
+        self.aperture = aperture
+        self.close_focus_in = close_focus_in
+        self.close_focus_cm = close_focus_cm
+        self.image_circle = image_circle
+        self.length = length
+        self.front_diameter = front_diameter
+        self.squeeze_factor = squeeze_factor
+        self.lens_format = lens_format
+    }
+    
     // Flexible decoding for various data types
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
