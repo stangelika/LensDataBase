@@ -10,7 +10,7 @@ enum AppTheme {
             startPoint: .top,
             endPoint: .bottom
         )
-        
+
         static let mainTabGradient = LinearGradient(
             gradient: Gradient(colors: [
                 Color(.sRGB, white: 0.09, opacity: 1),
@@ -19,7 +19,7 @@ enum AppTheme {
             startPoint: .top,
             endPoint: .bottom
         )
-        
+
         static let listViewGradient = LinearGradient(
             gradient: Gradient(colors: [
                 Color(.sRGB, red: 30 / 255, green: 32 / 255, blue: 54 / 255, opacity: 1),
@@ -28,7 +28,7 @@ enum AppTheme {
             startPoint: .top,
             endPoint: .bottom
         )
-        
+
         static let detailViewGradient = LinearGradient(
             gradient: Gradient(colors: [
                 Color(.sRGB, red: 27 / 255, green: 29 / 255, blue: 48 / 255, opacity: 1),
@@ -37,31 +37,31 @@ enum AppTheme {
             startPoint: .top,
             endPoint: .bottom
         )
-        
+
         static let titleGradient = LinearGradient(
             colors: [.white, .purple.opacity(0.85), .blue],
             startPoint: .leading,
             endPoint: .trailing
         )
-        
+
         static let favoriteTitleGradient = LinearGradient(
             colors: [.white, .yellow.opacity(0.85), .orange],
             startPoint: .leading,
             endPoint: .trailing
         )
-        
+
         static let manufacturerGradient = LinearGradient(
             colors: [.white, .blue.opacity(0.92)],
             startPoint: .leading,
             endPoint: .trailing
         )
-        
+
         static let stickyHeaderGradient = LinearGradient(
             colors: [.white, .blue],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
-        
+
         static let purple = Color.purple
         static let blue = Color.blue
         static let green = Color.green
@@ -71,7 +71,7 @@ enum AppTheme {
         static let teal = Color.teal
         static let pink = Color.pink
         static let brown = Color.brown
-        
+
         static let cardBackground = Color.white.opacity(0.07)
         static let selectedCardBackground = Color.white.opacity(0.15)
         static let unselectedCardBackground = Color.white.opacity(0.05)
@@ -88,7 +88,7 @@ enum AppTheme {
         static let quaternaryText = Color.white.opacity(0.6)
         static let disabledText = Color.white.opacity(0.5)
         static let captionText = Color.secondary
-        
+
         static let cardBorder = Color.white.opacity(0.1)
     }
     enum Spacing {
@@ -99,7 +99,7 @@ enum AppTheme {
         static let xl: CGFloat = 16
         static let xxl: CGFloat = 20
         static let xxxl: CGFloat = 28
-        
+
         static let padding6: CGFloat = 6
         static let padding10: CGFloat = 10
         static let padding11: CGFloat = 11
@@ -138,7 +138,7 @@ enum AppTheme {
         static func buttonShadow(color: Color = .blue, opacity: Double = 0.5) -> some View {
             EmptyView().shadow(color: color.opacity(opacity), radius: 10, y: 5)
         }
-        
+
     }
     enum Modifiers {
         static func glassCard(
@@ -163,20 +163,20 @@ enum AppTheme {
                 accentColor: accentColor, isActive: isActive, cornerRadius: cornerRadius
             )
         }
-        
+
     }
-    
+
 }
 extension Font {
     static let appLargeTitle = Font.system(size: 36, weight: .heavy, design: .rounded)
     static let appTitle = Font.system(size: 33, weight: .heavy, design: .rounded)
     static let appTitle2 = Font.system(size: 25, weight: .bold, design: .rounded)
-    
+
     static let appHeadline = Font.headline.weight(.semibold)
     static let appBody = Font.subheadline
     static let appBodyMedium = Font.subheadline.weight(.medium)
     static let appCaption = Font.caption.weight(.medium)
-    
+
     static let appMonospace = Font.system(.subheadline, design: .monospaced)
     static let appRounded18 = Font.system(size: 18, weight: .semibold, design: .rounded)
     static let appRounded14 = Font.system(size: 14, weight: .medium, design: .rounded)
@@ -185,7 +185,7 @@ struct GlassCardModifier: ViewModifier {
     let cornerRadius: CGFloat
     let borderColor: Color
     let borderWidth: CGFloat
-    
+
     func body(content: Content) -> some View {
         content
             .background(
@@ -197,12 +197,12 @@ struct GlassCardModifier: ViewModifier {
                 }
             )
     }
-    
+
 }
 struct MaterialBackgroundModifier: ViewModifier {
     let cornerRadius: CGFloat
     let material: Material
-    
+
     func body(content: Content) -> some View {
         content
             .background(
@@ -213,22 +213,22 @@ struct MaterialBackgroundModifier: ViewModifier {
                 }
             )
     }
-    
+
 }
 struct GradientTextModifier: ViewModifier {
     let gradient: LinearGradient
-    
+
     func body(content: Content) -> some View {
         content
             .foregroundStyle(gradient)
     }
-    
+
 }
 struct FilterChipModifier: ViewModifier {
     let accentColor: Color
     let isActive: Bool
     let cornerRadius: CGFloat
-    
+
     func body(content: Content) -> some View {
         content
             .background(
@@ -247,7 +247,7 @@ struct FilterChipModifier: ViewModifier {
             )
             .animation(.easeInOut(duration: 0.19), value: isActive)
     }
-    
+
 }
 extension View {
     func glassCard(
@@ -274,6 +274,6 @@ extension View {
             accentColor: accentColor, isActive: isActive, cornerRadius: cornerRadius
         ))
     }
-    
+
 }
 

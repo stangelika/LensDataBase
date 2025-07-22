@@ -121,9 +121,9 @@ struct CameraLensVisualizerRoot: View {
 
                     if let format = selectedFormat, let camera = selectedCamera {
                         GlassInfoCard(
-                        title: "\(camera.manufacturer) \(camera.model)", 
-                        subtitle: format.recordingFormat, 
-                        icon: "camera", 
+                        title: "\(camera.manufacturer) \(camera.model)",
+                        subtitle: format.recordingFormat,
+                        icon: "camera",
                         value: {
                             let w = format.recordingWidth
                             let h = format.recordingHeight
@@ -131,7 +131,7 @@ struct CameraLensVisualizerRoot: View {
                                 String(format: "%.1f мм", $0)
                             } ?? " - "
                             return "\(w)x\(h) мм (диаг. \(diag))"
-                        }(), 
+                        }(),
                         status: {
                             guard
                             let lensCircle = lens.validImageCircle, let formatDiag = format.recordingDiagonal
@@ -283,7 +283,7 @@ struct GlassInfoCard: View {
     let icon: String
     let value: String
     var status: (isCompatible: Bool, statusText: String, icon: String)?
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
