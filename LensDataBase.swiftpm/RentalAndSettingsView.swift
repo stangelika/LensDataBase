@@ -17,9 +17,8 @@ struct RentalAndSettingsView: View {
         return rentalName
     }
 
-    // Оптимизированная фильтрация
+    // Optimized filtering
     var filteredGroups: [LensGroup] {
-        print("🟡 Строим filteredGroups для рентала \(dataManager.selectedRentalId) и формата '\(selectedFormat)'")
         let result = dataManager.groupLenses(forRental: dataManager.selectedRentalId)
             .map { group in
                 let filteredSeries = group.series.map { series in
@@ -31,14 +30,9 @@ struct RentalAndSettingsView: View {
                     return LensSeries(name: series.name, lenses: filteredLenses)
                 }
                 .filter { !$0.lenses.isEmpty }
-                print("🟢 Группа \(group.manufacturer): \(filteredSeries.count) серий")
-                for s in filteredSeries {
-                    print("  Серия \(s.name): \(s.lenses.count) линз после фильтра")
-                }
                 return LensGroup(manufacturer: group.manufacturer, series: filteredSeries)
             }
             .filter { !$0.series.isEmpty }
-        print("🔵 Всего групп после фильтрации: \(result.count)")
         return result
     }
 

@@ -68,7 +68,7 @@ struct Lens: Codable, Identifiable, Hashable {
     let length: String
     let front_diameter: String
     let squeeze_factor: String?
-    let lens_format: String? // ✅ добавим, если ещё нет
+    let lens_format: String?
     
     enum CodingKeys: String, CodingKey {
         case id, display_name, manufacturer, lens_name, format,
@@ -77,8 +77,22 @@ struct Lens: Codable, Identifiable, Hashable {
              lens_format
     }
     
-    // ... остальной код без изменений
-
+    init(id: String, display_name: String, manufacturer: String, lens_name: String, format: String, focal_length: String, aperture: String, close_focus_in: String, close_focus_cm: String, image_circle: String, length: String, front_diameter: String, squeeze_factor: String?, lens_format: String?) {
+        self.id = id
+        self.display_name = display_name
+        self.manufacturer = manufacturer
+        self.lens_name = lens_name
+        self.format = format
+        self.focal_length = focal_length
+        self.aperture = aperture
+        self.close_focus_in = close_focus_in
+        self.close_focus_cm = close_focus_cm
+        self.image_circle = image_circle
+        self.length = length
+        self.front_diameter = front_diameter
+        self.squeeze_factor = squeeze_factor
+        self.lens_format = lens_format
+    }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -176,4 +190,72 @@ enum ActiveTab: Equatable {
     case rentalView
     case allLenses
     case favorites
+}
+
+enum FocalCategory: String, CaseIterable, Identifiable {
+    case all, ultraWide, wide, standard, tele, superTele
+    
+    var id: String { rawValue }
+    
+    var displayName: String {
+        switch self {
+        case .all: return "All"
+        case .ultraWide: return "Ultra Wide (≤12mm)"
+        case .wide: return "Wide (13–35mm)"
+        case .standard: return "Standard (36–70mm)"
+        case .tele: return "Tele (71–180mm)"
+        case .superTele: return "Super Tele (181mm + )"
+        }
+    }
+    
+    func contains(focal: Double?) -> Bool {
+        guard let f = focal else { return false }
+        switch self {
+        case .all: return true
+        case .ultraWide: return f <= 12
+        case .wide: return (13...35).contains(f)
+        case .standard: return (36...70).contains(f)
+        case .tele: return (71...180).contains(f)
+        case .superTele: return f > 180
+        }
+    }
+}
+
+extension Lens {
+    var mainFocalValue: Double? {
+        let numbers = focal_length
+            .components(separatedBy: CharacterSet(charactersIn: " - – "))
+            .compactMap { Double($0.filter("0123456789.".contains)) }
+        return numbers.first
+    }
+}
+
+enum LensFormatCategory: String, CaseIterable, Identifiable {
+    case s16
+    case s35
+    case ff
+    case mft
+
+    var id: String { rawValue }
+    var displayName: String {
+        switch self {
+        case .s16: return "S16"
+        case .s35: return "S35 / S35+"
+        case .ff:  return "FF / VV / LF / 65"
+        case .mft: return "MFT / No Data / Unknown"
+        }
+    }
+    func contains(lensFormat: String?) -> Bool {
+        guard let format = lensFormat?.lowercased() else { return false }
+        switch self {
+        case .s16:
+            return format.contains("s16")
+        case .s35:
+            return format.contains("s35")
+        case .ff:
+            return format.contains("ff") || format.contains("vv") || format.contains("lf") || format.contains("65")
+        case .mft:
+            return format.contains("mft") || format.contains("nodata") || format.contains("unknown") || format.isEmpty
+        }
+    }
 }

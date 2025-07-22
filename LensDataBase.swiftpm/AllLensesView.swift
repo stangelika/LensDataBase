@@ -1,48 +1,18 @@
 import SwiftUI
 
-enum LensFormatCategory: String, CaseIterable, Identifiable {
-    case s16
-    case s35
-    case ff
-    case mft
-
-    var id: String { rawValue }
-    var displayName: String {
-        switch self {
-        case .s16: return "S16"
-        case .s35: return "S35 / S35+"
-        case .ff:  return "FF / VV / LF / 65"
-        case .mft: return "MFT / No Data / Unknown"
-        }
-    }
-    func contains(lensFormat: String?) -> Bool {
-        guard let format = lensFormat?.lowercased() else { return false }
-        switch self {
-        case .s16:
-            return format.contains("s16")
-        case .s35:
-            return format.contains("s35")
-        case .ff:
-            return format.contains("ff") || format.contains("vv") || format.contains("lf") || format.contains("65")
-        case .mft:
-            return format.contains("mft") || format.contains("nodata") || format.contains("unknown") || format.isEmpty
-        }
-    }
-}
-
 struct AllLensesView: View {
     @EnvironmentObject var dataManager: DataManager
     @State private var selectedLens: Lens? = nil
     @State private var searchText: String = ""
     @State private var selectedLensFormatCategory: LensFormatCategory? = nil
     @State private var keyboardHeight: CGFloat = 0
-    @State private var groupByManufacturerAndName: Bool = true // ← Новый state для группировки
+    @State private var groupByManufacturerAndName: Bool = true
 
     var body: some View {
         ZStack {
             AppTheme.Colors.primaryGradient.ignoresSafeArea()
             VStack(spacing: AppTheme.Spacing.xxl) {
-                // Заголовок + фильтры
+                // Header and filters
                 HStack {
                     Text("Lenses")
                         .font(.appLargeTitle)
@@ -55,7 +25,7 @@ struct AllLensesView: View {
                     } label: {
                         RentalFilterButton(isActive: dataManager.allLensesShowOnlyRentable)
                     }
-                    // Кнопка отключения группировки
+                    // Toggle grouping button
                     Button {
                         withAnimation { groupByManufacturerAndName.toggle() }
                     } label: {
@@ -145,12 +115,12 @@ struct AllLensesView: View {
                     }.compactMap { $0 }
 
                     if groupByManufacturerAndName {
-                        // Список с группировкой
+                        // Grouped list
                         WeatherStyleLensListView(lensesSource: filteredLenses) { lens in
                             selectedLens = lens
                         }
                     } else {
-                        // Плоский список без группировки
+                        // Flat list without grouping
                         FlatLensListView(lenses: filteredLenses.flatMap { $0.series.flatMap { $0.lenses } }) { lens in
                             selectedLens = lens
                         }
@@ -213,44 +183,6 @@ struct AllLensesView: View {
     }
 }
 // MARK: - Filter & Models
-
-enum FocalCategory: String, CaseIterable, Identifiable {
-    case all, ultraWide, wide, standard, tele, superTele
-    
-    var id: String { rawValue }
-    
-    var displayName: String {
-        switch self {
-        case .all: return "All"
-        case .ultraWide: return "Ultra Wide (≤12mm)"
-        case .wide: return "Wide (13–35mm)"
-        case .standard: return "Standard (36–70mm)"
-        case .tele: return "Tele (71–180mm)"
-        case .superTele: return "Super Tele (181mm + )"
-        }
-    }
-    
-    func contains(focal: Double?) -> Bool {
-        guard let f = focal else { return false }
-        switch self {
-        case .all: return true
-        case .ultraWide: return f <= 12
-        case .wide: return (13...35).contains(f)
-        case .standard: return (36...70).contains(f)
-        case .tele: return (71...180).contains(f)
-        case .superTele: return f > 180
-        }
-    }
-}
-
-extension Lens {
-    var mainFocalValue: Double? {
-        let numbers = focal_length
-            .components(separatedBy: CharacterSet(charactersIn: " - – "))
-            .compactMap { Double($0.filter("0123456789.".contains)) }
-        return numbers.first
-    }
-}
 
 // MARK: - UI Components
 

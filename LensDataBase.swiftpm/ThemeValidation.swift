@@ -15,14 +15,18 @@ enum AppThemeValidation {
 
         for spacing in testSpacings {
             if spacing   <= 0 {
+                #if DEBUG
                 print("❌ Invalid spacing value: \(spacing)")
+                #endif
                 isValid = false
             }
 
         }
         for radius in testRadii {
             if radius   <= 0 {
+                #if DEBUG
                 print("❌ Invalid corner radius value: \(radius)")
+                #endif
                 isValid = false
             }
 
@@ -30,17 +34,22 @@ enum AppThemeValidation {
         let testFonts: [Font] = [
         .appLargeTitle, .appTitle, .appTitle2, .appHeadline, .appBody, .appBodyMedium, .appCaption, .appMonospace, .appRounded18, .appRounded14, ]
 
+        #if DEBUG
         print("✅ Theme validation completed with \(testGradients.count) gradients, \(testSpacings.count) spacings, \(testRadii.count) radii, and \(testFonts.count) fonts")
+        #endif
 
         return isValid
     }
+    
     static func printThemeUsageReport() {
+        #if DEBUG
         print("📊 AppTheme Usage Report: ")
         print(" - Colors: \(Mirror(reflecting: AppTheme.Colors.self).children.count) properties")
         print(" - Spacing: \(Mirror(reflecting: AppTheme.Spacing.self).children.count) properties")
         print(" - Corner Radius: \(Mirror(reflecting: AppTheme.CornerRadius.self).children.count) properties")
         print(" - Font Extensions: 10 custom fonts defined")
         print(" - View Modifiers: 4 reusable modifiers")
+        #endif
     }
 
 }

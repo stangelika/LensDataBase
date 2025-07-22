@@ -1,41 +1,65 @@
- import SwiftUI
+import SwiftUI
 
 enum AppTheme {
     enum Colors {
         static let primaryGradient = LinearGradient(
             gradient: Gradient(colors: [
-                Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1), Color(.sRGB, red: 34 / 255, green: 37 / 255, blue: 57 / 255, opacity: 1), ]), startPoint: .top, endPoint: .bottom
+                Color(.sRGB, red: 24 / 255, green: 27 / 255, blue: 37 / 255, opacity: 1),
+                Color(.sRGB, red: 34 / 255, green: 37 / 255, blue: 57 / 255, opacity: 1)
+            ]),
+            startPoint: .top,
+            endPoint: .bottom
         )
         
         static let mainTabGradient = LinearGradient(
             gradient: Gradient(colors: [
-                Color(.sRGB, white: 0.09, opacity: 1), Color(.sRGB, white: 0.15, opacity: 1), ]), startPoint: .top, endPoint: .bottom
+                Color(.sRGB, white: 0.09, opacity: 1),
+                Color(.sRGB, white: 0.15, opacity: 1)
+            ]),
+            startPoint: .top,
+            endPoint: .bottom
         )
         
         static let listViewGradient = LinearGradient(
             gradient: Gradient(colors: [
-                Color(.sRGB, red: 30 / 255, green: 32 / 255, blue: 54 / 255, opacity: 1), Color(.sRGB, red: 22 / 255, green: 22 / 255, blue: 32 / 255, opacity: 1), ]), startPoint: .top, endPoint: .bottom
+                Color(.sRGB, red: 30 / 255, green: 32 / 255, blue: 54 / 255, opacity: 1),
+                Color(.sRGB, red: 22 / 255, green: 22 / 255, blue: 32 / 255, opacity: 1)
+            ]),
+            startPoint: .top,
+            endPoint: .bottom
         )
         
         static let detailViewGradient = LinearGradient(
             gradient: Gradient(colors: [
-                Color(.sRGB, red: 27 / 255, green: 29 / 255, blue: 48 / 255, opacity: 1), Color(.sRGB, red: 38 / 255, green: 36 / 255, blue: 97 / 255, opacity: 1), ]), startPoint: .top, endPoint: .bottom
+                Color(.sRGB, red: 27 / 255, green: 29 / 255, blue: 48 / 255, opacity: 1),
+                Color(.sRGB, red: 38 / 255, green: 36 / 255, blue: 97 / 255, opacity: 1)
+            ]),
+            startPoint: .top,
+            endPoint: .bottom
         )
         
         static let titleGradient = LinearGradient(
-            colors: [.white, .purple.opacity(0.85), .blue], startPoint: .leading, endPoint: .trailing
+            colors: [.white, .purple.opacity(0.85), .blue],
+            startPoint: .leading,
+            endPoint: .trailing
         )
         
         static let favoriteTitleGradient = LinearGradient(
-            colors: [.white, .yellow.opacity(0.85), .orange], startPoint: .leading, endPoint: .trailing
+            colors: [.white, .yellow.opacity(0.85), .orange],
+            startPoint: .leading,
+            endPoint: .trailing
         )
         
         static let manufacturerGradient = LinearGradient(
-            colors: [.white, .blue.opacity(0.92)], startPoint: .leading, endPoint: .trailing
+            colors: [.white, .blue.opacity(0.92)],
+            startPoint: .leading,
+            endPoint: .trailing
         )
         
         static let stickyHeaderGradient = LinearGradient(
-            colors: [.white, .blue], startPoint: .topLeading, endPoint: .bottomTrailing
+            colors: [.white, .blue],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
         )
         
         static let purple = Color.purple
