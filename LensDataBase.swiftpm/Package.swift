@@ -10,7 +10,7 @@ import AppleProductTypes
 let package = Package(
     name: "LensDataBase",
     platforms: [
-        .iOS("16.0")
+        .iOS("18.0")
     ],
     products: [
         .iOSApplication(
@@ -18,8 +18,8 @@ let package = Package(
             targets: ["AppModule"],
             bundleIdentifier: "com.lensdatabase.app",
             teamIdentifier: "K28W7HPGF3",
-            displayVersion: "7.7",
-            bundleVersion: "14",
+            displayVersion: "7.8",
+            bundleVersion: "31",
             appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.green),
             supportedDeviceFamilies: [
