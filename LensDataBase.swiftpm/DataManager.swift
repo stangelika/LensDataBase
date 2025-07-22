@@ -1,39 +1,6 @@
 import Foundation
 import Combine
 
-class NetworkService {
-    static let shared = NetworkService()
-    
-    private let LENS_DATA_URL = "https://lksrental.site/api.php?action=all"
-    
-    struct APIResponse: Decodable {
-        let success: Bool
-        let database: AppData
-    }
-    
-    func fetchLensData() -> AnyPublisher<AppData, Error> {
-        guard let url = URL(string: LENS_DATA_URL) else {
-            return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
-        }
-        
-        return URLSession.shared.dataTaskPublisher(for: url)
-            .tryMap { data, response in
-                print("✅ Получен ответ от API: \(response)")
-                return data
-            }
-            .decode(type: APIResponse.self, decoder: JSONDecoder())
-            .map { $0.database }
-            .receive(on: DispatchQueue.main)
-            .handleEvents(receiveOutput: { appData in
-                print("✅ Успешно декодировано AppData")
-                print("🔹 Lenses: \(appData.lenses.count)")
-                print("🔹 Rentals: \(appData.rentals.count)")
-                print("🔹 Inventory: \(appData.inventory.count)")
-            })
-            .eraseToAnyPublisher()
-    }
-}
-
 class DataManager: ObservableObject {
     @Published var appData: AppData?
     @Published var loadingState: DataLoadingState = .idle
@@ -65,7 +32,6 @@ class DataManager: ObservableObject {
         guard loadingState == .idle else { return }
         
         loadingState = .loading
-        print("🔄 Запуск загрузки данных...")
         
         let lensPublisher = NetworkService.shared.fetchLensData()
         let cameraPublisher = loadLocalJSON(from: "CAMERADATA") as AnyPublisher<CameraApiResponse, Error>
@@ -73,12 +39,10 @@ class DataManager: ObservableObject {
         Publishers.Zip(lensPublisher, cameraPublisher)
             .sink(receiveCompletion: { [weak self] completion in
                 if case let .failure(error) = completion {
-                    print("❌ Ошибка при загрузке: \(error)")
                     self?.loadingState = .error(error.localizedDescription)
                 }
             }, receiveValue: { [weak self] appData, cameraData in
                 guard let self else { return }
-                print("✅ Данные успешно загружены.")
                 self.appData = appData
                 self.cameras = cameraData.camera.sorted { $0.manufacturer < $1.manufacturer }
                 self.formats = cameraData.formats
@@ -88,7 +52,6 @@ class DataManager: ObservableObject {
                 
                 if self.selectedRentalId.isEmpty {
                     self.selectedRentalId = appData.rentals.first?.id ?? ""
-                    print("🔹 Выбран первый рентал: \(self.selectedRentalId)")
                 }
             })
             .store(in: &cancellables)
@@ -96,27 +59,22 @@ class DataManager: ObservableObject {
     
     func refreshDataFromAPI() {
         loadingState = .loading
-        print("🔁 Обновление данных с API...")
         
         NetworkService.shared.fetchLensData()
             .sink(receiveCompletion: { [weak self] completion in
                 if case let .failure(error) = completion {
-                    print("❌ Ошибка обновления: \(error)")
                     self?.loadingState = .error(error.localizedDescription)
                 } else {
-                    print("✅ Обновление завершено")
                     self?.loadingState = .loaded
                 }
             }, receiveValue: { [weak self] appData in
                 guard let self else { return }
-                print("✅ Данные обновлены")
                 self.appData = appData
                 self.collectAvailableLenses()
                 self.updateFavoriteLensesList()
                 
                 if self.selectedRentalId.isEmpty {
                     self.selectedRentalId = appData.rentals.first?.id ?? ""
-                    print("🔹 Выбран первый рентал: \(self.selectedRentalId)")
                 }
             })
             .store(in: &cancellables)
@@ -136,7 +94,6 @@ class DataManager: ObservableObject {
     
     func collectAvailableLenses() {
         availableLenses = appData?.lenses ?? []
-        print("🔍 Доступные линзы: \(availableLenses.count)")
     }
     
     private func saveFavorites() {
@@ -240,30 +197,23 @@ class DataManager: ObservableObject {
     }
     
     func groupLenses(forRental rentalId: String? = nil) -> [LensGroup] {
-    let lenses = rentalId != nil ? lensesForRental(rentalId!) : availableLenses
-    print("⏳ Группируем \(lenses.count) линз")
-    
-    let grouped = Dictionary(grouping: lenses, by: { normalizeName($0.manufacturer) })
-        .map { key, lenses in
-            let manufacturer = lenses.first?.manufacturer ?? key
-            let series = Dictionary(grouping: lenses, by: { normalizeName($0.lens_name) })
-                .map { sKey, sLenses in
-                    LensSeries(name: sLenses.first?.lens_name ?? sKey, lenses: sLenses)
-                }
-                .sorted { $0.name < $1.name }
-            
-            print("🔎 Группа '\(manufacturer)' содержит \(series.count) серий")
-            for lensSeries in series {
-                print("  ↳ Серия '\(lensSeries.name)' — \(lensSeries.lenses.count) линз")
+        let lenses = rentalId != nil ? lensesForRental(rentalId!) : availableLenses
+        
+        let grouped = Dictionary(grouping: lenses, by: { normalizeName($0.manufacturer) })
+            .map { key, lenses in
+                let manufacturer = lenses.first?.manufacturer ?? key
+                let series = Dictionary(grouping: lenses, by: { normalizeName($0.lens_name) })
+                    .map { sKey, sLenses in
+                        LensSeries(name: sLenses.first?.lens_name ?? sKey, lenses: sLenses)
+                    }
+                    .sorted { $0.name < $1.name }
+                
+                return LensGroup(manufacturer: manufacturer, series: series)
             }
-            
-            return LensGroup(manufacturer: manufacturer, series: series)
-        }
-        .sorted { $0.manufacturer < $1.manufacturer }
-    
-    print("➡️ Групп создано: \(grouped.count)")
-    return grouped
-}
+            .sorted { $0.manufacturer < $1.manufacturer }
+        
+        return grouped
+    }
     
     func lensesForRental(_ rentalId: String) -> [Lens] {
         guard let appData = appData else { return [] }
@@ -285,12 +235,14 @@ class DataManager: ObservableObject {
     func lensDetails(for id: String) -> Lens? {
         appData?.lenses.first { $0.id == id }
     }
+    
     func normalizeLensFormat(_ format: String) -> String {
         format.trimmingCharacters(in: .whitespacesAndNewlines)
             .replacingOccurrences(of: "-", with: "")
             .replacingOccurrences(of: "_", with: "")
             .capitalized
     }
+    
     func normalizeFormat(_ format: String) -> String {
         format
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -299,7 +251,8 @@ class DataManager: ObservableObject {
             .replacingOccurrences(of: "  ", with: " ")
             .lowercased()
             .capitalized
-    } 
+    }
+    
     func normalizeName(_ str: String) -> String {
         str.lowercased()
             .replacingOccurrences(of: " ", with: "")
