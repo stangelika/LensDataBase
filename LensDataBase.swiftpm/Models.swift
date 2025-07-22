@@ -13,7 +13,7 @@ struct Camera: Codable, Identifiable, Hashable {
     let sensorWidth: String
     let sensorHeight: String
     let imageCircle: String
-    
+
     private enum CodingKeys: String, CodingKey {
         case id, manufacturer, model, sensor
         case sensorWidth = "sensorwidth"
@@ -33,7 +33,7 @@ struct RecordingFormat: Codable, Identifiable, Hashable {
     let recordingWidth: String
     let recordingHeight: String
     let recordingImageCircle: String
-    
+
     private enum CodingKeys: String, CodingKey {
         case id, manufacturer, model
         case cameraId = "cameraid"
@@ -69,14 +69,14 @@ struct Lens: Codable, Identifiable, Hashable {
     let front_diameter: String
     let squeeze_factor: String?
     let lens_format: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case id, display_name, manufacturer, lens_name, format,
              focal_length, aperture, close_focus_in, close_focus_cm,
              image_circle, length, front_diameter, squeeze_factor,
              lens_format
     }
-    
+
     init(id: String, display_name: String, manufacturer: String, lens_name: String, format: String, focal_length: String, aperture: String, close_focus_in: String, close_focus_cm: String, image_circle: String, length: String, front_diameter: String, squeeze_factor: String?, lens_format: String?) {
         self.id = id
         self.display_name = display_name
@@ -93,10 +93,10 @@ struct Lens: Codable, Identifiable, Hashable {
         self.squeeze_factor = squeeze_factor
         self.lens_format = lens_format
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         id = try Lens.decodeFlexible(container: container, key: .id) ?? ""
         display_name = try Lens.decodeFlexible(container: container, key: .display_name) ?? ""
         manufacturer = try Lens.decodeFlexible(container: container, key: .manufacturer) ?? ""
@@ -112,7 +112,7 @@ struct Lens: Codable, Identifiable, Hashable {
         squeeze_factor = try Lens.decodeFlexible(container: container, key: .squeeze_factor)
         lens_format = try Lens.decodeFlexible(container: container, key: .lens_format) ?? ""
     }
-    
+
     private static func decodeFlexible(container: KeyedDecodingContainer<CodingKeys>, key: CodingKeys) throws -> String? {
         if let stringValue = try? container.decode(String.self, forKey: key) {
             return stringValue
@@ -134,11 +134,11 @@ struct InventoryItem: Codable {
     let lens_id: String
     let display_name: String?
     let notes: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case id, rental_id, lens_id, display_name, notes
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try InventoryItem.decodeFlexible(container: container, key: .id) ?? ""
@@ -147,7 +147,7 @@ struct InventoryItem: Codable {
         display_name = try? container.decodeIfPresent(String.self, forKey: .display_name)
         notes = try? container.decodeIfPresent(String.self, forKey: .notes)
     }
-    
+
     private static func decodeFlexible(container: KeyedDecodingContainer<CodingKeys>, key: CodingKeys) throws -> String? {
         if let stringValue = try? container.decode(String.self, forKey: key) {
             return stringValue
@@ -194,9 +194,9 @@ enum ActiveTab: Equatable {
 
 enum FocalCategory: String, CaseIterable, Identifiable {
     case all, ultraWide, wide, standard, tele, superTele
-    
+
     var id: String { rawValue }
-    
+
     var displayName: String {
         switch self {
         case .all: return "All"
@@ -207,7 +207,7 @@ enum FocalCategory: String, CaseIterable, Identifiable {
         case .superTele: return "Super Tele (181mm + )"
         }
     }
-    
+
     func contains(focal: Double?) -> Bool {
         guard let f = focal else { return false }
         switch self {

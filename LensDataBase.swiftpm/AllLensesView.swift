@@ -191,7 +191,7 @@ struct GlassFilterChip: View {
     let title: String
     let accentColor: Color
     var isActive: Bool = false
-    
+
     var body: some View {
         HStack(spacing: AppTheme.Spacing.md) {
             Image(systemName: icon)
@@ -215,13 +215,13 @@ struct GlassFilterChip: View {
 
 struct RentalFilterButton: View {
     var isActive: Bool
-    
+
     let activeGradient = LinearGradient(
         colors: [AppTheme.Colors.blue, AppTheme.Colors.purple],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
-    
+
     var body: some View {
         HStack(spacing: AppTheme.Spacing.md) {
             Image(systemName: "building.2")
@@ -245,12 +245,12 @@ struct RentalFilterButton: View {
 struct GlassSearchBar: View {
     @Binding var text: String
     @FocusState private var isFocused: Bool
-    
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(AppTheme.Colors.secondaryText)
-            
+
             ZStack(alignment: .leading) {
                 if text.isEmpty && !isFocused {
                     Text("Search lenses...")
@@ -258,14 +258,14 @@ struct GlassSearchBar: View {
                         .font(.system(size: 17, weight: .medium, design: .rounded))
                         .padding(.leading, 2)
                 }
-                
+
                 TextField("", text: $text)
                     .focused($isFocused)
                     .foregroundColor(.white)
                     .font(.system(size: 17, weight: .semibold, design: .rounded))
                     .disableAutocorrection(true)
             }
-            
+
             if !text.isEmpty {
                 Button {
                     text = ""

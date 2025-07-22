@@ -5,21 +5,21 @@ struct FavoritesView: View {
     @State private var selectedLens: Lens? = nil
     @State private var isSelectionMode = false
     @State private var showComparisonSheet = false
-    
+
     var body: some View {
         ZStack {
             AppTheme.Colors.primaryGradient
                 .ignoresSafeArea()
-            
+
             VStack(spacing: 0) {
                 HStack {
                     Text("Favorites")
                         .font(.appLargeTitle)
                         .gradientText(AppTheme.Colors.favoriteTitleGradient)
                         .shadow(color: AppTheme.Colors.yellow.opacity(0.18), radius: 12, x: 0, y: 6)
-                    
+
                     Spacer()
-                    
+
                     if !dataManager.favoriteLensesList.isEmpty {
                         Button(action: {
                             withAnimation {
@@ -55,7 +55,7 @@ struct FavoritesView: View {
                 .padding(.horizontal, AppTheme.Spacing.xxxl)
                 .padding(.top, AppTheme.Spacing.padding22)
                 .padding(.bottom, AppTheme.Spacing.xxl)
-                
+
                 if dataManager.favoriteLensesList.isEmpty {
                     Spacer()
                     VStack(spacing: AppTheme.Spacing.lg) {
@@ -96,12 +96,12 @@ struct FavoritesView: View {
                     }
                 }
             }
-            
+
             .sheet(item: $selectedLens) { lens in
                 LensDetailView(lens: lens)
                     .environmentObject(dataManager)
             }
-            
+
             if isSelectionMode, dataManager.comparisonSet.count > 1 {
                 VStack {
                     Spacer()
@@ -148,7 +148,7 @@ struct LensRow: View {
     let lens: Lens
     let isSelectionMode: Bool
     let isSelectedForComparison: Bool
-    
+
     var body: some View {
         HStack(spacing: AppTheme.Spacing.padding15) {
             if isSelectionMode {
@@ -165,13 +165,13 @@ struct LensRow: View {
                     .foregroundColor(AppTheme.Colors.secondaryText)
             }
             Spacer()
-            
+
             if !isSelectionMode {
                 Image(systemName: "chevron.right")
                     .font(.callout.weight(.semibold))
                     .foregroundColor(AppTheme.Colors.disabledText)
             }
-            
+
         }
         .padding()
         .background(
@@ -181,11 +181,11 @@ struct LensRow: View {
                     RoundedRectangle(cornerRadius: AppTheme.CornerRadius.medium)
                         .stroke(AppTheme.Colors.blue, lineWidth: 2)
                 }
-                
+
             }
         )
         .cornerRadius(AppTheme.CornerRadius.medium)
         .animation(.easeInOut(duration: 0.2), value: [isSelectionMode, isSelectedForComparison])
     }
-    
+
 }
