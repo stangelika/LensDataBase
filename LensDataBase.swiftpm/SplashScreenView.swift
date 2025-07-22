@@ -12,7 +12,7 @@ struct SplashScreenView: View {
     @State private var showSubtitle = false
 
     @State private var shimmerPhase: CGFloat = 0
-    
+
       @State private var splashMinimumDelayPassed = false
 
     var body: some View {
@@ -115,23 +115,23 @@ struct SplashScreenView: View {
                 }
 
             }
-          
-            
+
+
                 .onAppear {dataManager.loadData()
-                    
+
                     withAnimation(.easeInOut(duration: 1.4)) {
                         glassBlur = true
                     }
-                    
+
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         logoPulse = true
                         showSubtitle = true
                     }
-                    
+
                     withAnimation(Animation.linear(duration: 1.8).repeatForever(autoreverses: false)) {
                         shimmerPhase = 1.0
                     }
-                    
+
                     // Минимальное время отображения Splash
                     DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                         splashMinimumDelayPassed = true
@@ -142,7 +142,7 @@ struct SplashScreenView: View {
                         }
                     }
                 }
-            
+
                 .onChange(of: dataManager.loadingState) { oldState, newState in
                     if newState == .loaded, splashMinimumDelayPassed {
                         withAnimation(.easeInOut(duration: 0.55)) {

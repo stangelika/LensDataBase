@@ -40,7 +40,7 @@ enum AppThemeValidation {
 
         return isValid
     }
-    
+
     static func printThemeUsageReport() {
         #if DEBUG
         print("📊 AppTheme Usage Report: ")

@@ -2,19 +2,19 @@ import SwiftUI
 
 struct MainTabView: View {
     @EnvironmentObject var dataManager: DataManager
-    
+
     var body: some View {
         ZStack {
             AppTheme.Colors.mainTabGradient
                 .ignoresSafeArea()
-            
+
             TabView(selection: $dataManager.activeTab) {
                 AllLensesView()
                     .tag(ActiveTab.allLenses)
-                
+
                 FavoritesView()
                     .tag(ActiveTab.favorites)
-                
+
                 RentalAndSettingsView()
                     .tag(ActiveTab.rentalView)
             }
