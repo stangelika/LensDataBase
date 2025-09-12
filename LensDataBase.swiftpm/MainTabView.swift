@@ -15,6 +15,9 @@ struct MainTabView: View {
                 FavoritesView()
                     .tag(ActiveTab.favorites)
 
+                PrimeNumbersView()
+                    .tag(ActiveTab.primeNumbers)
+
                 RentalAndSettingsView()
                     .tag(ActiveTab.rentalView)
             }

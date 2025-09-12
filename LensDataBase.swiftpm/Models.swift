@@ -190,6 +190,7 @@ enum ActiveTab: Equatable {
     case rentalView
     case allLenses
     case favorites
+    case primeNumbers
 }
 
 enum FocalCategory: String, CaseIterable, Identifiable {
@@ -257,5 +258,36 @@ enum LensFormatCategory: String, CaseIterable, Identifiable {
         case .mft:
             return format.contains("mft") || format.contains("nodata") || format.contains("unknown") || format.isEmpty
         }
+    }
+}
+
+// MARK: - Prime Number Service
+class PrimeNumberService {
+    static let shared = PrimeNumberService()
+    
+    private init() {}
+    
+    /// Generates all prime numbers up to the given limit using Sieve of Eratosthenes
+    func generatePrimesUpTo(_ limit: Int) -> [Int] {
+        guard limit >= 2 else { return [] }
+        
+        var sieve = Array(repeating: true, count: limit + 1)
+        sieve[0] = false
+        if limit >= 1 { sieve[1] = false }
+        
+        for i in 2...Int(Double(limit).squareRoot()) {
+            if sieve[i] {
+                for multiple in stride(from: i * i, through: limit, by: i) {
+                    sieve[multiple] = false
+                }
+            }
+        }
+        
+        return sieve.enumerated().compactMap { $0.element ? $0.offset : nil }
+    }
+    
+    /// Returns formatted string representation of prime numbers
+    func formatPrimeList(_ primes: [Int]) -> String {
+        return primes.map(String.init).joined(separator: ", ")
     }
 }

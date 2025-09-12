@@ -28,6 +28,7 @@ func runAllTests() {
     testUIComponents()
     testErrorHandling()
     testDataProcessing()
+    testPrimeNumberService()
 
     print("=" * 50)
     print("🎉 All tests completed successfully!")
@@ -117,7 +118,7 @@ func testEnumValues() {
     }
 
     // Test ActiveTab enum
-    let tabs: [ActiveTab] = [.rentalView, .allLenses, .favorites]
+    let tabs: [ActiveTab] = [.rentalView, .allLenses, .favorites, .primeNumbers]
     for tab in tabs {
         print("✅ ActiveTab: \(tab)")
     }
@@ -350,6 +351,42 @@ func testDataProcessing() {
     }
     
     print("✅ Data processing test passed!")
+}
+
+func testPrimeNumberService() {
+    print("\n🔢 Test: Prime Number Service")
+    
+    let service = PrimeNumberService.shared
+    
+    // Test prime generation up to 100
+    let primes = service.generatePrimesUpTo(100)
+    
+    // Expected prime count up to 100 is 25
+    let expectedPrimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+    
+    guard primes.count == expectedPrimes.count else {
+        print("❌ Expected \(expectedPrimes.count) primes, got \(primes.count)")
+        return
+    }
+    
+    guard primes == expectedPrimes else {
+        print("❌ Prime sequence doesn't match expected values")
+        return
+    }
+    
+    print("✅ Generated \(primes.count) prime numbers correctly")
+    print("✅ First 10 primes: \(Array(primes.prefix(10)))")
+    print("✅ Last 5 primes: \(Array(primes.suffix(5)))")
+    
+    // Test formatting
+    let formatted = service.formatPrimeList(Array(primes.prefix(5)))
+    guard formatted == "2, 3, 5, 7, 11" else {
+        print("❌ Formatting test failed: got '\(formatted)'")
+        return
+    }
+    
+    print("✅ Prime number formatting works correctly")
+    print("✅ Prime number service test passed!")
 }
 
 private func createTestLens() -> Lens {
